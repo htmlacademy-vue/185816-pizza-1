@@ -7,14 +7,14 @@
           <h2 class="title title--small sheet__title">Выберите тесто</h2>
           <div class="sheet__content dough">
             <label
-              v-for="dough in transformDoughs"
+              v-for="dough in transformedDoughs"
               :key="dough.id"
               :class="`dough__input dough__input--${dough.image}`"
             >
               <input
                 type="radio"
                 name="dought"
-                value="light"
+                :value="dough.id"
                 class="visually-hidden"
                 checked
               />
@@ -69,7 +69,7 @@
               <ul class="ingredients__list">
                 <li
                   class="ingredients__item"
-                  v-for="ingredient in transformIngredients"
+                  v-for="ingredient in transformedIngredients"
                   :key="ingredient.id"
                 >
                   <span :class="`filling filling--${ingredient.image}`">
@@ -149,21 +149,16 @@ export default {
     };
   },
   computed: {
-    transformIngredients: function () {
+    transformedIngredients: function () {
       return this.ingredients.map((ingredient) => ({
-        id: ingredient.id,
-        name: ingredient.name,
+        ...ingredient,
         image: ingredient.image.split("/").pop().split(".").shift(),
-        price: ingredient.price,
       }));
     },
-    transformDoughs: function () {
+    transformedDoughs: function () {
       return this.doughs.map((dough) => ({
-        id: dough.id,
-        name: dough.name,
+        ...dough,
         image: dough.image.split("/").pop().split(".").shift().split("-").pop(),
-        description: dough.description,
-        price: dough.price,
       }));
     },
   },
