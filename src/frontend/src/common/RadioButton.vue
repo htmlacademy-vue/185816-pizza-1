@@ -5,6 +5,7 @@
       type="radio"
       :name="name"
       :value="value"
+      :checked="checked"
     />
     <slot>
       <span>{{ title }}</span>
@@ -25,7 +26,7 @@ export default {
       required: true,
     },
     value: {
-      type: String,
+      type: Number,
       required: true,
     },
     className: {
@@ -33,6 +34,10 @@ export default {
       required: true,
     },
     hidden: {
+      type: Boolean,
+      default: false,
+    },
+    checked: {
       type: Boolean,
       default: false,
     },

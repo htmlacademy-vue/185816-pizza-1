@@ -11,6 +11,7 @@
           :value="dough.id"
           :title="dough.name"
           :hidden="true"
+          :checked="true"
         >
           <b>{{ dough.name }}</b>
           <span>{{ dough.description }}</span>

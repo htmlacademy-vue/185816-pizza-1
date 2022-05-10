@@ -61,6 +61,7 @@ export default {
       sauces: pizza.sauces,
       sizes: pizza.sizes,
       doughs: pizza.dough,
+      currentPizza: {},
     };
   },
   computed: {

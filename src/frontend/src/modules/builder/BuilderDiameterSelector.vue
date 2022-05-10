@@ -15,6 +15,7 @@
           :value="size.id"
           :title="size.name"
           :hidden="true"
+          :checked="true"
         />
       </div>
     </div>

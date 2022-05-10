@@ -12,6 +12,7 @@
             name="souce"
             :value="sauce.id"
             :title="sauce.name"
+            :checked="true"
           />
         </div>
 
@@ -32,7 +33,8 @@
                 <button
                   type="button"
                   class="counter__button counter__button--minus"
-                  disabled
+                  :disabled="pizzaIngredients[ingredient.id - 1].count === 0"
+                  @click="pizzaIngredients[ingredient.id - 1].count--"
                 >
                   <span class="visually-hidden">Меньше</span>
                 </button>
@@ -40,11 +42,12 @@
                   type="text"
                   name="counter"
                   class="counter__input"
-                  value="0"
+                  :value="pizzaIngredients[ingredient.id - 1].count"
                 />
                 <button
                   type="button"
                   class="counter__button counter__button--plus"
+                  @click="pizzaIngredients[ingredient.id - 1].count++"
                 >
                   <span class="visually-hidden">Больше</span>
                 </button>
@@ -74,6 +77,17 @@ export default {
       type: Array,
       required: true,
     },
+  },
+  data() {
+    return {
+      pizzaIngredients: this.ingredients.map((ingredient) => ({
+        id: ingredient.id,
+        count: 0,
+      })),
+    };
+  },
+  mounted() {
+    console.log(this.pizzaIngredients);
   },
 };
 </script>
