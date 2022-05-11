@@ -8,7 +8,8 @@
           :key="dough.id"
           :className="['dough__input', `dough__input--${dough.image}`]"
           name="dough"
-          :value="dough.id"
+          :id="dough.id"
+          :value="dough.price"
           :title="dough.name"
           :hidden="true"
           @input="setDough"
@@ -36,8 +37,17 @@ export default {
     },
   },
   methods: {
-    setDough(doughId) {
-      this.$emit("setDough", doughId);
+    /**
+     * Emit value to parent
+     * @param {object} dough
+     *
+     * {
+     *   id: Number,
+     *   value: Number
+     * }
+     */
+    setDough(dough) {
+      this.$emit("setDough", dough);
     },
   },
 };

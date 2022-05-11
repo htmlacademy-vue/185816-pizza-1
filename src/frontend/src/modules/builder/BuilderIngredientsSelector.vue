@@ -10,7 +10,8 @@
             :key="sauce.id"
             :className="['radio', 'ingredients__input']"
             name="sauce"
-            :value="sauce.id"
+            :id="sauce.id"
+            :value="sauce.price"
             :title="sauce.name"
             @input="getSauce"
           />
@@ -45,9 +46,22 @@ export default {
     },
   },
   methods: {
-    getSauce(sauceId) {
-      this.$emit("setSauce", sauceId);
+    /**
+     * Emit value to parent
+     * @param {object} sauce
+     *
+     * {
+     *   id: Number,
+     *   value: Number
+     * }
+     */
+    getSauce(sauce) {
+      this.$emit("setSauce", sauce);
     },
+    /**
+     * Emit to parent ingredients
+     * @param {array} ingredients
+     */
     getIngredients(ingredients) {
       this.$emit("setIngredients", ingredients);
     },

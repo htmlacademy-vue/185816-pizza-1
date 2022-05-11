@@ -12,7 +12,8 @@
             `diameter__input--${sizesMap[size.id]}`,
           ]"
           name="diameter"
-          :value="size.id"
+          :id="size.id"
+          :value="size.multiplier"
           :title="size.name"
           :hidden="true"
           @input="getSize"
@@ -43,8 +44,17 @@ export default {
     };
   },
   methods: {
-    getSize(sizeId) {
-      this.$emit("setSize", sizeId);
+    /**
+     * Emit parent value
+     * @param {object} size
+     *
+     * {
+     *   id: Number,
+     *   value: Number
+     * }
+     */
+    getSize(size) {
+      this.$emit("setSize", size);
     },
   },
 };

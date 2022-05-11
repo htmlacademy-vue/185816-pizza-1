@@ -53,15 +53,24 @@ export default {
     return {
       pizzaIngredients: this.ingredients.map((ingredient) => ({
         id: ingredient.id,
+        price: ingredient.price,
         count: 0,
       })),
     };
   },
   methods: {
+    /**
+     * Add ingredients and emit to parent
+     * @param {int} id
+     */
     addIngredient(id) {
       this.pizzaIngredients[id - 1].count++;
       this.$emit("getIngredients", this.pizzaIngredients);
     },
+    /**
+     * Remove ingredients and emit to parent
+     * @param {int} id
+     */
     removeIngredient(id) {
       this.pizzaIngredients[id - 1].count--;
       this.$emit("getIngredients", this.pizzaIngredients);

@@ -6,7 +6,7 @@
       :name="name"
       :value="value"
       :checked="checked"
-      @input="$emit('input', Number($event.target.value))"
+      @input="$emit('input', { id, value: Number($event.target.value) })"
     />
     <slot>
       <span>{{ title }}</span>
@@ -18,6 +18,10 @@
 export default {
   name: "RadioButton",
   props: {
+    id: {
+      type: Number,
+      required: true,
+    },
     title: {
       type: String,
       required: true,

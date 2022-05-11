@@ -40,7 +40,7 @@
 
         <div class="content__result">
           <p>Итого: {{ price }} ₽</p>
-          <button type="button" class="button" :disabled="isSubmitDisabled">
+          <button type="button" class="button" :disabled="!currentPizza.dough">
             Готовьте!
           </button>
         </div>
@@ -106,13 +106,21 @@ export default {
       }));
     },
   },
+  watch: {
+    currentPizza: {
+      handler: function () {
+        this.calculatePrice();
+      },
+      deep: true,
+    },
+  },
   methods: {
     /**
      * Define sauce
-     * @param {int} sauceId
+     * @param {object} sauce
      */
-    setSauce(sauceId) {
-      this.currentPizza.sauce = sauceId;
+    setSauce(sauce) {
+      this.currentPizza.sauce = sauce;
     },
     /**
      * Define ingredients
@@ -123,20 +131,37 @@ export default {
     },
     /**
      * Define dough
-     * @param {int} doughId
+     * @param {object} dough
      */
-    setDough(doughId) {
-      this.currentPizza.dough = doughId;
+    setDough(dough) {
+      this.currentPizza.dough = dough;
     },
     /**
      * Define size
-     * @param {int} sizeId
+     * @param {object} size
      */
-    setSize(sizeId) {
-      this.currentPizza.size = sizeId;
+    setSize(size) {
+      this.currentPizza.size = size;
     },
-    displayPizza() {
-      console.log(this.currentPizza);
+    calculatePrice() {
+      if (this.currentPizza.ingredients.length !== 0) {
+        this.price = this.currentPizza.ingredients
+          .filter((ingredient) => ingredient.count !== 0)
+          .map((fill) => fill.count * fill.price)
+          .reduce((prev, current) => prev + current);
+      }
+
+      if (this.currentPizza.dough) {
+        this.price = this.price + this.currentPizza.dough.value;
+      }
+
+      if (this.currentPizza.sauce) {
+        this.price = this.price + this.currentPizza.sauce.value;
+      }
+
+      if (this.currentPizza.size) {
+        this.price = this.price * this.currentPizza.size.value;
+      }
     },
   },
 };
