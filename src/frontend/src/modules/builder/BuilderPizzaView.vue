@@ -144,6 +144,7 @@ export default {
       this.currentPizza.size = size;
     },
     calculatePrice() {
+      this.price = 0;
       if (this.currentPizza.ingredients.length !== 0) {
         this.price = this.currentPizza.ingredients
           .filter((ingredient) => ingredient.count !== 0)
