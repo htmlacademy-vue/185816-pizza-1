@@ -15,7 +15,7 @@
           :value="size.id"
           :title="size.name"
           :hidden="true"
-          :checked="true"
+          @input="getSize"
         />
       </div>
     </div>
@@ -41,6 +41,11 @@ export default {
     return {
       sizesMap,
     };
+  },
+  methods: {
+    getSize(sizeId) {
+      this.$emit("setSize", sizeId);
+    },
   },
 };
 </script>

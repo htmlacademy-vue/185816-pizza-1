@@ -9,52 +9,16 @@
             v-for="sauce in sauces"
             :key="sauce.id"
             :className="['radio', 'ingredients__input']"
-            name="souce"
+            name="sauce"
             :value="sauce.id"
             :title="sauce.name"
-            :checked="true"
+            @input="getSauce"
           />
         </div>
-
-        <div class="ingredients__filling">
-          <p>Начинка:</p>
-
-          <ul class="ingredients__list">
-            <li
-              class="ingredients__item"
-              v-for="ingredient in ingredients"
-              :key="ingredient.id"
-            >
-              <span :class="`filling filling--${ingredient.image}`">
-                {{ ingredient.name }}
-              </span>
-
-              <div class="counter counter--orange ingredients__counter">
-                <button
-                  type="button"
-                  class="counter__button counter__button--minus"
-                  :disabled="pizzaIngredients[ingredient.id - 1].count === 0"
-                  @click="pizzaIngredients[ingredient.id - 1].count--"
-                >
-                  <span class="visually-hidden">Меньше</span>
-                </button>
-                <input
-                  type="text"
-                  name="counter"
-                  class="counter__input"
-                  :value="pizzaIngredients[ingredient.id - 1].count"
-                />
-                <button
-                  type="button"
-                  class="counter__button counter__button--plus"
-                  @click="pizzaIngredients[ingredient.id - 1].count++"
-                >
-                  <span class="visually-hidden">Больше</span>
-                </button>
-              </div>
-            </li>
-          </ul>
-        </div>
+        <BuilderFillingList
+          :ingredients="ingredients"
+          @getIngredients="getIngredients"
+        />
       </div>
     </div>
   </div>
@@ -62,11 +26,13 @@
 
 <script>
 import RadioButton from "@/common/RadioButton";
+import BuilderFillingList from "@/modules/builder/BuilderFillingList";
 
 export default {
   name: "BuilderIngredientsSelector",
   components: {
     RadioButton,
+    BuilderFillingList,
   },
   props: {
     ingredients: {
@@ -78,16 +44,13 @@ export default {
       required: true,
     },
   },
-  data() {
-    return {
-      pizzaIngredients: this.ingredients.map((ingredient) => ({
-        id: ingredient.id,
-        count: 0,
-      })),
-    };
-  },
-  mounted() {
-    console.log(this.pizzaIngredients);
+  methods: {
+    getSauce(sauceId) {
+      this.$emit("setSauce", sauceId);
+    },
+    getIngredients(ingredients) {
+      this.$emit("setIngredients", ingredients);
+    },
   },
 };
 </script>

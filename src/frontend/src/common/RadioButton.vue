@@ -6,6 +6,7 @@
       :name="name"
       :value="value"
       :checked="checked"
+      @input="$emit('input', Number($event.target.value))"
     />
     <slot>
       <span>{{ title }}</span>

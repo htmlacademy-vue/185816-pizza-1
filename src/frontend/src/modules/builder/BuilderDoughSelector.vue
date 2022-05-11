@@ -11,7 +11,7 @@
           :value="dough.id"
           :title="dough.name"
           :hidden="true"
-          :checked="true"
+          @input="setDough"
         >
           <b>{{ dough.name }}</b>
           <span>{{ dough.description }}</span>
@@ -33,6 +33,11 @@ export default {
     doughs: {
       type: Array,
       required: true,
+    },
+  },
+  methods: {
+    setDough(doughId) {
+      this.$emit("setDough", doughId);
     },
   },
 };

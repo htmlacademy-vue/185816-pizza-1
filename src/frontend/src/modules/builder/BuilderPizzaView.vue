@@ -5,13 +5,18 @@
       <div class="content__ingredients">
         <div class="sheet">
           <h2 class="title title--small sheet__title">Выберите ингредиенты</h2>
-          <BuilderDoughSelector :doughs="transformedDoughs" />
+          <BuilderDoughSelector
+            :doughs="transformedDoughs"
+            @setDough="setDough"
+          />
         </div>
       </div>
-      <BuilderDiameterSelector :sizes="sizes" />
+      <BuilderDiameterSelector :sizes="sizes" @setSize="setSize" />
       <BuilderIngredientsSelector
         :sauces="sauces"
         :ingredients="transformedIngredients"
+        @setSauce="setSauce"
+        @setIngredients="setIngredients"
       />
       <div class="content__pizza">
         <label class="input">
@@ -34,8 +39,10 @@
         </div>
 
         <div class="content__result">
-          <p>Итого: 0 ₽</p>
-          <button type="button" class="button" disabled>Готовьте!</button>
+          <p>Итого: {{ price }} ₽</p>
+          <button type="button" class="button" :disabled="isSubmitDisabled">
+            Готовьте!
+          </button>
         </div>
       </div>
     </div>
@@ -57,25 +64,79 @@ export default {
   },
   data() {
     return {
+      /**
+       * Mock pizza components
+       */
       ingredients: pizza.ingredients,
       sauces: pizza.sauces,
       sizes: pizza.sizes,
       doughs: pizza.dough,
-      currentPizza: {},
+      /**
+       * Pizza to cart
+       */
+      currentPizza: {
+        sauce: false,
+        dough: false,
+        size: false,
+        ingredients: [],
+      },
+      price: 0,
+      isSubmitDisabled: true,
     };
   },
   computed: {
+    /**
+     * Transformation url image to class modification
+     * @return {array}
+     */
     transformedIngredients: function () {
       return this.ingredients.map((ingredient) => ({
         ...ingredient,
         image: ingredient.image.split("/").pop().split(".").shift(),
       }));
     },
+    /**
+     * Transformation url image to class modification
+     * @return {array}
+     */
     transformedDoughs: function () {
       return this.doughs.map((dough) => ({
         ...dough,
         image: dough.image.split("/").pop().split(".").shift().split("-").pop(),
       }));
+    },
+  },
+  methods: {
+    /**
+     * Define sauce
+     * @param {int} sauceId
+     */
+    setSauce(sauceId) {
+      this.currentPizza.sauce = sauceId;
+    },
+    /**
+     * Define ingredients
+     * @param {array} ingredients
+     */
+    setIngredients(ingredients) {
+      this.currentPizza.ingredients = ingredients;
+    },
+    /**
+     * Define dough
+     * @param {int} doughId
+     */
+    setDough(doughId) {
+      this.currentPizza.dough = doughId;
+    },
+    /**
+     * Define size
+     * @param {int} sizeId
+     */
+    setSize(sizeId) {
+      this.currentPizza.size = sizeId;
+    },
+    displayPizza() {
+      console.log(this.currentPizza);
     },
   },
 };
