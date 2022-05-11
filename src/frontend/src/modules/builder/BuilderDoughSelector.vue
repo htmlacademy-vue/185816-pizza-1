@@ -6,13 +6,14 @@
         <RadioButton
           v-for="dough in doughs"
           :key="dough.id"
-          :className="['dough__input', `dough__input--${dough.image}`]"
+          :class="['dough__input', `dough__input--${dough.image}`]"
           name="dough"
           :id="dough.id"
           :value="dough.price"
           :title="dough.name"
-          :hidden="true"
-          @input="setDough"
+          hidden
+          :checked="dough.id === 1"
+          @setValue="setDough"
         >
           <b>{{ dough.name }}</b>
           <span>{{ dough.description }}</span>

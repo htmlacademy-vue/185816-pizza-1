@@ -7,16 +7,14 @@
         <RadioButton
           v-for="size in sizes"
           :key="size.id"
-          :className="[
-            'diameter__input',
-            `diameter__input--${sizesMap[size.id]}`,
-          ]"
+          :class="['diameter__input', `diameter__input--${sizesMap[size.id]}`]"
           name="diameter"
           :id="size.id"
           :value="size.multiplier"
           :title="size.name"
-          :hidden="true"
-          @input="getSize"
+          hidden
+          :checked="size.id === 2"
+          @setValue="setSize"
         />
       </div>
     </div>
@@ -53,7 +51,8 @@ export default {
      *   value: Number
      * }
      */
-    getSize(size) {
+    setSize(size) {
+      console.log(size);
       this.$emit("setSize", size);
     },
   },

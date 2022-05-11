@@ -6,20 +6,18 @@
         <div class="ingredients__sauce">
           <p>Основной соус:</p>
           <RadioButton
+            :class="['radio', 'ingredients__input']"
             v-for="sauce in sauces"
             :key="sauce.id"
-            :className="['radio', 'ingredients__input']"
             name="sauce"
             :id="sauce.id"
             :value="sauce.price"
             :title="sauce.name"
-            @input="getSauce"
+            :checked="sauce.id === 2"
+            @setValue="setSauce"
           />
         </div>
-        <BuilderFillingList
-          :ingredients="ingredients"
-          @getIngredients="getIngredients"
-        />
+        <BuilderFillingList :ingredients="ingredients" />
       </div>
     </div>
   </div>
@@ -55,7 +53,7 @@ export default {
      *   value: Number
      * }
      */
-    getSauce(sauce) {
+    setSauce(sauce) {
       this.$emit("setSauce", sauce);
     },
     /**

@@ -1,12 +1,12 @@
 <template>
-  <label :class="className">
+  <label>
     <input
       :class="[{ 'visually-hidden': hidden }]"
       type="radio"
       :name="name"
       :value="value"
       :checked="checked"
-      @input="$emit('input', { id, value: Number($event.target.value) })"
+      @click="$emit('setValue', { id, value })"
     />
     <slot>
       <span>{{ title }}</span>
@@ -32,10 +32,6 @@ export default {
     },
     value: {
       type: Number,
-      required: true,
-    },
-    className: {
-      type: Array,
       required: true,
     },
     hidden: {

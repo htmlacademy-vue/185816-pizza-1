@@ -16,7 +16,6 @@
         :sauces="sauces"
         :ingredients="transformedIngredients"
         @setSauce="setSauce"
-        @setIngredients="setIngredients"
       />
       <div class="content__pizza">
         <label class="input">

@@ -16,21 +16,15 @@
           <button
             type="button"
             class="counter__button counter__button--minus"
-            :disabled="pizzaIngredients[ingredient.id - 1].count === 0"
-            @click="removeIngredient(ingredient.id)"
+            @click="removeIngredient(ingredient)"
           >
             <span class="visually-hidden">Меньше</span>
           </button>
-          <input
-            type="text"
-            name="counter"
-            class="counter__input"
-            :value="pizzaIngredients[ingredient.id - 1].count"
-          />
+          <input type="text" name="counter" class="counter__input" />
           <button
             type="button"
             class="counter__button counter__button--plus"
-            @click="addIngredient(ingredient.id)"
+            @click="addIngredient(ingredient)"
           >
             <span class="visually-hidden">Больше</span>
           </button>
@@ -49,31 +43,20 @@ export default {
       required: true,
     },
   },
-  data() {
-    return {
-      pizzaIngredients: this.ingredients.map((ingredient) => ({
-        id: ingredient.id,
-        price: ingredient.price,
-        count: 0,
-      })),
-    };
-  },
   methods: {
     /**
      * Add ingredients and emit to parent
-     * @param {int} id
+     * @param {object} ingredient
      */
-    addIngredient(id) {
-      this.pizzaIngredients[id - 1].count++;
-      this.$emit("getIngredients", this.pizzaIngredients);
+    addIngredient(ingredient) {
+      this.$emit("setIngredients", ingredient);
     },
     /**
      * Remove ingredients and emit to parent
-     * @param {int} id
+     * @param {object} ingredient
      */
-    removeIngredient(id) {
-      this.pizzaIngredients[id - 1].count--;
-      this.$emit("getIngredients", this.pizzaIngredients);
+    removeIngredient(ingredient) {
+      this.$emit("setIngredients", ingredient);
     },
   },
 };
