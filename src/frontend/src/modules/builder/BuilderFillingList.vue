@@ -17,14 +17,21 @@
             type="button"
             class="counter__button counter__button--minus"
             @click="removeIngredient(ingredient)"
+            :disabled="ingredient.count === 0"
           >
             <span class="visually-hidden">Меньше</span>
           </button>
-          <input type="text" name="counter" class="counter__input" />
+          <input
+            type="text"
+            name="counter"
+            class="counter__input"
+            :value="ingredient.count"
+          />
           <button
             type="button"
             class="counter__button counter__button--plus"
             @click="addIngredient(ingredient)"
+            :disabled="ingredient.count >= 3"
           >
             <span class="visually-hidden">Больше</span>
           </button>
@@ -49,14 +56,16 @@ export default {
      * @param {object} ingredient
      */
     addIngredient(ingredient) {
-      this.$emit("setIngredients", ingredient);
+      ingredient.count++;
+      this.$emit("setIngredient", ingredient);
     },
     /**
      * Remove ingredients and emit to parent
      * @param {object} ingredient
      */
     removeIngredient(ingredient) {
-      this.$emit("setIngredients", ingredient);
+      ingredient.count--;
+      this.$emit("removeIngredient", ingredient);
     },
   },
 };

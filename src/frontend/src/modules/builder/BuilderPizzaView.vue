@@ -16,6 +16,8 @@
         :sauces="sauces"
         :ingredients="transformedIngredients"
         @setSauce="setSauce"
+        @setIngredient="setIngredient"
+        @removeIngredient="setIngredient"
       />
       <div class="content__pizza">
         <label class="input">
@@ -24,22 +26,29 @@
             type="text"
             name="pizza_name"
             placeholder="Введите название пиццы"
+            v-model="pizzaName"
           />
         </label>
 
         <div class="content__constructor">
           <div class="pizza pizza--foundation--big-tomato">
             <div class="pizza__wrapper">
-              <div class="pizza__filling pizza__filling--ananas"></div>
-              <div class="pizza__filling pizza__filling--bacon"></div>
-              <div class="pizza__filling pizza__filling--cheddar"></div>
+              <div
+                v-for="fill in currentIngredients"
+                :key="fill.id"
+                :class="[
+                  'pizza__filling',
+                  `pizza__filling--${fill.image}`,
+                  `pizza__filling--${fill.add}`,
+                ]"
+              ></div>
             </div>
           </div>
         </div>
 
         <div class="content__result">
-          <p>Итого: {{ price }} ₽</p>
-          <button type="button" class="button" :disabled="!currentPizza.dough">
+          <p>Итого: {{ calculatedPrice }} ₽</p>
+          <button type="button" class="button" :disabled="checkDisabledSubmit">
             Готовьте!
           </button>
         </div>
@@ -73,14 +82,13 @@ export default {
       /**
        * Pizza to cart
        */
-      currentPizza: {
-        sauce: false,
-        dough: false,
-        size: false,
+      pizza: {
+        sauce: pizza.sauces[0],
+        dough: pizza.dough[0],
+        size: pizza.sizes[1],
         ingredients: [],
       },
-      price: 0,
-      isSubmitDisabled: true,
+      pizzaName: "",
     };
   },
   computed: {
@@ -89,10 +97,13 @@ export default {
      * @return {array}
      */
     transformedIngredients: function () {
-      return this.ingredients.map((ingredient) => ({
-        ...ingredient,
-        image: ingredient.image.split("/").pop().split(".").shift(),
-      }));
+      return this.ingredients
+        .map((ingredient) => ({
+          ...ingredient,
+          image: ingredient.image.split("/").pop().split(".").shift(),
+          count: ingredient.count ? ingredient.count : 0,
+        }))
+        .sort((a, b) => a.id - b.id);
     },
     /**
      * Transformation url image to class modification
@@ -104,13 +115,70 @@ export default {
         image: dough.image.split("/").pop().split(".").shift().split("-").pop(),
       }));
     },
-  },
-  watch: {
-    currentPizza: {
-      handler: function () {
-        this.calculatePrice();
-      },
-      deep: true,
+    /**
+     * Filtering changed filling
+     * @return {array}
+     */
+    currentIngredients() {
+      const arrayTemplate = [1, 2, 3, 4, 5];
+
+      return this.transformedIngredients
+        .filter((fill) => fill.count !== 0)
+        .map((fill) => {
+          const fillCountArr = arrayTemplate.slice(0, fill.count);
+          return fillCountArr.map((el, index) => {
+            if (index === 1) {
+              return {
+                ...fill,
+                add: "second",
+              };
+            }
+
+            if (index === 2) {
+              return {
+                ...fill,
+                add: "third",
+              };
+            }
+
+            return fill;
+          });
+        })
+        .flat();
+    },
+    /**
+     * Calculate pizza to cart
+     * @return {number}
+     */
+    calculatedPrice: function () {
+      let price = 0;
+
+      if (this.currentIngredients.length !== 0) {
+        price =
+          price +
+          this.transformedIngredients
+            .map((fill) => fill.price * fill.count)
+            .reduce((prev, current) => prev + current);
+      }
+
+      if (this.pizza.dough) {
+        price = price + this.pizza.dough.price;
+      }
+
+      if (this.pizza.sauce) {
+        price = price + this.pizza.sauce.price;
+      }
+
+      if (this.pizza.size) {
+        price = price * this.pizza.size.multiplier;
+      }
+
+      return price;
+    },
+    checkDisabledSubmit() {
+      return !(
+        this.pizzaName.length > 0 && this.currentIngredients.length >= 3
+      );
     },
   },
   methods: {
@@ -119,49 +187,46 @@ export default {
      * @param {object} sauce
      */
     setSauce(sauce) {
-      this.currentPizza.sauce = sauce;
+      this.pizza.sauce = sauce;
     },
     /**
      * Define ingredients
      * @param {array} ingredients
      */
     setIngredients(ingredients) {
-      this.currentPizza.ingredients = ingredients;
+      this.pizza.ingredients = ingredients;
     },
     /**
      * Define dough
      * @param {object} dough
      */
     setDough(dough) {
-      this.currentPizza.dough = dough;
+      this.pizza.dough = dough;
     },
     /**
      * Define size
      * @param {object} size
      */
     setSize(size) {
-      this.currentPizza.size = size;
+      this.pizza.size = { id: size.id, multiplier: size.price };
     },
-    calculatePrice() {
-      this.price = 0;
-      if (this.currentPizza.ingredients.length !== 0) {
-        this.price = this.currentPizza.ingredients
-          .filter((ingredient) => ingredient.count !== 0)
-          .map((fill) => fill.count * fill.price)
-          .reduce((prev, current) => prev + current);
-      }
-
-      if (this.currentPizza.dough) {
-        this.price = this.price + this.currentPizza.dough.value;
-      }
-
-      if (this.currentPizza.sauce) {
-        this.price = this.price + this.currentPizza.sauce.value;
-      }
-
-      if (this.currentPizza.size) {
-        this.price = this.price * this.currentPizza.size.value;
-      }
+    /**
+     * Update information for ingredient
+     * @param ingredient
+     */
+    setIngredient(ingredient) {
+      this.removeIngredient(ingredient);
+      this.ingredients.push(ingredient);
+    },
+    /**
+     * Delete ingredient by index
+     * @param ingredient
+     */
+    removeIngredient(ingredient) {
+      const index = this.ingredients.findIndex(
+        (fill) => fill.id === ingredient.id
+      );
+      this.ingredients.splice(index, 1);
     },
   },
 };

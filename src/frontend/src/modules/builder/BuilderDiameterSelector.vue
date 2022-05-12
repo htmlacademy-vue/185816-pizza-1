@@ -52,7 +52,6 @@ export default {
      * }
      */
     setSize(size) {
-      console.log(size);
       this.$emit("setSize", size);
     },
   },

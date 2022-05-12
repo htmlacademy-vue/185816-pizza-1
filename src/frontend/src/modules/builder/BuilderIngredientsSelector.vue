@@ -17,7 +17,11 @@
             @setValue="setSauce"
           />
         </div>
-        <BuilderFillingList :ingredients="ingredients" />
+        <BuilderFillingList
+          :ingredients="ingredients"
+          @setIngredient="setIngredient"
+          @removeIngredient="removeIngredient"
+        />
       </div>
     </div>
   </div>
@@ -58,10 +62,13 @@ export default {
     },
     /**
      * Emit to parent ingredients
-     * @param {array} ingredients
+     * @param {object} ingredient
      */
-    getIngredients(ingredients) {
-      this.$emit("setIngredients", ingredients);
+    setIngredient(ingredient) {
+      this.$emit("setIngredient", ingredient);
+    },
+    removeIngredient(ingredient) {
+      this.$emit("removeIngredient", ingredient);
     },
   },
 };
