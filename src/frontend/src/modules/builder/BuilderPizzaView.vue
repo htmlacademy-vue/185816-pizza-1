@@ -1,6 +1,6 @@
 <template>
   <form action="#" method="post">
-    <div class="content__wrapper">
+    <div class="content__wrapper" @drop="onDropFill">
       <h1 class="title title--big">Конструктор пиццы</h1>
       <div class="content__ingredients">
         <div class="sheet">
@@ -30,18 +30,29 @@
           />
         </label>
 
-        <div class="content__constructor">
+        <div class="content__constructor" style="position: relative">
           <div class="pizza pizza--foundation--big-tomato">
-            <div class="pizza__wrapper">
+            <div
+              class="pizza__wrapper"
+              draggable="true"
+              @dragstart.prevent
+              @dragover.prevent
+              @dragenter.prevent
+              aria-dropeffect="copy"
+            >
               <div
-                v-for="fill in currentIngredients"
-                :key="fill.id"
+                v-for="(fill, index) in currentIngredients"
+                :key="index"
                 :class="[
                   'pizza__filling',
                   `pizza__filling--${fill.image}`,
                   `pizza__filling--${fill.add}`,
                 ]"
               ></div>
+              <ul
+                class="ingredients__list"
+                style="position: absolute; width: 100%; height: 100%"
+              ></ul>
             </div>
           </div>
         </div>
@@ -62,6 +73,7 @@ import pizza from "@/static/pizza.json";
 import BuilderDoughSelector from "@/modules/builder/BuilderDoughSelector";
 import BuilderDiameterSelector from "@/modules/builder/BuilderDiameterSelector";
 import BuilderIngredientsSelector from "@/modules/builder/BuilderIngredientsSelector";
+import { DataTransferType } from "@/common/constants";
 
 export default {
   name: "BuilderPizzaView",
@@ -177,7 +189,7 @@ export default {
     },
     checkDisabledSubmit() {
       return !(
-        this.pizzaName.length > 0 && this.currentIngredients.length >= 3
+        this.pizzaName.length > 0 && this.currentIngredients.length >= 1
       );
     },
   },
@@ -227,6 +239,16 @@ export default {
         (fill) => fill.id === ingredient.id
       );
       this.ingredients.splice(index, 1);
+    },
+    /**
+     * Add ingredient for drop event
+     * @param {object} dataTransfer
+     */
+    onDropFill({ dataTransfer }) {
+      const ingredient = JSON.parse(
+        dataTransfer.getData(DataTransferType.PAYLOAD)
+      );
+      this.setIngredient(ingredient);
     },
   },
 };

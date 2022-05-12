@@ -7,6 +7,11 @@
         class="ingredients__item"
         v-for="ingredient in ingredients"
         :key="ingredient.id"
+        :draggable="ingredient.count < 3"
+        @dragstart.self="onDragFill($event, ingredient)"
+        @dragover.prevent
+        @dragenter.prevent
+        aria-dropeffect="copy"
       >
         <span :class="`filling filling--${ingredient.image}`">
           {{ ingredient.name }}
@@ -42,6 +47,12 @@
 </template>
 
 <script>
+import {
+  DataTransferType,
+  DataTransferDropEffect,
+  DataTransferAllowEffect,
+} from "@/common/constants";
+
 export default {
   name: "BuilderFillingList",
   props: {
@@ -66,6 +77,20 @@ export default {
     removeIngredient(ingredient) {
       ingredient.count--;
       this.$emit("removeIngredient", ingredient);
+    },
+    /**
+     * Passing ingredient to drop zone
+     * @param {object} dataTransfer
+     * @param {object} ingredient
+     */
+    onDragFill({ dataTransfer }, ingredient) {
+      ingredient.count++;
+      dataTransfer.effectAllowed = DataTransferAllowEffect.MOVE;
+      dataTransfer.dropEffect = DataTransferDropEffect.MOVE;
+      dataTransfer.setData(
+        DataTransferType.PAYLOAD,
+        JSON.stringify(ingredient)
+      );
     },
   },
 };
