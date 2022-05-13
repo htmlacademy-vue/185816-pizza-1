@@ -11,7 +11,7 @@
         @dragstart.self="onDragFill($event, ingredient)"
         @dragover.prevent
         @dragenter.prevent
-        aria-dropeffect="copy"
+        aria-dropeffect="move"
       >
         <span :class="`filling filling--${ingredient.image}`">
           {{ ingredient.name }}

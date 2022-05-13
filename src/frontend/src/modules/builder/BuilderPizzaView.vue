@@ -1,6 +1,6 @@
 <template>
   <form action="#" method="post">
-    <div class="content__wrapper" @drop="onDropFill">
+    <div class="content__wrapper">
       <h1 class="title title--big">Конструктор пиццы</h1>
       <div class="content__ingredients">
         <div class="sheet">
@@ -36,15 +36,18 @@
           />
         </label>
 
-        <div class="content__constructor" style="position: relative">
-          <div class="pizza pizza--foundation--big-tomato">
+        <div class="content__constructor">
+          <div
+            :class="`pizza pizza--foundation--${DoughMap[pizza.dough.id]}-${
+              SauceMap[pizza.sauce.id]
+            }`"
+            @drop.stop="onDropFill"
+          >
             <div
               class="pizza__wrapper"
-              draggable="true"
               @dragstart.prevent
               @dragover.prevent
               @dragenter.prevent
-              aria-dropeffect="copy"
             >
               <div
                 v-for="(fill, index) in currentIngredients"
@@ -55,10 +58,6 @@
                   `pizza__filling--${fill.add}`,
                 ]"
               ></div>
-              <ul
-                class="ingredients__list"
-                style="position: absolute; width: 100%; height: 100%"
-              ></ul>
             </div>
           </div>
         </div>
@@ -79,7 +78,7 @@ import pizza from "@/static/pizza.json";
 import BuilderDoughSelector from "@/modules/builder/BuilderDoughSelector";
 import BuilderDiameterSelector from "@/modules/builder/BuilderDiameterSelector";
 import BuilderIngredientsSelector from "@/modules/builder/BuilderIngredientsSelector";
-import { DataTransferType } from "@/common/constants";
+import { DataTransferType, DoughMap, SauceMap } from "@/common/constants";
 
 export default {
   name: "BuilderPizzaView",
@@ -107,6 +106,8 @@ export default {
         ingredients: [],
       },
       pizzaName: "",
+      DoughMap,
+      SauceMap,
     };
   },
   computed: {
@@ -236,7 +237,6 @@ export default {
      */
     setIngredient(ingredient) {
       ingredient.add ? ingredient.count++ : ingredient.count--;
-      console.log(ingredient);
       this.removeIngredient(ingredient);
       this.ingredients.push(ingredient);
     },
@@ -258,7 +258,6 @@ export default {
       const ingredient = JSON.parse(
         dataTransfer.getData(DataTransferType.PAYLOAD)
       );
-      ingredient.count++;
       this.setIngredient(ingredient);
     },
   },
