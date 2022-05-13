@@ -13,7 +13,7 @@
           :value="size.multiplier"
           :title="size.name"
           hidden
-          :checked="size.id === 2"
+          :checked="size.id === defaultDiameter.id"
           @setValue="setSize"
         />
       </div>
@@ -33,6 +33,10 @@ export default {
   props: {
     sizes: {
       type: Array,
+      required: true,
+    },
+    defaultDiameter: {
+      type: Object,
       required: true,
     },
   },

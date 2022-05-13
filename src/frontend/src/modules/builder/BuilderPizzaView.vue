@@ -7,14 +7,20 @@
           <h2 class="title title--small sheet__title">Выберите ингредиенты</h2>
           <BuilderDoughSelector
             :doughs="transformedDoughs"
+            :default-dough="pizza.dough"
             @setDough="setDough"
           />
         </div>
       </div>
-      <BuilderDiameterSelector :sizes="sizes" @setSize="setSize" />
+      <BuilderDiameterSelector
+        :sizes="sizes"
+        :default-diameter="pizza.size"
+        @setSize="setSize"
+      />
       <BuilderIngredientsSelector
         :sauces="sauces"
         :ingredients="transformedIngredients"
+        :default-sauce="pizza.sauce"
         @setSauce="setSauce"
         @setIngredient="setIngredient"
         @removeIngredient="setIngredient"
@@ -199,34 +205,38 @@ export default {
      * @param {object} sauce
      */
     setSauce(sauce) {
-      this.pizza.sauce = sauce;
-    },
-    /**
-     * Define ingredients
-     * @param {array} ingredients
-     */
-    setIngredients(ingredients) {
-      this.pizza.ingredients = ingredients;
+      this.pizza.sauce = {
+        id: sauce.id,
+        price: sauce.value,
+      };
     },
     /**
      * Define dough
      * @param {object} dough
      */
     setDough(dough) {
-      this.pizza.dough = dough;
+      this.pizza.dough = {
+        id: dough.id,
+        price: dough.value,
+      };
     },
     /**
      * Define size
      * @param {object} size
      */
     setSize(size) {
-      this.pizza.size = { id: size.id, multiplier: size.price };
+      this.pizza.size = {
+        id: size.id,
+        multiplier: size.value,
+      };
     },
     /**
      * Update information for ingredient
      * @param ingredient
      */
     setIngredient(ingredient) {
+      ingredient.add ? ingredient.count++ : ingredient.count--;
+      console.log(ingredient);
       this.removeIngredient(ingredient);
       this.ingredients.push(ingredient);
     },
@@ -248,6 +258,7 @@ export default {
       const ingredient = JSON.parse(
         dataTransfer.getData(DataTransferType.PAYLOAD)
       );
+      ingredient.count++;
       this.setIngredient(ingredient);
     },
   },

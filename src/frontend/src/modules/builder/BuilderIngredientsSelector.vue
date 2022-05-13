@@ -13,7 +13,7 @@
             :id="sauce.id"
             :value="sauce.price"
             :title="sauce.name"
-            :checked="sauce.id === 2"
+            :checked="sauce.id === defaultSauce.id"
             @setValue="setSauce"
           />
         </div>
@@ -44,6 +44,10 @@ export default {
     },
     sauces: {
       type: Array,
+      required: true,
+    },
+    defaultSauce: {
+      type: Object,
       required: true,
     },
   },

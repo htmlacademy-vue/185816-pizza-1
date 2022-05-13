@@ -67,16 +67,20 @@ export default {
      * @param {object} ingredient
      */
     addIngredient(ingredient) {
-      ingredient.count++;
-      this.$emit("setIngredient", ingredient);
+      this.$emit("setIngredient", {
+        ...ingredient,
+        add: true,
+      });
     },
     /**
      * Remove ingredients and emit to parent
      * @param {object} ingredient
      */
     removeIngredient(ingredient) {
-      ingredient.count--;
-      this.$emit("removeIngredient", ingredient);
+      this.$emit("removeIngredient", {
+        ...ingredient,
+        add: false,
+      });
     },
     /**
      * Passing ingredient to drop zone
@@ -84,12 +88,14 @@ export default {
      * @param {object} ingredient
      */
     onDragFill({ dataTransfer }, ingredient) {
-      ingredient.count++;
       dataTransfer.effectAllowed = DataTransferAllowEffect.MOVE;
       dataTransfer.dropEffect = DataTransferDropEffect.MOVE;
       dataTransfer.setData(
         DataTransferType.PAYLOAD,
-        JSON.stringify(ingredient)
+        JSON.stringify({
+          ...ingredient,
+          add: true,
+        })
       );
     },
   },

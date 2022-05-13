@@ -6,7 +6,7 @@
       :name="name"
       :value="value"
       :checked="checked"
-      @click="$emit('setValue', { id, price: value })"
+      @click="$emit('setValue', { id, value })"
     />
     <slot>
       <span>{{ title }}</span>
