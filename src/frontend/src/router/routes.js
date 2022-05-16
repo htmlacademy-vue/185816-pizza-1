@@ -1,45 +1,52 @@
-import Index from "@/views/Index";
-import Login from "@/views/Login";
-import Orders from "@/views/Orders";
-import Cart from "@/views/Cart";
-import Profile from "@/views/Profile";
-
 export default [
   {
     path: "/",
     name: "Index",
-    component: Index,
+    component: () => import("@/views/Index.vue"),
     meta: {
-      layout: "AppLayout",
+      layout: "AppLayoutDefault",
     },
+    children: [
+      {
+        path: ":popup",
+        name: "IndexPopup",
+        component: () => import("@/views/Popup.vue"),
+        meta: {
+          layout: "AppLayoutDefault",
+        },
+      },
+    ],
   },
   {
     path: "/cart",
     name: "Cart",
-    component: Cart,
+    component: () => import("@/views/Cart.vue"),
+    meta: {
+      layout: "AppLayoutDefault",
+    },
   },
   {
     path: "/orders",
     name: "Orders",
-    component: Orders,
+    component: () => import("@/views/Orders.vue"),
     meta: {
-      layout: "AppLayout",
+      layout: "AppLayoutDefault",
     },
   },
   {
     path: "/login",
     name: "Login",
-    component: Login,
+    component: () => import("@/views/Login.vue"),
     meta: {
-      layout: "AppLayout",
+      layout: "AppLayoutDefault",
     },
   },
   {
     path: "/profile",
     name: "Profile",
-    component: Profile,
+    component: () => import("@/views/Profile.vue"),
     meta: {
-      layout: "AppLayout",
+      layout: "AppLayoutDefault",
     },
   },
 ];
