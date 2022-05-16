@@ -3,7 +3,7 @@
     <div id="app">
       <AppHeader />
       <main class="content">
-        <IndexPage />
+        <router-view />
       </main>
     </div>
   </div>
@@ -11,11 +11,10 @@
 
 <script>
 import AppHeader from "@/layouts/AppHeader";
-import IndexPage from "../views/Index";
 
 export default {
   name: "AppLayout",
-  components: { AppHeader, IndexPage },
+  components: { AppHeader },
 };
 </script>
 
