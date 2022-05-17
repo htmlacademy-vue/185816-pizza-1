@@ -11,9 +11,7 @@ export default {
     popup() {
       return () =>
         import(
-          `../modules/popups/${this.capitalize(
-            this.$route.params.popup
-          )}View.vue`
+          `../modules/popups/${this.capitalize(this.$route.meta.popup)}View.vue`
         );
     },
   },

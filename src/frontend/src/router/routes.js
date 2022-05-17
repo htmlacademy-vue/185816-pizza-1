@@ -8,11 +8,21 @@ export default [
     },
     children: [
       {
-        path: ":popup",
-        name: "IndexPopup",
+        path: "login-popup",
+        name: "LoginPopup",
         component: () => import("@/views/Popup.vue"),
         meta: {
           layout: "AppLayoutDefault",
+          popup: "login",
+        },
+      },
+      {
+        path: "success-popup",
+        name: "SuccessPopup",
+        component: () => import("@/views/Popup.vue"),
+        meta: {
+          layout: "AppLayoutDefault",
+          popup: "success",
         },
       },
     ],

@@ -1,17 +1,17 @@
 <template>
   <header class="header">
     <div class="header__logo">
-      <a href="#" class="logo">
+      <router-link :to="{ name: 'Index' }" class="logo">
         <img
           src="@/assets/img/logo.svg"
           alt="V!U!E! Pizza logo"
           width="90"
           height="40"
         />
-      </a>
+      </router-link>
     </div>
     <div class="header__cart">
-      <a href="#">0 ₽</a>
+      <router-link :to="{ name: 'Cart' }">0 ₽</router-link>
     </div>
     <div class="header__user">
       <router-link :to="{ name: 'Login' }" class="header__login">
