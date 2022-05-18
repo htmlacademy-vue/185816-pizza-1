@@ -1,5 +1,8 @@
 <template>
-  <BuilderPizzaView />
+  <div>
+    <router-view></router-view>
+    <BuilderPizzaView />
+  </div>
 </template>
 
 <script>
