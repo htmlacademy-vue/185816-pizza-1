@@ -20,6 +20,9 @@ export default {
       return () => import(`@/layouts/${layout}.vue`);
     },
   },
+  mounted() {
+    console.log(this.$store.state.msg);
+  },
 };
 </script>
 
