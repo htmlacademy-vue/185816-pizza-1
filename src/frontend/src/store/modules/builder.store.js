@@ -1,5 +1,13 @@
 import pizza from "@/static/pizza.json";
-import { SET_DOUGH, SET_SAUCE, SET_SIZE } from "@/store/mutations";
+import {
+  SET_DOUGH,
+  SET_SAUCE,
+  SET_SIZE,
+  UPDATE_INGREDIENT,
+  SET_PIZZA_NAME,
+  UPDATE_CURRENT_INGREDIENTS,
+  SET_PIZZA_PRICE,
+} from "@/store/mutations";
 
 export default {
   namespaced: true,
@@ -13,11 +21,19 @@ export default {
       ingredients: [],
       size: pizza.sizes[0],
       sauce: pizza.sauces[1],
+      name: "",
+      price: 0,
     },
   },
   getters: {
     getIngredients: (state) => {
-      return state.ingredients;
+      return state.ingredients
+        .map((ingredient) => ({
+          ...ingredient,
+          image: ingredient.image.split("/").pop().split(".").shift(),
+          count: ingredient.count ? ingredient.count : 0,
+        }))
+        .sort((a, b) => a.id - b.id);
     },
     getSauces: (state) => {
       return state.sauces;
@@ -69,16 +85,76 @@ export default {
     [SET_SIZE](state, size) {
       return (state.pizza.size = size);
     },
+    /**
+     *
+     * @param {object} state
+     * @param {object} ingredient
+     * {
+     *   "id": 4,
+     *   "name": "Ветчина",
+     *   "image": "/public/img/filling/ham.svg",
+     *   "price": 42
+     * }
+     */
+    [UPDATE_INGREDIENT](state, ingredient) {
+      ingredient.add ? ingredient.count++ : ingredient.count--;
+
+      const index = state.ingredients.findIndex(
+        (fill) => fill.id === ingredient.id
+      );
+
+      state.ingredients.splice(index, 1);
+
+      return state.ingredients.push(ingredient);
+    },
+    /**
+     * Update changed ingredients
+     *
+     * @param {object} state
+     * @param {array} ingredients
+     * @return {*}
+     */
+    [UPDATE_CURRENT_INGREDIENTS](state, ingredients) {
+      return (state.pizza.ingredients = ingredients);
+    },
+    /**
+     * Set pizza name
+     *
+     * @param {object} state
+     * @param {string} name
+     * @return {*}
+     */
+    [SET_PIZZA_NAME](state, name) {
+      return (state.pizza.name = name);
+    },
+    [SET_PIZZA_PRICE](state, price) {
+      return (state.pizza.price = price);
+    },
   },
   actions: {
     setDough({ commit }, dough) {
-      commit(SET_DOUGH, dough);
+      commit(SET_DOUGH, { id: dough.id, price: dough.value });
     },
     setSauce({ commit }, sauce) {
-      commit(SET_SAUCE, sauce);
+      commit(SET_SAUCE, { id: sauce.id, price: sauce.value });
     },
     setSize({ commit }, size) {
-      commit(SET_SIZE, size);
+      commit(SET_SIZE, { id: size.id, multiplier: size.value });
+    },
+    updateIngredients({ commit }, ingredients) {
+      commit(UPDATE_CURRENT_INGREDIENTS, ingredients);
+    },
+    addIngredient({ commit }, ingredient) {
+      commit(UPDATE_INGREDIENT, ingredient);
+    },
+    deleteIngredient({ commit }, ingredient) {
+      commit(UPDATE_INGREDIENT, ingredient);
+    },
+    setPizzaName({ commit }, name) {
+      commit(SET_PIZZA_NAME, name);
+    },
+    setPizzaPrice({ commit }, price) {
+      commit(SET_PIZZA_PRICE, price);
     },
   },
 };

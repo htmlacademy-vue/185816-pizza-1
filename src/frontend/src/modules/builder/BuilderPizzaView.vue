@@ -22,8 +22,8 @@
         :ingredients="transformedIngredients"
         :default-sauce="pizza.sauce"
         @setSauce="setSauce"
-        @setIngredient="setIngredient"
-        @removeIngredient="setIngredient"
+        @setIngredient="addIngredient"
+        @removeIngredient="deleteIngredient"
       />
       <div class="content__pizza">
         <label class="input">
@@ -32,7 +32,7 @@
             type="text"
             name="pizza_name"
             placeholder="Введите название пиццы"
-            v-model="pizzaName"
+            @input="setName"
           />
         </label>
 
@@ -67,7 +67,12 @@
 
         <div class="content__result">
           <p>Итого: {{ calculatedPrice }} ₽</p>
-          <button type="button" class="button" :disabled="checkDisabledSubmit">
+          <button
+            type="button"
+            class="button"
+            :disabled="checkedDisabledSubmit"
+            @click.prevent="addToCart"
+          >
             Готовьте!
           </button>
         </div>
@@ -77,12 +82,11 @@
 </template>
 
 <script>
-import pizza from "@/static/pizza.json";
 import BuilderDoughSelector from "@/modules/builder/BuilderDoughSelector";
 import BuilderDiameterSelector from "@/modules/builder/BuilderDiameterSelector";
 import BuilderIngredientsSelector from "@/modules/builder/BuilderIngredientsSelector";
 import { DataTransferType, DoughMap, SauceMap } from "@/common/constants";
-import { mapGetters, mapState } from "vuex";
+import { mapActions, mapGetters, mapState } from "vuex";
 
 export default {
   name: "BuilderPizzaView",
@@ -93,27 +97,23 @@ export default {
   },
   data() {
     return {
-      /**
-       * Mock pizza components
-       */
-      ingredients: pizza.ingredients,
-      sauces: pizza.sauces,
-      sizes: pizza.sizes,
-      doughs: pizza.dough,
-      pizzaName: "",
       DoughMap,
       SauceMap,
     };
   },
   computed: {
-    ...mapState("Builder", ["pizza"]),
-    ...mapGetters("Builder", ["getDoughs", "getIngredients"]),
+    ...mapState("Builder", ["pizza", "sizes", "sauces"]),
+    ...mapGetters("Builder", [
+      "getDoughs",
+      "getIngredients",
+      "getSizes",
+      "getSauces",
+    ]),
     /**
      * Transformation url image to class modification
      * @return {array}
      */
     transformedIngredients: function () {
-      console.log(this.pizza);
       return this.getIngredients
         .map((ingredient) => ({
           ...ingredient,
@@ -192,61 +192,30 @@ export default {
 
       return price;
     },
-    checkDisabledSubmit() {
+    /**
+     * Disable or enable submit button
+     * @return {boolean}
+     */
+    checkedDisabledSubmit() {
       return !(
-        this.pizzaName.length > 0 && this.currentIngredients.length >= 1
+        this.pizza.name.length > 0 && this.currentIngredients.length >= 1
       );
     },
   },
   methods: {
-    /**
-     * Define sauce
-     * @param {object} sauce
-     */
-    setSauce(sauce) {
-      this.pizza.sauce = {
-        id: sauce.id,
-        price: sauce.value,
-      };
-    },
-    /**
-     * Define dough
-     * @param {object} dough
-     */
-    setDough(dough) {
-      this.pizza.dough = {
-        id: dough.id,
-        price: dough.value,
-      };
-    },
-    /**
-     * Define size
-     * @param {object} size
-     */
-    setSize(size) {
-      this.pizza.size = {
-        id: size.id,
-        multiplier: size.value,
-      };
-    },
-    /**
-     * Update information for ingredient
-     * @param ingredient
-     */
-    setIngredient(ingredient) {
-      ingredient.add ? ingredient.count++ : ingredient.count--;
-      this.removeIngredient(ingredient);
-      this.ingredients.push(ingredient);
-    },
-    /**
-     * Delete ingredient by index
-     * @param ingredient
-     */
-    removeIngredient(ingredient) {
-      const index = this.ingredients.findIndex(
-        (fill) => fill.id === ingredient.id
-      );
-      this.ingredients.splice(index, 1);
+    ...mapActions("Builder", [
+      "addIngredient",
+      "deleteIngredient",
+      "setPizzaName",
+      "setSauce",
+      "setDough",
+      "setSize",
+      "updateIngredients",
+      "setPizzaPrice",
+    ]),
+    ...mapActions("Cart", ["addItem"]),
+    setName(e) {
+      return this.setPizzaName(e.target.value);
     },
     /**
      * Add ingredient for drop event
@@ -256,7 +225,12 @@ export default {
       const ingredient = JSON.parse(
         dataTransfer.getData(DataTransferType.PAYLOAD)
       );
-      this.setIngredient(ingredient);
+      this.addIngredient(ingredient);
+    },
+    addToCart() {
+      this.updateIngredients(this.currentIngredients);
+      this.setPizzaPrice(this.calculatedPrice);
+      this.addItem(this.pizza);
     },
   },
 };
