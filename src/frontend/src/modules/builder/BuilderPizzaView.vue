@@ -36,7 +36,10 @@
           />
         </label>
 
-        <div class="content__constructor">
+        <div
+          class="content__constructor"
+          :style="{ transform: `scale(${pizza.size.scale})` }"
+        >
           <div
             :class="`pizza pizza--foundation--${DoughMap[pizza.dough.id]}-${
               SauceMap[pizza.sauce.id]
@@ -79,6 +82,7 @@ import BuilderDoughSelector from "@/modules/builder/BuilderDoughSelector";
 import BuilderDiameterSelector from "@/modules/builder/BuilderDiameterSelector";
 import BuilderIngredientsSelector from "@/modules/builder/BuilderIngredientsSelector";
 import { DataTransferType, DoughMap, SauceMap } from "@/common/constants";
+import { mapGetters, mapState } from "vuex";
 
 export default {
   name: "BuilderPizzaView",
@@ -96,27 +100,21 @@ export default {
       sauces: pizza.sauces,
       sizes: pizza.sizes,
       doughs: pizza.dough,
-      /**
-       * Pizza to cart
-       */
-      pizza: {
-        sauce: pizza.sauces[0],
-        dough: pizza.dough[0],
-        size: pizza.sizes[1],
-        ingredients: [],
-      },
       pizzaName: "",
       DoughMap,
       SauceMap,
     };
   },
   computed: {
+    ...mapState("Builder", ["pizza"]),
+    ...mapGetters("Builder", ["getDoughs", "getIngredients"]),
     /**
      * Transformation url image to class modification
      * @return {array}
      */
     transformedIngredients: function () {
-      return this.ingredients
+      console.log(this.pizza);
+      return this.getIngredients
         .map((ingredient) => ({
           ...ingredient,
           image: ingredient.image.split("/").pop().split(".").shift(),
@@ -129,7 +127,7 @@ export default {
      * @return {array}
      */
     transformedDoughs: function () {
-      return this.doughs.map((dough) => ({
+      return this.getDoughs.map((dough) => ({
         ...dough,
         image: dough.image.split("/").pop().split(".").shift().split("-").pop(),
       }));
