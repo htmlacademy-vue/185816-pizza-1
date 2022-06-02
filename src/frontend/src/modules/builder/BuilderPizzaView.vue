@@ -38,7 +38,7 @@
 
         <div
           class="content__constructor"
-          :style="{ transform: `scale(${pizza.size.scale})` }"
+          :style="{ transform: `scale(${pizza.size.multiplier / 3})` }"
         >
           <div
             :class="`pizza pizza--foundation--${DoughMap[pizza.dough.id]}-${
@@ -86,7 +86,7 @@ import BuilderDoughSelector from "@/modules/builder/BuilderDoughSelector";
 import BuilderDiameterSelector from "@/modules/builder/BuilderDiameterSelector";
 import BuilderIngredientsSelector from "@/modules/builder/BuilderIngredientsSelector";
 import { DataTransferType, DoughMap, SauceMap } from "@/common/constants";
-import { mapActions, mapGetters, mapState } from "vuex";
+import { mapActions, mapState } from "vuex";
 
 export default {
   name: "BuilderPizzaView",
@@ -102,19 +102,19 @@ export default {
     };
   },
   computed: {
-    ...mapState("Builder", ["pizza", "sizes", "sauces"]),
-    ...mapGetters("Builder", [
-      "getDoughs",
-      "getIngredients",
-      "getSizes",
-      "getSauces",
+    ...mapState("Builder", [
+      "pizza",
+      "sizes",
+      "sauces",
+      "ingredients",
+      "doughs",
     ]),
     /**
      * Transformation url image to class modification
      * @return {array}
      */
     transformedIngredients: function () {
-      return this.getIngredients
+      return this.ingredients
         .map((ingredient) => ({
           ...ingredient,
           image: ingredient.image.split("/").pop().split(".").shift(),
@@ -127,7 +127,7 @@ export default {
      * @return {array}
      */
     transformedDoughs: function () {
-      return this.getDoughs.map((dough) => ({
+      return this.doughs.map((dough) => ({
         ...dough,
         image: dough.image.split("/").pop().split(".").shift().split("-").pop(),
       }));
@@ -213,7 +213,7 @@ export default {
       "updateIngredients",
       "setPizzaPrice",
     ]),
-    ...mapActions("Cart", ["addItem"]),
+    ...mapActions("Cart", ["addOrder"]),
     setName(e) {
       return this.setPizzaName(e.target.value);
     },
@@ -230,7 +230,8 @@ export default {
     addToCart() {
       this.updateIngredients(this.currentIngredients);
       this.setPizzaPrice(this.calculatedPrice);
-      this.addItem(this.pizza);
+      this.addOrder(this.pizza);
+      this.$router.push("cart");
     },
   },
 };

@@ -11,9 +11,21 @@
       </router-link>
     </div>
     <div class="header__cart">
-      <router-link :to="{ name: 'Cart' }">{{ orders }} ₽</router-link>
+      <router-link :to="{ name: 'Cart' }">{{ sumOrders }} ₽</router-link>
     </div>
-    <div class="header__user">
+    <div class="header__user" v-if="isAuth">
+      <router-link to="profile">
+        <img
+          src="@/assets/img/users/user.jpg"
+          :alt="user.name"
+          width="32"
+          height="32"
+        />
+        <span>{{ user.name }}</span>
+      </router-link>
+      <a href="#" class="header__logout"><span>Выйти</span></a>
+    </div>
+    <div class="header__user" v-else>
       <router-link :to="{ name: 'Login' }" class="header__login">
         Войти
       </router-link>
@@ -22,21 +34,13 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapGetters, mapState } from "vuex";
 
 export default {
   name: "AppHeader",
   computed: {
-    ...mapState("Cart", ["items"]),
-    orders() {
-      if (this.items.length !== 0) {
-        const prices = this.items.map((i) => i.price);
-
-        return prices.reduce((prev, current) => prev + current);
-      } else {
-        return 0;
-      }
-    },
+    ...mapState("Auth", ["user", "isAuth"]),
+    ...mapGetters("Cart", ["sumOrders"]),
   },
 };
 </script>
