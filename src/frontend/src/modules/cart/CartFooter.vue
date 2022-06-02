@@ -19,7 +19,7 @@
       <button
         type="submit"
         class="button"
-        @click.prevent="$router.push('success-popup')"
+        @click.prevent="submitOrder"
         :disabled="orders.length === 0"
       >
         Оформить заказ
@@ -44,9 +44,17 @@ export default {
   },
   methods: {
     ...mapActions("Builder", ["clearCurrentIngredients"]),
+    ...mapActions("Cart", ["clearCart"]),
+    ...mapActions("Orders", ["addOrder"]),
     clearBuilder() {
       this.clearCurrentIngredients();
       this.$router.push("/");
+    },
+    submitOrder() {
+      this.clearCurrentIngredients();
+      this.addOrder(this.orders);
+      this.clearCart();
+      this.$router.push("success-popup");
     },
   },
 };

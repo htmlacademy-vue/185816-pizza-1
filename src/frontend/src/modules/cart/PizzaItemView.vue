@@ -28,7 +28,7 @@
       <button
         type="button"
         class="counter__button counter__button--minus"
-        :disabled="multiplier < 2"
+        :disabled="multiplier < 1"
         @click="downMultiplier"
       >
         <span class="visually-hidden">Меньше</span>

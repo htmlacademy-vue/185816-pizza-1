@@ -2,6 +2,7 @@ import {
   ADD_ITEM_CART,
   DELETE_ITEM_CART,
   SET_ORDER_MULTIPLIER,
+  CLEAR_CART,
 } from "@/store/mutations";
 import { v4 as uuidv4 } from "uuid";
 
@@ -33,8 +34,17 @@ export default {
       if (order.add) {
         return state.orders[index].multiplier++;
       } else {
-        return state.orders[index].multiplier--;
+        state.orders[index].multiplier--;
+
+        if (state.orders[index].multiplier === 0) {
+          state.orders.splice(index, 1);
+        }
+
+        return state.orders[index].multiplier;
       }
+    },
+    [CLEAR_CART](state) {
+      return (state.orders = []);
     },
   },
   getters: {
@@ -59,6 +69,9 @@ export default {
     },
     setMultiplier({ commit }, order) {
       commit(SET_ORDER_MULTIPLIER, order);
+    },
+    clearCart({ commit }) {
+      commit(CLEAR_CART);
     },
   },
 };
