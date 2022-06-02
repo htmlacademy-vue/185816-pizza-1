@@ -7,6 +7,7 @@ import {
   SET_PIZZA_NAME,
   UPDATE_CURRENT_INGREDIENTS,
   SET_PIZZA_PRICE,
+  CLEAR_CURRENT_INGREDIENTS,
 } from "@/store/mutations";
 
 export default {
@@ -35,15 +36,6 @@ export default {
         }))
         .sort((a, b) => a.id - b.id);
     },
-    getSauces: (state) => {
-      return state.sauces;
-    },
-    getSizes: (state) => {
-      return state.sizes;
-    },
-    getDoughs: (state) => {
-      return state.doughs;
-    },
   },
   mutations: {
     /**
@@ -58,7 +50,11 @@ export default {
      * }
      */
     [SET_DOUGH](state, dough) {
-      return (state.pizza.dough = dough);
+      const index = state.doughs.findIndex(
+        (doughItem) => doughItem.id === dough.id
+      );
+
+      return (state.pizza.dough = state.doughs[index]);
     },
     /**
      * @param {object} state
@@ -70,7 +66,11 @@ export default {
      * }
      */
     [SET_SAUCE](state, sauce) {
-      return (state.pizza.sauce = sauce);
+      const index = state.sauces.findIndex(
+        (sauceItem) => sauceItem.id === sauce.id
+      );
+
+      return (state.pizza.sauce = state.sauces[index]);
     },
     /**
      * @param {object} state
@@ -83,7 +83,11 @@ export default {
      * }
      */
     [SET_SIZE](state, size) {
-      return (state.pizza.size = size);
+      const index = state.sizes.findIndex(
+        (sizeItem) => sizeItem.id === size.id
+      );
+
+      return (state.pizza.size = state.sizes[index]);
     },
     /**
      *
@@ -130,6 +134,10 @@ export default {
     [SET_PIZZA_PRICE](state, price) {
       return (state.pizza.price = price);
     },
+    [CLEAR_CURRENT_INGREDIENTS](state) {
+      state.pizza.ingredients = [];
+      return state.ingredients.map((ingredient) => (ingredient.count = 0));
+    },
   },
   actions: {
     setDough({ commit }, dough) {
@@ -155,6 +163,9 @@ export default {
     },
     setPizzaPrice({ commit }, price) {
       commit(SET_PIZZA_PRICE, price);
+    },
+    clearCurrentIngredients({ commit }) {
+      commit(CLEAR_CURRENT_INGREDIENTS);
     },
   },
 };
