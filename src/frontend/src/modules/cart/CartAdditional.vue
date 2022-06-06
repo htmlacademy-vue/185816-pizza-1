@@ -1,15 +1,19 @@
 <template>
   <div class="cart__additional">
     <ul class="additional-list">
-      <li class="additional-list__item sheet">
+      <li
+        class="additional-list__item sheet"
+        v-for="miscItem in misc"
+        :key="miscItem.id"
+      >
         <p class="additional-list__description">
           <img
-            src="@/assets/img/cola.svg"
+            :src="require(`@/assets/img/${miscItem.image}`)"
             width="39"
             height="60"
-            alt="Coca-Cola 0,5 литра"
+            :alt="miscItem.name"
           />
-          <span>Coca-Cola 0,5 литра</span>
+          <span>{{ miscItem.name }}</span>
         </p>
 
         <div class="additional-list__wrapper">
@@ -17,6 +21,8 @@
             <button
               type="button"
               class="counter__button counter__button--minus"
+              :disabled="miscItem.multiplier === 0"
+              @click.prevent="removeMiscItem(miscItem)"
             >
               <span class="visually-hidden">Меньше</span>
             </button>
@@ -24,94 +30,19 @@
               type="text"
               name="counter"
               class="counter__input"
-              value="2"
+              :value="miscItem.multiplier"
             />
             <button
               type="button"
               class="counter__button counter__button--plus counter__button--orange"
+              @click.prevent="addMiscItem(miscItem)"
             >
               <span class="visually-hidden">Больше</span>
             </button>
           </div>
 
           <div class="additional-list__price">
-            <b>× 56 ₽</b>
-          </div>
-        </div>
-      </li>
-      <li class="additional-list__item sheet">
-        <p class="additional-list__description">
-          <img
-            src="@/assets/img/sauce.svg"
-            width="39"
-            height="60"
-            alt="Острый соус"
-          />
-          <span>Острый соус</span>
-        </p>
-
-        <div class="additional-list__wrapper">
-          <div class="counter additional-list__counter">
-            <button
-              type="button"
-              class="counter__button counter__button--minus"
-            >
-              <span class="visually-hidden">Меньше</span>
-            </button>
-            <input
-              type="text"
-              name="counter"
-              class="counter__input"
-              value="2"
-            />
-            <button
-              type="button"
-              class="counter__button counter__button--plus counter__button--orange"
-            >
-              <span class="visually-hidden">Больше</span>
-            </button>
-          </div>
-
-          <div class="additional-list__price">
-            <b>× 30 ₽</b>
-          </div>
-        </div>
-      </li>
-      <li class="additional-list__item sheet">
-        <p class="additional-list__description">
-          <img
-            src="@/assets/img/potato.svg"
-            width="39"
-            height="60"
-            alt="Картошка из печи"
-          />
-          <span>Картошка из печи</span>
-        </p>
-
-        <div class="additional-list__wrapper">
-          <div class="counter additional-list__counter">
-            <button
-              type="button"
-              class="counter__button counter__button--minus"
-            >
-              <span class="visually-hidden">Меньше</span>
-            </button>
-            <input
-              type="text"
-              name="counter"
-              class="counter__input"
-              value="2"
-            />
-            <button
-              type="button"
-              class="counter__button counter__button--plus counter__button--orange"
-            >
-              <span class="visually-hidden">Больше</span>
-            </button>
-          </div>
-
-          <div class="additional-list__price">
-            <b>× 56 ₽</b>
+            <b>× {{ miscItem.price }} ₽</b>
           </div>
         </div>
       </li>
@@ -120,8 +51,31 @@
 </template>
 
 <script>
+import { mapActions } from "vuex";
+
 export default {
   name: "CartAdditional",
+  props: {
+    misc: {
+      type: Array,
+      required: true,
+    },
+  },
+  methods: {
+    ...mapActions("Cart", ["updateMiscItem"]),
+    addMiscItem(miscItem) {
+      return this.updateMiscItem({
+        ...miscItem,
+        add: true,
+      });
+    },
+    removeMiscItem(miscItem) {
+      return this.updateMiscItem({
+        ...miscItem,
+        add: false,
+      });
+    },
+  },
 };
 </script>
 

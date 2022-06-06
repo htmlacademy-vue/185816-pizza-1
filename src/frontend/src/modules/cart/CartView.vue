@@ -10,7 +10,7 @@
         </div>
         <div v-else>
           <cart-orders :pizzas="orders" />
-          <cart-additional />
+          <cart-additional :misc="transformedMisc" />
           <cart-form />
         </div>
       </div>
@@ -35,10 +35,19 @@ export default {
     CartForm,
   },
   computed: {
-    ...mapState("Cart", ["orders"]),
+    ...mapState("Cart", ["orders", "misc"]),
     ...mapGetters("Cart", ["sumOrders"]),
     countOrders() {
       return this.orders.length;
+    },
+    transformedMisc() {
+      return this.misc
+        .map((miscItem) =>
+          miscItem.multiplier === undefined
+            ? { ...miscItem, multiplier: 0 }
+            : miscItem
+        )
+        .sort((a, b) => a.id - b.id);
     },
   },
 };
