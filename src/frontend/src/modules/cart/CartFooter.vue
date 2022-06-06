@@ -4,7 +4,7 @@
       <a
         href="#"
         class="button button--border button--arrow"
-        @click.prevent="clearBuilder"
+        @click.prevent="$router.push('/')"
         >Хочу еще одну
       </a>
     </div>
@@ -46,14 +46,9 @@ export default {
     ...mapActions("Builder", ["clearCurrentIngredients"]),
     ...mapActions("Cart", ["clearCart"]),
     ...mapActions("Orders", ["addOrder"]),
-    clearBuilder() {
-      this.clearCurrentIngredients();
-      this.$router.push("/");
-    },
     submitOrder() {
       this.clearCurrentIngredients();
       this.addOrder(this.orders);
-      this.clearCart();
       this.$router.push("success-popup");
     },
   },

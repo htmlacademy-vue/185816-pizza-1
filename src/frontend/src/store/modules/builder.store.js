@@ -28,27 +28,13 @@ export default {
   },
   getters: {
     /**
-     * Transformation url image to class modification
-     * @return {array}
-     */
-    transformedIngredients(state) {
-      return state.ingredients
-        .map((ingredient) => ({
-          ...ingredient,
-          image: ingredient.image.split("/").pop().split(".").shift(),
-          count: ingredient.count ? ingredient.count : 0,
-        }))
-        .sort((a, b) => a.id - b.id);
-    },
-    /**
      * Filtering changed filling
      * @return {array}
      */
-    currentIngredients(state, getters) {
+    currentIngredients(state) {
       const arrayTemplate = [1, 2, 3, 4, 5];
 
-      return getters.transformedIngredients
-        .filter((fill) => fill.count !== 0)
+      return state.ingredients
         .map((fill) => {
           const fillCountArr = arrayTemplate.slice(0, fill.count);
           return fillCountArr.map((el, index) => {
@@ -75,28 +61,32 @@ export default {
      * Calculate pizza to cart
      * @return {number}
      */
-    calculatedPrice: function (state, getters) {
-      if (getters.currentIngredients.length !== 0) {
-        state.pizza.price =
-          state.pizza.price +
-          this.transformedIngredients
+    calculatedPrice: function (state) {
+      let startPrice = 0;
+
+      if (state.pizza.ingredients.length !== 0) {
+        startPrice =
+          startPrice +
+          state.pizza.ingredients
             .map((fill) => fill.price * fill.count)
             .reduce((prev, current) => prev + current);
       }
 
       if (state.pizza.dough) {
-        state.pizza.price = state.pizza.price + state.pizza.dough.price;
+        startPrice = startPrice + state.pizza.dough.price;
       }
 
       if (state.pizza.sauce) {
-        state.pizza.price = state.pizza.price + state.pizza.sauce.price;
+        startPrice = startPrice + state.pizza.sauce.price;
       }
 
       if (state.pizza.size) {
-        state.pizza.price = state.pizza.price * state.pizza.size.multiplier;
+        startPrice = startPrice * state.pizza.size.multiplier;
       }
 
-      return state.pizza.price;
+      state.pizza.price = startPrice;
+
+      return startPrice;
     },
   },
   mutations: {
@@ -166,15 +156,25 @@ export default {
       );
 
       if (ingredient.add) {
-        return state.ingredients.push({
+        state.ingredients.push({
           ...ingredient,
           count: ingredient.count + 1,
         });
+
+        return (state.pizza.ingredients = state.ingredients.filter(
+          (ingredient) =>
+            ingredient.count !== undefined && ingredient.count !== 0
+        ));
       } else {
-        return state.ingredients.push({
+        state.ingredients.push({
           ...ingredient,
           count: ingredient.count - 1,
         });
+
+        return (state.pizza.ingredients = state.ingredients.filter(
+          (ingredient) =>
+            ingredient.count !== undefined && ingredient.count !== 0
+        ));
       }
     },
     /**

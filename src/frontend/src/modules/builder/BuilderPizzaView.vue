@@ -109,11 +109,20 @@ export default {
       "ingredients",
       "doughs",
     ]),
-    ...mapGetters("Builder", [
-      "calculatedPrice",
-      "transformedIngredients",
-      "currentIngredients",
-    ]),
+    ...mapGetters("Builder", ["calculatedPrice", "currentIngredients"]),
+    /**
+     * Transformation url image to class modification
+     * @return {array}
+     */
+    transformedIngredients(state) {
+      return state.ingredients
+        .map((ingredient) => ({
+          ...ingredient,
+          image: ingredient.image.split("/").pop().split(".").shift(),
+          count: ingredient.count ? ingredient.count : 0,
+        }))
+        .sort((a, b) => a.id - b.id);
+    },
     /**
      * Transformation url image to class modification
      * @return {array}
@@ -129,7 +138,7 @@ export default {
      * @return {boolean}
      */
     checkedDisabledSubmit() {
-      return !(this.pizza.name.length > 0);
+      return !(this.pizza.name.length > 0 && this.pizza.ingredients.length > 0);
     },
   },
   methods: {
@@ -142,6 +151,7 @@ export default {
       "setSize",
       "updateIngredients",
       "setPizzaPrice",
+      "clearCurrentIngredients",
     ]),
     ...mapActions("Cart", ["addOrder"]),
     setName(e) {
@@ -158,7 +168,7 @@ export default {
       this.addIngredient(ingredient);
     },
     addToCart() {
-      this.updateIngredients(this.currentIngredients);
+      setTimeout(this.clearCurrentIngredients, 1000);
       this.addOrder(this.pizza);
       this.$router.push("cart");
     },
