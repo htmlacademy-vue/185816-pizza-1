@@ -101,15 +101,21 @@ export default {
      * }
      */
     [UPDATE_INGREDIENT](state, ingredient) {
-      ingredient.add ? ingredient.count++ : ingredient.count--;
-
-      const index = state.ingredients.findIndex(
-        (fill) => fill.id === ingredient.id
+      state.ingredients = state.ingredients.filter(
+        (ingredientItem) => ingredientItem.id !== ingredient.id
       );
 
-      state.ingredients.splice(index, 1);
-
-      return state.ingredients.push(ingredient);
+      if (ingredient.add) {
+        return state.ingredients.push({
+          ...ingredient,
+          count: ingredient.count + 1,
+        });
+      } else {
+        return state.ingredients.push({
+          ...ingredient,
+          count: ingredient.count - 1,
+        });
+      }
     },
     /**
      * Update changed ingredients

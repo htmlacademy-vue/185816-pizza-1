@@ -37,10 +37,8 @@ export default {
         state.orders[index].multiplier--;
 
         if (state.orders[index].multiplier === 0) {
-          state.orders.splice(index, 1);
+          return state.orders.splice(index, 1);
         }
-
-        return state.orders[index].multiplier;
       }
     },
     [CLEAR_CART](state) {
