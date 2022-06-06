@@ -27,7 +27,11 @@ export default {
     },
   },
   getters: {
-    getIngredients: (state) => {
+    /**
+     * Transformation url image to class modification
+     * @return {array}
+     */
+    transformedIngredients(state) {
       return state.ingredients
         .map((ingredient) => ({
           ...ingredient,
@@ -35,6 +39,64 @@ export default {
           count: ingredient.count ? ingredient.count : 0,
         }))
         .sort((a, b) => a.id - b.id);
+    },
+    /**
+     * Filtering changed filling
+     * @return {array}
+     */
+    currentIngredients(state, getters) {
+      const arrayTemplate = [1, 2, 3, 4, 5];
+
+      return getters.transformedIngredients
+        .filter((fill) => fill.count !== 0)
+        .map((fill) => {
+          const fillCountArr = arrayTemplate.slice(0, fill.count);
+          return fillCountArr.map((el, index) => {
+            if (index === 1) {
+              return {
+                ...fill,
+                add: "second",
+              };
+            }
+
+            if (index === 2) {
+              return {
+                ...fill,
+                add: "third",
+              };
+            }
+
+            return fill;
+          });
+        })
+        .flat();
+    },
+    /**
+     * Calculate pizza to cart
+     * @return {number}
+     */
+    calculatedPrice: function (state, getters) {
+      if (getters.currentIngredients.length !== 0) {
+        state.pizza.price =
+          state.pizza.price +
+          this.transformedIngredients
+            .map((fill) => fill.price * fill.count)
+            .reduce((prev, current) => prev + current);
+      }
+
+      if (state.pizza.dough) {
+        state.pizza.price = state.pizza.price + state.pizza.dough.price;
+      }
+
+      if (state.pizza.sauce) {
+        state.pizza.price = state.pizza.price + state.pizza.sauce.price;
+      }
+
+      if (state.pizza.size) {
+        state.pizza.price = state.pizza.price * state.pizza.size.multiplier;
+      }
+
+      return state.pizza.price;
     },
   },
   mutations: {

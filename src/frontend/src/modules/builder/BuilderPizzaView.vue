@@ -86,7 +86,7 @@ import BuilderDoughSelector from "@/modules/builder/BuilderDoughSelector";
 import BuilderDiameterSelector from "@/modules/builder/BuilderDiameterSelector";
 import BuilderIngredientsSelector from "@/modules/builder/BuilderIngredientsSelector";
 import { DataTransferType, DoughMap, SauceMap } from "@/common/constants";
-import { mapActions, mapState } from "vuex";
+import { mapGetters, mapActions, mapState } from "vuex";
 
 export default {
   name: "BuilderPizzaView",
@@ -109,19 +109,11 @@ export default {
       "ingredients",
       "doughs",
     ]),
-    /**
-     * Transformation url image to class modification
-     * @return {array}
-     */
-    transformedIngredients: function () {
-      return this.ingredients
-        .map((ingredient) => ({
-          ...ingredient,
-          image: ingredient.image.split("/").pop().split(".").shift(),
-          count: ingredient.count ? ingredient.count : 0,
-        }))
-        .sort((a, b) => a.id - b.id);
-    },
+    ...mapGetters("Builder", [
+      "calculatedPrice",
+      "transformedIngredients",
+      "currentIngredients",
+    ]),
     /**
      * Transformation url image to class modification
      * @return {array}
@@ -133,73 +125,11 @@ export default {
       }));
     },
     /**
-     * Filtering changed filling
-     * @return {array}
-     */
-    currentIngredients() {
-      const arrayTemplate = [1, 2, 3, 4, 5];
-
-      return this.transformedIngredients
-        .filter((fill) => fill.count !== 0)
-        .map((fill) => {
-          const fillCountArr = arrayTemplate.slice(0, fill.count);
-          return fillCountArr.map((el, index) => {
-            if (index === 1) {
-              return {
-                ...fill,
-                add: "second",
-              };
-            }
-
-            if (index === 2) {
-              return {
-                ...fill,
-                add: "third",
-              };
-            }
-
-            return fill;
-          });
-        })
-        .flat();
-    },
-    /**
-     * Calculate pizza to cart
-     * @return {number}
-     */
-    calculatedPrice: function () {
-      let price = 0;
-
-      if (this.currentIngredients.length !== 0) {
-        price =
-          price +
-          this.transformedIngredients
-            .map((fill) => fill.price * fill.count)
-            .reduce((prev, current) => prev + current);
-      }
-
-      if (this.pizza.dough) {
-        price = price + this.pizza.dough.price;
-      }
-
-      if (this.pizza.sauce) {
-        price = price + this.pizza.sauce.price;
-      }
-
-      if (this.pizza.size) {
-        price = price * this.pizza.size.multiplier;
-      }
-
-      return price;
-    },
-    /**
      * Disable or enable submit button
      * @return {boolean}
      */
     checkedDisabledSubmit() {
-      return !(
-        this.pizza.name.length > 0 && this.currentIngredients.length >= 1
-      );
+      return !(this.pizza.name.length > 0);
     },
   },
   methods: {
@@ -229,7 +159,6 @@ export default {
     },
     addToCart() {
       this.updateIngredients(this.currentIngredients);
-      this.setPizzaPrice(this.calculatedPrice);
       this.addOrder(this.pizza);
       this.$router.push("cart");
     },
