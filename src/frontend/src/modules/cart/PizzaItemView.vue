@@ -12,7 +12,7 @@
         <h2>{{ lowerName }}</h2>
         <ul>
           <li>
-            {{ size }},
+            {{ pizza.size.name }},
             {{ lowerDough }}
           </li>
           <li>Соус: {{ lowerSauce }}</li>
@@ -28,7 +28,7 @@
       <button
         type="button"
         class="counter__button counter__button--minus"
-        :disabled="multiplier < 1"
+        :disabled="pizza.size.multiplier < 1"
         @click="downMultiplier"
       >
         <span class="visually-hidden">Меньше</span>
@@ -37,7 +37,7 @@
         type="text"
         name="counter"
         class="counter__input"
-        :value="multiplier"
+        :value="pizza.multiplier"
       />
       <button
         type="button"
@@ -49,7 +49,7 @@
     </div>
 
     <div class="cart-list__price">
-      <b>{{ sumPrice }} ₽</b>
+      <b>{{ pizza.price }} ₽</b>
     </div>
 
     <div class="cart-list__button">
@@ -64,56 +64,28 @@ import { mapActions } from "vuex";
 export default {
   name: "PizzaItemView",
   props: {
-    id: {
-      type: String,
-      required: true,
-    },
-    name: {
-      type: String,
-      required: true,
-    },
-    sauce: {
-      type: String,
-      required: true,
-    },
-    dough: {
-      type: String,
-      required: true,
-    },
-    size: {
-      type: String,
-      required: true,
-    },
-    price: {
-      type: Number,
-      required: true,
-    },
-    ingredients: {
-      type: Array,
-      required: true,
-    },
-    multiplier: {
-      type: Number,
+    pizza: {
+      type: Object,
       required: true,
     },
   },
   computed: {
     ingredientsFlat() {
-      return this.ingredients
+      return this.pizza.ingredients
         .map((ingredient) => ingredient.name.toLowerCase())
         .toString();
     },
     lowerName() {
-      return this.name.toLowerCase();
+      return this.pizza.name.toLowerCase();
     },
     lowerDough() {
-      return this.dough.toLowerCase();
+      return this.pizza.dough.name.toLowerCase();
     },
     lowerSauce() {
-      return this.sauce.toLowerCase();
+      return this.pizza.sauce.name.toLowerCase();
     },
     sumPrice() {
-      return this.price * this.multiplier;
+      return this.pizza.price * this.multiplier;
     },
   },
   methods: {
@@ -121,13 +93,13 @@ export default {
     upMultiplier() {
       this.setMultiplier({
         add: true,
-        id: this.id,
+        id: this.pizza.id,
       });
     },
     downMultiplier() {
       this.setMultiplier({
         add: false,
-        id: this.id,
+        id: this.pizza.id,
       });
     },
   },

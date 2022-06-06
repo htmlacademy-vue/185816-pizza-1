@@ -151,7 +151,7 @@ export default {
       "setSize",
       "updateIngredients",
       "setPizzaPrice",
-      "clearCurrentIngredients",
+      "clearBuilder",
     ]),
     ...mapActions("Cart", ["addOrder"]),
     setName(e) {
@@ -168,7 +168,7 @@ export default {
       this.addIngredient(ingredient);
     },
     addToCart() {
-      setTimeout(this.clearCurrentIngredients, 1000);
+      setTimeout(this.clearBuilder, 1000);
       this.addOrder(this.pizza);
       this.$router.push("cart");
     },

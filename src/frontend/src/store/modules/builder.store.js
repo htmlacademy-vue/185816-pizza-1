@@ -7,7 +7,7 @@ import {
   SET_PIZZA_NAME,
   UPDATE_CURRENT_INGREDIENTS,
   SET_PIZZA_PRICE,
-  CLEAR_CURRENT_INGREDIENTS,
+  CLEAR_BUILDER,
 } from "@/store/mutations";
 
 export default {
@@ -200,8 +200,9 @@ export default {
     [SET_PIZZA_PRICE](state, price) {
       return (state.pizza.price = price);
     },
-    [CLEAR_CURRENT_INGREDIENTS](state) {
+    [CLEAR_BUILDER](state) {
       state.pizza.ingredients = [];
+      state.pizza.name = "";
       return state.ingredients.map((ingredient) => (ingredient.count = 0));
     },
   },
@@ -230,8 +231,8 @@ export default {
     setPizzaPrice({ commit }, price) {
       commit(SET_PIZZA_PRICE, price);
     },
-    clearCurrentIngredients({ commit }) {
-      commit(CLEAR_CURRENT_INGREDIENTS);
+    clearBuilder({ commit }) {
+      commit(CLEAR_BUILDER);
     },
   },
 };

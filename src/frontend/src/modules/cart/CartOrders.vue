@@ -1,17 +1,6 @@
 <template>
   <ul class="cart-list sheet">
-    <pizza-item-view
-      v-for="pizza in pizzas"
-      :key="pizza.id"
-      :id="pizza.id"
-      :name="pizza.name"
-      :sauce="pizza.sauce.name"
-      :dough="pizza.dough.name"
-      :ingredients="pizza.ingredients"
-      :price="pizza.price"
-      :size="pizza.size.name"
-      :multiplier="pizza.multiplier"
-    />
+    <pizza-item-view v-for="pizza in pizzas" :key="pizza.id" :pizza="pizza" />
   </ul>
 </template>
 

@@ -43,11 +43,10 @@ export default {
     ...mapState("Cart", ["orders"]),
   },
   methods: {
-    ...mapActions("Builder", ["clearCurrentIngredients"]),
     ...mapActions("Cart", ["clearCart"]),
     ...mapActions("Orders", ["addOrder"]),
     submitOrder() {
-      this.clearCurrentIngredients();
+      setTimeout(this.clearCart, 1000);
       this.addOrder(this.orders);
       this.$router.push("success-popup");
     },
