@@ -50,11 +50,11 @@ export default {
      * }
      */
     [SET_DOUGH](state, dough) {
-      const index = state.doughs.findIndex(
+      const current = state.doughs.find(
         (doughItem) => doughItem.id === dough.id
       );
 
-      return (state.pizza.dough = state.doughs[index]);
+      return (state.pizza.dough = current);
     },
     /**
      * @param {object} state
@@ -66,11 +66,11 @@ export default {
      * }
      */
     [SET_SAUCE](state, sauce) {
-      const index = state.sauces.findIndex(
+      const current = state.sauces.find(
         (sauceItem) => sauceItem.id === sauce.id
       );
 
-      return (state.pizza.sauce = state.sauces[index]);
+      return (state.pizza.sauce = current);
     },
     /**
      * @param {object} state
@@ -83,11 +83,9 @@ export default {
      * }
      */
     [SET_SIZE](state, size) {
-      const index = state.sizes.findIndex(
-        (sizeItem) => sizeItem.id === size.id
-      );
+      const current = state.sizes.find((sizeItem) => sizeItem.id === size.id);
 
-      return (state.pizza.size = state.sizes[index]);
+      return (state.pizza.size = current);
     },
     /**
      *
