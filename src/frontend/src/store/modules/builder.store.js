@@ -14,7 +14,7 @@ export default {
   namespaced: true,
   state: {
     doughs: pizza.dough,
-    ingredients: pizza.ingredients,
+    ingredients: pizza.ingredients.map((item) => ({ ...item, count: 0 })),
     sauces: pizza.sauces,
     sizes: pizza.sizes,
     pizza: {
@@ -151,20 +151,12 @@ export default {
      * }
      */
     [UPDATE_INGREDIENT](state, ingredient) {
-      state.ingredients = state.ingredients.filter(
-        (ingredientItem) => ingredientItem.id !== ingredient.id
-      );
-
       if (ingredient.add) {
-        state.ingredients.push({
-          ...ingredient,
-          count: ingredient.count + 1,
-        });
+        const currentIngredient = state.ingredients.findIndex(
+          (item) => item.id === ingredient.id
+        );
 
-        return (state.pizza.ingredients = state.ingredients.filter(
-          (ingredient) =>
-            ingredient.count !== undefined && ingredient.count !== 0
-        ));
+        state.ingredients[currentIngredient].count = 10;
       } else {
         state.ingredients.push({
           ...ingredient,
