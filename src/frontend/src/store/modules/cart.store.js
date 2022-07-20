@@ -5,6 +5,7 @@ import {
   CLEAR_CART,
   SET_MULTIPLIER_MISC,
 } from "@/store/mutations";
+
 import misc from "@/static/misc.json";
 import { v4 as uuidv4 } from "uuid";
 

@@ -1,13 +1,13 @@
 import pizza from "@/static/pizza.json";
 import {
+  CLEAR_BUILDER,
   SET_DOUGH,
+  SET_PIZZA_NAME,
+  SET_PIZZA_PRICE,
   SET_SAUCE,
   SET_SIZE,
-  UPDATE_INGREDIENT,
-  SET_PIZZA_NAME,
   UPDATE_CURRENT_INGREDIENTS,
-  SET_PIZZA_PRICE,
-  CLEAR_BUILDER,
+  UPDATE_INGREDIENT,
 } from "@/store/mutations";
 
 export default {
@@ -102,11 +102,9 @@ export default {
      * }
      */
     [SET_DOUGH](state, dough) {
-      const current = state.doughs.find(
+      state.pizza.dough = state.doughs.find(
         (doughItem) => doughItem.id === dough.id
       );
-
-      return (state.pizza.dough = current);
     },
     /**
      * @param {object} state
@@ -118,11 +116,9 @@ export default {
      * }
      */
     [SET_SAUCE](state, sauce) {
-      const current = state.sauces.find(
+      state.pizza.sauce = state.sauces.find(
         (sauceItem) => sauceItem.id === sauce.id
       );
-
-      return (state.pizza.sauce = current);
     },
     /**
      * @param {object} state
@@ -135,9 +131,9 @@ export default {
      * }
      */
     [SET_SIZE](state, size) {
-      const current = state.sizes.find((sizeItem) => sizeItem.id === size.id);
-
-      return (state.pizza.size = current);
+      state.pizza.size = state.sizes.find(
+        (sizeItem) => sizeItem.id === size.id
+      );
     },
     /**
      *
@@ -151,22 +147,14 @@ export default {
      * }
      */
     [UPDATE_INGREDIENT](state, ingredient) {
+      const currentIngredient = state.ingredients.findIndex(
+        (item) => item.id === ingredient.id
+      );
+
       if (ingredient.add) {
-        const currentIngredient = state.ingredients.findIndex(
-          (item) => item.id === ingredient.id
-        );
-
-        state.ingredients[currentIngredient].count = 10;
+        state.ingredients[currentIngredient].count = ingredient.count + 1;
       } else {
-        state.ingredients.push({
-          ...ingredient,
-          count: ingredient.count - 1,
-        });
-
-        return (state.pizza.ingredients = state.ingredients.filter(
-          (ingredient) =>
-            ingredient.count !== undefined && ingredient.count !== 0
-        ));
+        state.ingredients[currentIngredient].count = ingredient.count + -1;
       }
     },
     /**
@@ -177,7 +165,7 @@ export default {
      * @return {*}
      */
     [UPDATE_CURRENT_INGREDIENTS](state, ingredients) {
-      return (state.pizza.ingredients = ingredients);
+      state.pizza.ingredients = ingredients;
     },
     /**
      * Set pizza name
@@ -187,15 +175,15 @@ export default {
      * @return {*}
      */
     [SET_PIZZA_NAME](state, name) {
-      return (state.pizza.name = name);
+      state.pizza.name = name;
     },
     [SET_PIZZA_PRICE](state, price) {
-      return (state.pizza.price = price);
+      state.pizza.price = price;
     },
     [CLEAR_BUILDER](state) {
       state.pizza.ingredients = [];
       state.pizza.name = "";
-      return state.ingredients.map((ingredient) => (ingredient.count = 0));
+      state.ingredients.map((ingredient) => (ingredient.count = 0));
     },
   },
   actions: {
