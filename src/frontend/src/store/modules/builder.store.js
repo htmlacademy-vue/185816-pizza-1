@@ -27,16 +27,6 @@ export default {
   },
   getters: {
     /**
-     * Filtering changed filling
-     * @return {array}
-     */
-    currentIngredients(state, getters) {
-      return getters.changeIngredients.map((fill) => ({
-        ...fill,
-        icon: fill.image.split("/").pop().split(".")[0],
-      }));
-    },
-    /**
      * Return changes ingredients
      *
      * @param {*} state
@@ -44,6 +34,17 @@ export default {
      */
     changeIngredients(state) {
       return state.ingredients.filter((item) => item.count !== 0);
+    },
+    /**
+     * Filtering changed filling
+     *
+     * @return {array}
+     */
+    currentIngredients(state, getters) {
+      return getters.changeIngredients.map((fill) => ({
+        ...fill,
+        icon: fill.image.split("/").pop().split(".")[0],
+      }));
     },
     /**
      * Return summ changes ingredients
@@ -144,19 +145,15 @@ export default {
      * }
      */
     [UPDATE_INGREDIENT](state, ingredient) {
-      const currentIngredient = state.ingredients.findIndex(
-        (item) => item.id === ingredient.id
-      );
-
       state.pizza.ingredients = state.ingredients.filter(
         (item) => item.count !== 0
       );
 
-      if (ingredient.add) {
-        state.ingredients[currentIngredient].count = ingredient.count + 1;
-      } else {
-        state.ingredients[currentIngredient].count = ingredient.count - 1;
-      }
+      state.ingredients.find((item) => {
+        if (item.id === ingredient.id) {
+          ingredient.add ? item.count++ : item.count--;
+        }
+      });
     },
     /**
      * Set pizza name
