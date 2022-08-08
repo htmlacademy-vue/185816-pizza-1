@@ -6,7 +6,6 @@ import {
   SET_PIZZA_PRICE,
   SET_SAUCE,
   SET_SIZE,
-  UPDATE_CURRENT_INGREDIENTS,
   UPDATE_INGREDIENT,
 } from "@/store/mutations";
 
@@ -31,46 +30,44 @@ export default {
      * Filtering changed filling
      * @return {array}
      */
-    currentIngredients(state) {
-      const arrayTemplate = [1, 2, 3, 4, 5];
-
-      return state.ingredients
-        .map((fill) => {
-          const fillCountArr = arrayTemplate.slice(0, fill.count);
-          return fillCountArr.map((el, index) => {
-            if (index === 1) {
-              return {
-                ...fill,
-                add: "second",
-              };
-            }
-
-            if (index === 2) {
-              return {
-                ...fill,
-                add: "third",
-              };
-            }
-
-            return fill;
-          });
-        })
-        .flat();
+    currentIngredients(state, getters) {
+      return getters.changeIngredients.map((fill) => ({
+        ...fill,
+        icon: fill.image.split("/").pop().split(".")[0],
+      }));
+    },
+    /**
+     * Return changes ingredients
+     *
+     * @param {*} state
+     * @returns {Array}
+     */
+    changeIngredients(state) {
+      return state.ingredients.filter((item) => item.count !== 0);
+    },
+    /**
+     * Return summ changes ingredients
+     *
+     * @param {*} state
+     * @returns {Number}
+     */
+    summIngredients(state, getters) {
+      if (getters.changeIngredients.length !== 0) {
+        return getters.changeIngredients
+          .map((fill) => fill.price * fill.count)
+          .reduce((prev, current) => prev + current);
+      } else {
+        return 0;
+      }
     },
     /**
      * Calculate pizza to cart
      * @return {number}
      */
-    calculatedPrice: function (state) {
+    calculatedPrice: function (state, getters) {
       let startPrice = 0;
 
-      if (state.pizza.ingredients.length !== 0) {
-        startPrice =
-          startPrice +
-          state.pizza.ingredients
-            .map((fill) => fill.price * fill.count)
-            .reduce((prev, current) => prev + current);
-      }
+      startPrice = startPrice + getters.summIngredients;
 
       if (state.pizza.dough) {
         startPrice = startPrice + state.pizza.dough.price;
@@ -151,21 +148,15 @@ export default {
         (item) => item.id === ingredient.id
       );
 
+      state.pizza.ingredients = state.ingredients.filter(
+        (item) => item.count !== 0
+      );
+
       if (ingredient.add) {
         state.ingredients[currentIngredient].count = ingredient.count + 1;
       } else {
-        state.ingredients[currentIngredient].count = ingredient.count + -1;
+        state.ingredients[currentIngredient].count = ingredient.count - 1;
       }
-    },
-    /**
-     * Update changed ingredients
-     *
-     * @param {object} state
-     * @param {array} ingredients
-     * @return {*}
-     */
-    [UPDATE_CURRENT_INGREDIENTS](state, ingredients) {
-      state.pizza.ingredients = ingredients;
     },
     /**
      * Set pizza name
@@ -195,9 +186,6 @@ export default {
     },
     setSize({ commit }, size) {
       commit(SET_SIZE, { id: size.id, multiplier: size.value });
-    },
-    updateIngredients({ commit }, ingredients) {
-      commit(UPDATE_CURRENT_INGREDIENTS, ingredients);
     },
     addIngredient({ commit }, ingredient) {
       commit(UPDATE_INGREDIENT, ingredient);

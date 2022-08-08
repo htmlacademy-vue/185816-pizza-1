@@ -52,15 +52,17 @@
               @dragover.prevent
               @dragenter.prevent
             >
-              <div
-                v-for="(fill, index) in currentIngredients"
-                :key="index"
-                :class="[
-                  'pizza__filling',
-                  `pizza__filling--${fill.image}`,
-                  `pizza__filling--${fill.add}`,
-                ]"
-              ></div>
+              <div v-for="(fill, index) in currentIngredients" :key="index">
+                <div
+                  v-for="(layer, index) in fill.count"
+                  :key="index"
+                  :class="[
+                    'pizza__filling',
+                    `pizza__filling--${fill.icon}`,
+                    `pizza__filling--${ingredientLayer[layer]}`,
+                  ]"
+                ></div>
+              </div>
             </div>
           </div>
         </div>
@@ -99,6 +101,7 @@ export default {
     return {
       DoughMap,
       SauceMap,
+      ingredientLayer: ["", "second", "third"],
     };
   },
   computed: {
@@ -141,6 +144,9 @@ export default {
       return !(this.pizza.name.length > 0 && this.pizza.ingredients.length > 0);
     },
   },
+  mounted() {
+    console.log(this.currentIngredients);
+  },
   methods: {
     ...mapActions("Builder", [
       "addIngredient",
@@ -149,7 +155,6 @@ export default {
       "setSauce",
       "setDough",
       "setSize",
-      "updateIngredients",
       "setPizzaPrice",
       "clearBuilder",
     ]),
