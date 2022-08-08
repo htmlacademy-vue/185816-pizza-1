@@ -13,7 +13,7 @@
             :id="sauce.id"
             :value="sauce.price"
             :title="sauce.name"
-            :checked="sauce.id === defaultSauce.id"
+            :checked="sauce.selected"
             @setValue="setSauce"
           />
         </div>
@@ -32,7 +32,7 @@ import RadioButton from "@/common/RadioButton";
 import BuilderFillingList from "@/modules/builder/BuilderFillingList";
 
 export default {
-  name: "BuilderIngredientsSelector",
+  name: "BuilderSauceSelector",
   components: {
     RadioButton,
     BuilderFillingList,
@@ -44,10 +44,6 @@ export default {
     },
     sauces: {
       type: Array,
-      required: true,
-    },
-    defaultSauce: {
-      type: Object,
       required: true,
     },
   },

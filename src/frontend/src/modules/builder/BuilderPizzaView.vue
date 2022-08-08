@@ -7,20 +7,14 @@
           <h2 class="title title--small sheet__title">Выберите ингредиенты</h2>
           <BuilderDoughSelector
             :doughs="transformedDoughs"
-            :default-dough="pizza.dough"
             @setDough="setDough"
           />
         </div>
       </div>
-      <BuilderDiameterSelector
-        :sizes="sizes"
-        :default-diameter="pizza.size"
-        @setSize="setSize"
-      />
-      <BuilderIngredientsSelector
+      <BuilderDiameterSelector :sizes="sizes" @setSize="setSize" />
+      <BuilderSauceSelector
         :sauces="sauces"
         :ingredients="transformedIngredients"
-        :default-sauce="pizza.sauce"
         @setSauce="setSauce"
         @setIngredient="addIngredient"
         @removeIngredient="deleteIngredient"
@@ -38,11 +32,11 @@
 
         <div
           class="content__constructor"
-          :style="{ transform: `scale(${pizza.size.multiplier / 3})` }"
+          :style="{ transform: `scale(${size.multiplier / 3})` }"
         >
           <div
-            :class="`pizza pizza--foundation--${DoughMap[pizza.dough.id]}-${
-              SauceMap[pizza.sauce.id]
+            :class="`pizza pizza--foundation--${DoughMap[dough.id]}-${
+              SauceMap[sauce.id]
             }`"
             @drop.stop="onDropFill"
           >
@@ -86,7 +80,7 @@
 <script>
 import BuilderDoughSelector from "@/modules/builder/BuilderDoughSelector";
 import BuilderDiameterSelector from "@/modules/builder/BuilderDiameterSelector";
-import BuilderIngredientsSelector from "@/modules/builder/BuilderIngredientsSelector";
+import BuilderSauceSelector from "@/modules/builder/BuilderSauceSelector";
 import { DataTransferType, DoughMap, SauceMap } from "@/common/constants";
 import { mapGetters, mapActions, mapState } from "vuex";
 
@@ -95,24 +89,32 @@ export default {
   components: {
     BuilderDoughSelector,
     BuilderDiameterSelector,
-    BuilderIngredientsSelector,
+    BuilderSauceSelector,
   },
   data() {
     return {
       DoughMap,
       SauceMap,
       ingredientLayer: ["", "second", "third"],
+      name: "",
     };
   },
   computed: {
-    ...mapState("Builder", [
-      "pizza",
-      "sizes",
-      "sauces",
-      "ingredients",
-      "doughs",
+    ...mapState("Builder", ["sizes", "sauces", "ingredients", "doughs"]),
+    ...mapGetters("Builder", [
+      "calculatedPrice",
+      "currentIngredients",
+      "currentComponentPizza",
     ]),
-    ...mapGetters("Builder", ["calculatedPrice", "currentIngredients"]),
+    size() {
+      return this.currentComponentPizza("sizes");
+    },
+    dough() {
+      return this.currentComponentPizza("doughs");
+    },
+    sauce() {
+      return this.currentComponentPizza("sauces");
+    },
     /**
      * Transformation url image to class modification
      * @return {array}
@@ -141,11 +143,11 @@ export default {
      * @return {boolean}
      */
     checkedDisabledSubmit() {
-      return !(this.pizza.name.length > 0 && this.pizza.ingredients.length > 0);
+      return !(this.name.length > 0 && this.pizza.ingredients.length > 0);
     },
   },
-  mounted() {
-    console.log(this.currentIngredients);
+  created() {
+    this.initDefault();
   },
   methods: {
     ...mapActions("Builder", [
@@ -157,6 +159,7 @@ export default {
       "setSize",
       "setPizzaPrice",
       "clearBuilder",
+      "initDefault",
     ]),
     ...mapActions("Cart", ["addOrder"]),
     setName(e) {

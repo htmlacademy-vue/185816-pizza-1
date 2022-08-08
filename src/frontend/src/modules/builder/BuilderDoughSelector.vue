@@ -12,7 +12,7 @@
           :value="dough.price"
           :title="dough.name"
           hidden
-          :checked="dough.id === defaultDough.id"
+          :checked="dough.selected"
           @setValue="setDough"
         >
           <b>{{ dough.name }}</b>
@@ -34,10 +34,6 @@ export default {
   props: {
     doughs: {
       type: Array,
-      required: true,
-    },
-    defaultDough: {
-      type: Object,
       required: true,
     },
   },

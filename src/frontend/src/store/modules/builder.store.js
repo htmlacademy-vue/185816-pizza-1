@@ -1,29 +1,24 @@
 import pizza from "@/static/pizza.json";
 import {
   CLEAR_BUILDER,
-  SET_DOUGH,
   SET_PIZZA_NAME,
   SET_PIZZA_PRICE,
-  SET_SAUCE,
-  SET_SIZE,
   UPDATE_INGREDIENT,
+  SET_DEFAULT_BUILDER,
+  SET_COMPONENT_PIZZA,
 } from "@/store/mutations";
+
+const addSelectedProps = (item) => ({ ...item, selected: false });
+const addCountProps = (item) => ({ ...item, count: 0 });
 
 export default {
   namespaced: true,
   state: {
-    doughs: pizza.dough,
-    ingredients: pizza.ingredients.map((item) => ({ ...item, count: 0 })),
-    sauces: pizza.sauces,
-    sizes: pizza.sizes,
-    pizza: {
-      dough: pizza.dough[0],
-      ingredients: [],
-      size: pizza.sizes[0],
-      sauce: pizza.sauces[1],
-      name: "",
-      price: 0,
-    },
+    doughs: pizza.dough.map(addSelectedProps),
+    ingredients: pizza.ingredients.map(addCountProps),
+    sauces: pizza.sauces.map(addSelectedProps),
+    sizes: pizza.sizes.map(addSelectedProps),
+    name: "",
   },
   getters: {
     /**
@@ -50,9 +45,10 @@ export default {
      * Return summ changes ingredients
      *
      * @param {*} state
+     * @param getters
      * @returns {Number}
      */
-    summIngredients(state, getters) {
+    sumIngredients(state, getters) {
       if (getters.changeIngredients.length !== 0) {
         return getters.changeIngredients
           .map((fill) => fill.price * fill.count)
@@ -62,77 +58,27 @@ export default {
       }
     },
     /**
+     * Return current sauce, dough, size
+     * @param state
+     * @return {object}
+     */
+    currentComponentPizza: (state) => (component) => {
+      return state[component].filter((item) => item.selected === true).pop();
+    },
+    /**
      * Calculate pizza to cart
      * @return {number}
      */
     calculatedPrice: function (state, getters) {
-      let startPrice = 0;
-
-      startPrice = startPrice + getters.summIngredients;
-
-      if (state.pizza.dough) {
-        startPrice = startPrice + state.pizza.dough.price;
-      }
-
-      if (state.pizza.sauce) {
-        startPrice = startPrice + state.pizza.sauce.price;
-      }
-
-      if (state.pizza.size) {
-        startPrice = startPrice * state.pizza.size.multiplier;
-      }
-
-      state.pizza.price = startPrice;
-
-      return startPrice;
+      return (
+        (getters.sumIngredients +
+          getters.currentComponentPizza("doughs").price +
+          getters.currentComponentPizza("sauces").price) *
+        getters.currentComponentPizza("sizes").multiplier
+      );
     },
   },
   mutations: {
-    /**
-     * @param {object} state
-     * @param {object} dough
-     * {
-     *  "id": 1,
-     *  "name": "Тонкое",
-     *  "image": "/public/img/dough-light.svg",
-     *  "description": "Из твердых сортов пшеницы",
-     *  "price": 300
-     * }
-     */
-    [SET_DOUGH](state, dough) {
-      state.pizza.dough = state.doughs.find(
-        (doughItem) => doughItem.id === dough.id
-      );
-    },
-    /**
-     * @param {object} state
-     * @param {object} sauce
-     * {
-     *  "id": 1,
-     *  "name": "Томатный",
-     *  "price": 50
-     * }
-     */
-    [SET_SAUCE](state, sauce) {
-      state.pizza.sauce = state.sauces.find(
-        (sauceItem) => sauceItem.id === sauce.id
-      );
-    },
-    /**
-     * @param {object} state
-     * @param {object} size
-     * {
-     *   "id": 1,
-     *   "name": "23 см",
-     *   "image": "/public/img/diameter.svg",
-     *   "multiplier": 1
-     * }
-     */
-    [SET_SIZE](state, size) {
-      state.pizza.size = state.sizes.find(
-        (sizeItem) => sizeItem.id === size.id
-      );
-    },
     /**
      *
      * @param {object} state
@@ -145,10 +91,6 @@ export default {
      * }
      */
     [UPDATE_INGREDIENT](state, ingredient) {
-      state.pizza.ingredients = state.ingredients.filter(
-        (item) => item.count !== 0
-      );
-
       state.ingredients.find((item) => {
         if (item.id === ingredient.id) {
           ingredient.add ? item.count++ : item.count--;
@@ -163,26 +105,35 @@ export default {
      * @return {*}
      */
     [SET_PIZZA_NAME](state, name) {
-      state.pizza.name = name;
+      state.name = name;
+    },
+    [SET_COMPONENT_PIZZA](state, { component, data }) {
+      state[component].find((item) => {
+        item.selected = item.id === data.id;
+      });
     },
     [SET_PIZZA_PRICE](state, price) {
       state.pizza.price = price;
     },
     [CLEAR_BUILDER](state) {
-      state.pizza.ingredients = [];
-      state.pizza.name = "";
+      state.name = "";
       state.ingredients.map((ingredient) => (ingredient.count = 0));
+    },
+    [SET_DEFAULT_BUILDER](state) {
+      state.doughs[0].selected = true;
+      state.sizes[1].selected = true;
+      state.sauces[1].selected = true;
     },
   },
   actions: {
     setDough({ commit }, dough) {
-      commit(SET_DOUGH, { id: dough.id, price: dough.value });
+      commit(SET_COMPONENT_PIZZA, { component: "doughs", data: dough });
     },
     setSauce({ commit }, sauce) {
-      commit(SET_SAUCE, { id: sauce.id, price: sauce.value });
+      commit(SET_COMPONENT_PIZZA, { component: "sauces", data: sauce });
     },
     setSize({ commit }, size) {
-      commit(SET_SIZE, { id: size.id, multiplier: size.value });
+      commit(SET_COMPONENT_PIZZA, { component: "sizes", data: size });
     },
     addIngredient({ commit }, ingredient) {
       commit(UPDATE_INGREDIENT, ingredient);
@@ -196,7 +147,11 @@ export default {
     setPizzaPrice({ commit }, price) {
       commit(SET_PIZZA_PRICE, price);
     },
+    initDefault({ commit }) {
+      commit(SET_DEFAULT_BUILDER);
+    },
     clearBuilder({ commit }) {
+      commit(SET_DEFAULT_BUILDER);
       commit(CLEAR_BUILDER);
     },
   },
