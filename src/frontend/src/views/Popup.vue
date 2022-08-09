@@ -1,23 +1,28 @@
 <template>
-  <component :is="popup"></component>
+  <component :is="popupName"></component>
 </template>
 
 <script>
-import { capitalize } from "@/common/utils";
+import LoginView from "@/modules/popups/LoginView";
+import SuccessView from "@/modules/popups/SuccessView";
 
 export default {
-  name: "LoginPopup",
-  computed: {
-    popup() {
-      return () =>
-        import(
-          `../modules/popups/${this.capitalize(this.$route.meta.popup)}View.vue`
-        );
-    },
+  name: "Popup",
+  components: {
+    LoginView,
+    SuccessView,
   },
-  methods: {
-    capitalize(string) {
-      return capitalize(string);
+  data() {
+    return {
+      popups: {
+        login: "loginView",
+        success: "SuccessView",
+      },
+    };
+  },
+  computed: {
+    popupName() {
+      return this.popups[this.$route.meta.popup];
     },
   },
 };
