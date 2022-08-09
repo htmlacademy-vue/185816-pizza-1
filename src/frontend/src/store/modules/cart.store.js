@@ -13,9 +13,15 @@ export default {
   namespaced: true,
   state: {
     orders: [],
-    misc,
+    misc: misc.map((item) => ({ ...item, multiplier: 0 })),
   },
   mutations: {
+    /**
+     * Add pizza to cart
+     * @param state
+     * @param {object} order
+     * @return {number}
+     */
     [ADD_ITEM_CART](state, order) {
       return state.orders.push({
         id: uuidv4(),
@@ -24,55 +30,41 @@ export default {
       });
     },
     [DELETE_ITEM_CART](state, order) {
-      const index = state.orders.findIndex(
-        (orderItem) => orderItem.id === order.id
-      );
-
-      return state.items.splice(index, 1);
+      state.orders = state.orders.filter((items) => items.id !== order.id);
     },
     [SET_ORDER_MULTIPLIER](state, order) {
-      const index = state.orders.findIndex(
-        (orderItem) => orderItem.id === order.id
-      );
-
-      if (order.add) {
-        return state.orders[index].multiplier++;
-      } else {
-        state.orders[index].multiplier--;
-
-        if (state.orders[index].multiplier === 0) {
-          return state.orders.splice(index, 1);
+      state.orders.find((item) => {
+        if (item.id === order.id) {
+          order.add ? item.multiplier++ : item.multiplier--;
         }
-      }
+      });
+
+      state.orders = state.orders.filter((item) => item.multiplier !== 0);
     },
     [CLEAR_CART](state) {
       state.orders = [];
-      return state.misc.map((miscItem) => (miscItem.multiplier = 0));
+      state.misc.map((miscItem) => (miscItem.multiplier = 0));
     },
+    /**
+     * Up and down multiplier misc
+     * @param {object} state
+     * @param {object} miscItem
+     */
     [SET_MULTIPLIER_MISC](state, miscItem) {
-      state.misc = state.misc.filter((item) => item.id !== miscItem.id);
-
-      if (miscItem.add) {
-        return state.misc.push({
-          ...miscItem,
-          multiplier: miscItem.multiplier + 1,
-        });
-      } else {
-        return state.misc.push({
-          ...miscItem,
-          multiplier: miscItem.multiplier - 1,
-        });
-      }
+      state.misc.find((item) => {
+        if (item.id === miscItem.id) {
+          miscItem.add ? item.multiplier++ : item.multiplier--;
+        }
+      });
     },
   },
   getters: {
     sumOrders(state) {
       if (state.orders.length !== 0) {
-        const misc = state.misc.map((miscItem) =>
-          miscItem.multiplier !== 0 && miscItem.multiplier !== undefined
-            ? miscItem.price * miscItem.multiplier
-            : 0
-        );
+        const misc = state.misc
+          .filter((item) => item.multiplier !== 0)
+          .map((item) => item.price * item.multiplier);
+
         const prices = state.orders.map(
           (order) => order.price * order.multiplier
         );
@@ -81,6 +73,13 @@ export default {
       } else {
         return 0;
       }
+    },
+    scopeOrders(state, getters) {
+      return {
+        orders: state.orders,
+        misc: state.misc.filter((item) => item.multiplier !== 0),
+        sum: getters.sumOrders,
+      };
     },
   },
   actions: {

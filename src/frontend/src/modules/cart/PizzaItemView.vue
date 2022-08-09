@@ -9,13 +9,13 @@
         alt="Капричоза"
       />
       <div class="product__text">
-        <h2>{{ lowerName }}</h2>
+        <h2>{{ lowerNamePizzaComponents.name }}</h2>
         <ul>
           <li>
             {{ pizza.size.name }},
-            {{ lowerDough }}
+            {{ lowerNamePizzaComponents.dough }}
           </li>
-          <li>Соус: {{ lowerSauce }}</li>
+          <li>Соус: {{ lowerNamePizzaComponents.sauce }}</li>
           <li>
             Начинка:
             {{ ingredientsFlat }}
@@ -29,7 +29,7 @@
         type="button"
         class="counter__button counter__button--minus"
         :disabled="pizza.size.multiplier < 1"
-        @click="downMultiplier"
+        @click="setMultiplier({ add: false, id: pizza.id })"
       >
         <span class="visually-hidden">Меньше</span>
       </button>
@@ -42,18 +42,21 @@
       <button
         type="button"
         class="counter__button counter__button--plus counter__button--orange"
-        @click="upMultiplier"
+        @click="setMultiplier({ add: true, id: pizza.id })"
       >
         <span class="visually-hidden">Больше</span>
       </button>
     </div>
 
     <div class="cart-list__price">
-      <b>{{ pizza.price }} ₽</b>
+      <b>{{ sumPrice }} ₽</b>
     </div>
 
     <div class="cart-list__button">
       <button type="button" class="cart-list__edit">Изменить</button>
+      <button type="button" class="cart-list__edit" @click="deleteOrder(pizza)">
+        Удалить
+      </button>
     </div>
   </li>
 </template>
@@ -73,35 +76,21 @@ export default {
     ingredientsFlat() {
       return this.pizza.ingredients
         .map((ingredient) => ingredient.name.toLowerCase())
-        .toString();
+        .join();
     },
-    lowerName() {
-      return this.pizza.name.toLowerCase();
-    },
-    lowerDough() {
-      return this.pizza.dough.name.toLowerCase();
-    },
-    lowerSauce() {
-      return this.pizza.sauce.name.toLowerCase();
+    lowerNamePizzaComponents() {
+      return {
+        name: this.pizza.name.toLowerCase(),
+        dough: this.pizza.dough.name.toLowerCase(),
+        sauce: this.pizza.sauce.name.toLowerCase(),
+      };
     },
     sumPrice() {
-      return this.pizza.price * this.multiplier;
+      return this.pizza.price * this.pizza.multiplier;
     },
   },
   methods: {
-    ...mapActions("Cart", ["setMultiplier"]),
-    upMultiplier() {
-      this.setMultiplier({
-        add: true,
-        id: this.pizza.id,
-      });
-    },
-    downMultiplier() {
-      this.setMultiplier({
-        add: false,
-        id: this.pizza.id,
-      });
-    },
+    ...mapActions("Cart", ["setMultiplier", "deleteOrder"]),
   },
 };
 </script>

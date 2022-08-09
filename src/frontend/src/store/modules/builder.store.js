@@ -8,8 +8,7 @@ import {
   SET_COMPONENT_PIZZA,
 } from "@/store/mutations";
 
-const addSelectedProps = (item) => ({ ...item, selected: false });
-const addCountProps = (item) => ({ ...item, count: 0 });
+import { addSelectedProps, addCountProps } from "@/store/utils";
 
 export default {
   namespaced: true,
@@ -77,6 +76,19 @@ export default {
         getters.currentComponentPizza("sizes").multiplier
       );
     },
+    /**
+     * Return pizza object
+     */
+    pizza(state, getters) {
+      return {
+        dough: getters.currentComponentPizza("doughs"),
+        sauce: getters.currentComponentPizza("sauces"),
+        size: getters.currentComponentPizza("sizes"),
+        ingredients: getters.changeIngredients,
+        name: state.name,
+        price: getters.calculatedPrice,
+      };
+    },
   },
   mutations: {
     /**
@@ -116,13 +128,16 @@ export default {
       state.pizza.price = price;
     },
     [CLEAR_BUILDER](state) {
+      state.doughs = state.doughs.map(addSelectedProps);
+      state.sizes = state.sizes.map(addSelectedProps);
+      state.sauces = state.sauces.map(addSelectedProps);
       state.name = "";
       state.ingredients.map((ingredient) => (ingredient.count = 0));
     },
     [SET_DEFAULT_BUILDER](state) {
       state.doughs[0].selected = true;
       state.sizes[1].selected = true;
-      state.sauces[1].selected = true;
+      state.sauces[0].selected = true;
     },
   },
   actions: {
@@ -151,8 +166,8 @@ export default {
       commit(SET_DEFAULT_BUILDER);
     },
     clearBuilder({ commit }) {
-      commit(SET_DEFAULT_BUILDER);
       commit(CLEAR_BUILDER);
+      commit(SET_DEFAULT_BUILDER);
     },
   },
 };

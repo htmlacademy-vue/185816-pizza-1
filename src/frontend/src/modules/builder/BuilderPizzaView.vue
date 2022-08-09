@@ -96,15 +96,22 @@ export default {
       DoughMap,
       SauceMap,
       ingredientLayer: ["", "second", "third"],
-      name: "",
     };
   },
   computed: {
-    ...mapState("Builder", ["sizes", "sauces", "ingredients", "doughs"]),
+    ...mapState("Builder", [
+      "sizes",
+      "sauces",
+      "ingredients",
+      "doughs",
+      "name",
+    ]),
     ...mapGetters("Builder", [
       "calculatedPrice",
       "currentIngredients",
       "currentComponentPizza",
+      "changeIngredients",
+      "pizza",
     ]),
     size() {
       return this.currentComponentPizza("sizes");
@@ -143,7 +150,7 @@ export default {
      * @return {boolean}
      */
     checkedDisabledSubmit() {
-      return !(this.name.length > 0 && this.pizza.ingredients.length > 0);
+      return !(this.name.length > 0 && this.changeIngredients.length > 0);
     },
   },
   created() {
@@ -157,9 +164,8 @@ export default {
       "setSauce",
       "setDough",
       "setSize",
-      "setPizzaPrice",
-      "clearBuilder",
       "initDefault",
+      "clearBuilder",
     ]),
     ...mapActions("Cart", ["addOrder"]),
     setName(e) {
@@ -176,8 +182,8 @@ export default {
       this.addIngredient(ingredient);
     },
     addToCart() {
-      setTimeout(this.clearBuilder, 1000);
       this.addOrder(this.pizza);
+      this.clearBuilder();
       this.$router.push("cart");
     },
   },

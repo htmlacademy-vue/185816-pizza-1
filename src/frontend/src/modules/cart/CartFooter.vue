@@ -29,7 +29,7 @@
 </template>
 
 <script>
-import { mapActions, mapState } from "vuex";
+import { mapActions, mapState, mapGetters } from "vuex";
 
 export default {
   name: "CartFooter",
@@ -43,11 +43,12 @@ export default {
     ...mapState("Cart", ["orders"]),
   },
   methods: {
+    ...mapGetters("Cart", ["scopeOrders"]),
     ...mapActions("Cart", ["clearCart"]),
     ...mapActions("Orders", ["addOrder"]),
     submitOrder() {
-      setTimeout(this.clearCart, 1000);
-      this.addOrder(this.orders);
+      this.addOrder(this.scopeOrders());
+      this.clearCart();
       this.$router.push("success-popup");
     },
   },

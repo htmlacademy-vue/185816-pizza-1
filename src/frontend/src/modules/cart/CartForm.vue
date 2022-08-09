@@ -49,5 +49,3 @@ export default {
   name: "CartForm",
 };
 </script>
-
-<style scoped></style>
