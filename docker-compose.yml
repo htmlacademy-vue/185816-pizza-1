@@ -9,7 +9,7 @@ services:
       POSTGRES_PASSWORD: psql
       POSTGRES_DB: pizza
     ports:
-      - 5432:5432
+      - "5432:5432"
 
   backend:
     build: src/backend
@@ -20,7 +20,7 @@ services:
     depends_on:
       - db
     ports:
-      - 3000:3000
+      - "3000:3000"
 
   frontend:
     build: src/frontend

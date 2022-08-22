@@ -13,6 +13,9 @@ export default {
   components: {
     BuilderPizzaView,
   },
+  async mounted() {
+    console.log(await this.$api.dough.query());
+  },
 };
 </script>
 
