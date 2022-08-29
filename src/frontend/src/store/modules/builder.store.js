@@ -1,4 +1,3 @@
-import pizza from "@/static/pizza.json";
 import {
   CLEAR_BUILDER,
   SET_PIZZA_NAME,
@@ -13,10 +12,10 @@ import { addSelectedProps, addCountProps } from "@/store/utils";
 export default {
   namespaced: true,
   state: {
-    doughs: pizza.dough.map(addSelectedProps),
-    ingredients: pizza.ingredients.map(addCountProps),
-    sauces: pizza.sauces.map(addSelectedProps),
-    sizes: pizza.sizes.map(addSelectedProps),
+    doughs: [],
+    ingredients: [],
+    sauces: [],
+    sizes: [],
     name: "",
   },
   getters: {
@@ -89,8 +88,37 @@ export default {
         price: getters.calculatedPrice,
       };
     },
+    /**
+     * Transformation url image to class modification
+     * @return {array}
+     */
+    transformedDoughs(state) {
+      return state.doughs.map((dough) => ({
+        ...dough,
+        image: dough.image.split("/").pop().split(".").shift().split("-").pop(),
+      }));
+    },
+    /**
+     * Transformation url image to class modification
+     * @return {array}
+     */
+    transformedIngredients(state) {
+      return state.ingredients
+        .map((ingredient) => ({
+          ...ingredient,
+          image: ingredient.image.split("/").pop().split(".").shift(),
+          count: ingredient.count ? ingredient.count : 0,
+        }))
+        .sort((a, b) => a.id - b.id);
+    },
   },
   mutations: {
+    loadComponents(state, { dough, sizes, ingredients, sauces }) {
+      state.doughs = dough;
+      state.ingredients = ingredients;
+      state.sauces = sauces;
+      state.sizes = sizes;
+    },
     /**
      *
      * @param {object} state
@@ -141,6 +169,28 @@ export default {
     },
   },
   actions: {
+    loadBuilder: {
+      root: true,
+      handler: async function ({ commit, dispatch }) {
+        try {
+          const dough = await this.$api.dough.query();
+          const sauces = await this.$api.sauces.query();
+          const ingredients = await this.$api.ingredients.query();
+          const sizes = await this.$api.sizes.query();
+
+          commit("loadComponents", {
+            dough: dough.map(addCountProps),
+            sizes: sizes.map(addCountProps),
+            ingredients: ingredients.map(addCountProps),
+            sauces: sauces.map(addCountProps),
+          });
+
+          await dispatch("initDefault");
+        } catch (e) {
+          console.log(e, this.$api);
+        }
+      },
+    },
     setDough({ commit }, dough) {
       commit(SET_COMPONENT_PIZZA, { component: "doughs", data: dough });
     },
@@ -158,9 +208,6 @@ export default {
     },
     setPizzaName({ commit }, name) {
       commit(SET_PIZZA_NAME, name);
-    },
-    setPizzaPrice({ commit }, price) {
-      commit(SET_PIZZA_PRICE, price);
     },
     initDefault({ commit }) {
       commit(SET_DEFAULT_BUILDER);

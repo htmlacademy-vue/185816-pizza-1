@@ -3,5 +3,8 @@ export default {
   USERS: "users",
   MISC: "misc",
   PIZZA: "pizza",
-  DOUGH: "dough",
+  DOUGHS: "dough",
+  SIZES: "sizes",
+  INGREDIENTS: "ingredients",
+  SAUCES: "sauces",
 };

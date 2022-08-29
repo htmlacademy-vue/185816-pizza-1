@@ -21,3 +21,11 @@ export const CLEAR_CART = "CLEAR_CART";
 export const ADD_ORDER_ITEM = "ADD_ORDER_ITEM";
 export const REMOVE_ORDER_ITEM = "REMOVE_ORDER_ITEM";
 export const SET_MULTIPLIER_MISC = "SET_MULTIPLIER_MISC";
+/**
+ * Common mutations
+ */
+export const SET_ENTITY = "SET_ENTITY";
+export const ADD_ENTITY = "ADD_ENTITY";
+export const DELETE_ENTITY = "DELETE_ENTITY";
+export const UPDATE_ENTITY = "UPDATE_ENTITY";
+export const CREATE_NOTICE = "CREATE_NOTICE";

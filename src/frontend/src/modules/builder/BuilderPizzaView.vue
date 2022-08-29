@@ -30,14 +30,11 @@
           />
         </label>
 
-        <div
-          class="content__constructor"
-          :style="{ transform: `scale(${size.multiplier / 3})` }"
-        >
+        <div class="content__constructor">
           <div
-            :class="`pizza pizza--foundation--${DoughMap[dough.id]}-${
-              SauceMap[sauce.id]
-            }`"
+            :class="`pizza pizza--foundation--${
+              dough ? DoughMap[dough.id] : 1
+            }-${sauce ? SauceMap[sauce.id] : 1}`"
             @drop.stop="onDropFill"
           >
             <div
@@ -112,6 +109,8 @@ export default {
       "currentComponentPizza",
       "changeIngredients",
       "pizza",
+      "transformedIngredients",
+      "transformedDoughs",
     ]),
     size() {
       return this.currentComponentPizza("sizes");
@@ -123,38 +122,12 @@ export default {
       return this.currentComponentPizza("sauces");
     },
     /**
-     * Transformation url image to class modification
-     * @return {array}
-     */
-    transformedIngredients(state) {
-      return state.ingredients
-        .map((ingredient) => ({
-          ...ingredient,
-          image: ingredient.image.split("/").pop().split(".").shift(),
-          count: ingredient.count ? ingredient.count : 0,
-        }))
-        .sort((a, b) => a.id - b.id);
-    },
-    /**
-     * Transformation url image to class modification
-     * @return {array}
-     */
-    transformedDoughs: function () {
-      return this.doughs.map((dough) => ({
-        ...dough,
-        image: dough.image.split("/").pop().split(".").shift().split("-").pop(),
-      }));
-    },
-    /**
      * Disable or enable submit button
      * @return {boolean}
      */
     checkedDisabledSubmit() {
       return !(this.name.length > 0 && this.changeIngredients.length > 0);
     },
-  },
-  created() {
-    this.initDefault();
   },
   methods: {
     ...mapActions("Builder", [

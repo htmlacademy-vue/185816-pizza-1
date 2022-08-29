@@ -8,11 +8,8 @@
           :key="dough.id"
           :class="['dough__input', `dough__input--${dough.image}`]"
           name="dough"
-          :id="dough.id"
-          :value="dough.price"
-          :title="dough.name"
+          :entity="dough"
           hidden
-          :checked="dough.selected"
           @setValue="setDough"
         >
           <b>{{ dough.name }}</b>
@@ -24,7 +21,7 @@
 </template>
 
 <script>
-import RadioButton from "@/common/RadioButton";
+import RadioButton from "@/common/RadioButtonNew";
 
 export default {
   name: "BuilderDoughSelector",
