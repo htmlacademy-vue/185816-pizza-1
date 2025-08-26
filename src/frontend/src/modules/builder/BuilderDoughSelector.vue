@@ -2,18 +2,21 @@
   <div class="content__dough">
     <div class="sheet">
       <h2 class="title title--small sheet__title">Выберите тесто</h2>
+      {{ doughs }}
+      {{ checked }}
       <div class="sheet__content dough">
         <RadioButton
-          v-for="dough in doughs"
-          :key="dough.id"
-          :class="['dough__input', `dough__input--${dough.image}`]"
-          name="dough"
-          :entity="dough"
+          v-for="{ id, image, name, description } of doughsNormalize"
+          :key="id"
+          :class="['dough__input', `dough__input--${image}`]"
           hidden
-          @setValue="setDough"
+          name="dough"
+          :value="id"
+          @change="setDough"
+          v-model="checked"
         >
-          <b>{{ dough.name }}</b>
-          <span>{{ dough.description }}</span>
+          <b>{{ name }}</b>
+          <span>{{ description }}</span>
         </RadioButton>
       </div>
     </div>
@@ -34,18 +37,32 @@ export default {
       required: true,
     },
   },
+  data() {
+    return {
+      checked: 0,
+    };
+  },
+  computed: {
+    doughsNormalize() {
+      return this.doughs.map(({ image, ...item }) => ({
+        ...item,
+        image: image.match(/-.+\./g).at(0).replace("-", "").replace(".", ""),
+      }));
+    },
+  },
   methods: {
     /**
      * Emit value to parent
-     * @param {object} dough
      *
      * {
      *   id: Number,
      *   value: Number
      * }
+     * @param id
      */
-    setDough(dough) {
-      this.$emit("setDough", dough);
+    setDough(id) {
+      console.log(id);
+      this.$emit("setDough", id);
     },
   },
 };

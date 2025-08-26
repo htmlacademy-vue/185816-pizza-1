@@ -1,28 +1,40 @@
 <template>
   <label>
     <input
+      v-bind="$attrs"
       :class="[{ 'visually-hidden': hidden }]"
       type="radio"
-      :name="entity.name"
-      :value="entity.value"
-      :checked="entity.selected"
-      @click="$emit('setValue', { id: entity.id, value: entity.value })"
+      :checked="checked"
+      :value="value"
+      v-model="proxyChecked"
     />
-    <slot>
-      <span>{{ entity.title }}</span>
-    </slot>
+    <span>
+      <slot />
+    </span>
   </label>
 </template>
 
 <script>
 export default {
   name: "RadioButton",
+  model: {
+    prop: "checked",
+    event: "change",
+  },
   props: {
-    entity: {
-      type: Object,
-      required: true,
-    },
+    value: [String, Number],
+    checked: [Boolean, String, Number],
     hidden: Boolean,
+  },
+  computed: {
+    proxyChecked: {
+      get() {
+        return this.checked;
+      },
+      set(val) {
+        this.$emit("change", val);
+      },
+    },
   },
 };
 </script>

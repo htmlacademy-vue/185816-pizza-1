@@ -7,7 +7,7 @@ import {
   SET_COMPONENT_PIZZA,
 } from "@/store/mutations";
 
-import { addSelectedProps, addCountProps } from "@/store/utils";
+import { addSelectedProps } from "@/store/utils";
 
 export default {
   namespaced: true,
@@ -92,16 +92,6 @@ export default {
      * Transformation url image to class modification
      * @return {array}
      */
-    transformedDoughs(state) {
-      return state.doughs.map((dough) => ({
-        ...dough,
-        image: dough.image.split("/").pop().split(".").shift().split("-").pop(),
-      }));
-    },
-    /**
-     * Transformation url image to class modification
-     * @return {array}
-     */
     transformedIngredients(state) {
       return state.ingredients
         .map((ingredient) => ({
@@ -147,6 +137,14 @@ export default {
     [SET_PIZZA_NAME](state, name) {
       state.name = name;
     },
+    SET_BOOLEAN_ENTITY(state, { component, selectedId }) {
+      console.log("asdsa");
+      state[component] = state[component].map(({ id, ...item }) => ({
+        ...item,
+        id,
+        selected: id === selectedId,
+      }));
+    },
     [SET_COMPONENT_PIZZA](state, { component, data }) {
       state[component].find((item) => {
         item.selected = item.id === data.id;
@@ -173,16 +171,20 @@ export default {
       root: true,
       handler: async function ({ commit, dispatch }) {
         try {
-          const dough = await this.$api.dough.query();
-          const sauces = await this.$api.sauces.query();
-          const ingredients = await this.$api.ingredients.query();
-          const sizes = await this.$api.sizes.query();
+          const promises = [
+            this.$api.dough.query(),
+            this.$api.sauces.query(),
+            this.$api.ingredients.query(),
+            this.$api.sizes.query(),
+          ];
+
+          const results = await Promise.all(promises);
 
           commit("loadComponents", {
-            dough: dough.map(addCountProps),
-            sizes: sizes.map(addCountProps),
-            ingredients: ingredients.map(addCountProps),
-            sauces: sauces.map(addCountProps),
+            dough: results.at(0),
+            sizes: results.at(1),
+            ingredients: results.at(2),
+            sauces: results.at(3),
           });
 
           await dispatch("initDefault");
@@ -191,8 +193,8 @@ export default {
         }
       },
     },
-    setDough({ commit }, dough) {
-      commit(SET_COMPONENT_PIZZA, { component: "doughs", data: dough });
+    setDough({ commit }, selectedId) {
+      commit("SET_BOOLEAN_ENTITY", { component: "doughs", selectedId });
     },
     setSauce({ commit }, sauce) {
       commit(SET_COMPONENT_PIZZA, { component: "sauces", data: sauce });

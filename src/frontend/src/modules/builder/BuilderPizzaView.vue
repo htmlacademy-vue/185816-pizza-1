@@ -5,69 +5,7 @@
       <div class="content__ingredients">
         <div class="sheet">
           <h2 class="title title--small sheet__title">Выберите ингредиенты</h2>
-          <BuilderDoughSelector
-            :doughs="transformedDoughs"
-            @setDough="setDough"
-          />
-        </div>
-      </div>
-      <BuilderDiameterSelector :sizes="sizes" @setSize="setSize" />
-      <BuilderSauceSelector
-        :sauces="sauces"
-        :ingredients="transformedIngredients"
-        @setSauce="setSauce"
-        @setIngredient="addIngredient"
-        @removeIngredient="deleteIngredient"
-      />
-      <div class="content__pizza">
-        <label class="input">
-          <span class="visually-hidden">Название пиццы</span>
-          <input
-            type="text"
-            name="pizza_name"
-            placeholder="Введите название пиццы"
-            @input="setName"
-          />
-        </label>
-
-        <div class="content__constructor">
-          <div
-            :class="`pizza pizza--foundation--${
-              dough ? DoughMap[dough.id] : 1
-            }-${sauce ? SauceMap[sauce.id] : 1}`"
-            @drop.stop="onDropFill"
-          >
-            <div
-              class="pizza__wrapper"
-              @dragstart.prevent
-              @dragover.prevent
-              @dragenter.prevent
-            >
-              <div v-for="(fill, index) in currentIngredients" :key="index">
-                <div
-                  v-for="(layer, index) in fill.count"
-                  :key="index"
-                  :class="[
-                    'pizza__filling',
-                    `pizza__filling--${fill.icon}`,
-                    `pizza__filling--${ingredientLayer[layer]}`,
-                  ]"
-                ></div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="content__result">
-          <p>Итого: {{ calculatedPrice }} ₽</p>
-          <button
-            type="button"
-            class="button"
-            :disabled="checkedDisabledSubmit"
-            @click.prevent="addToCart"
-          >
-            Готовьте!
-          </button>
+          <BuilderDoughSelector :doughs="doughs" @setDough="setDough" />
         </div>
       </div>
     </div>
@@ -76,8 +14,6 @@
 
 <script>
 import BuilderDoughSelector from "@/modules/builder/BuilderDoughSelector";
-import BuilderDiameterSelector from "@/modules/builder/BuilderDiameterSelector";
-import BuilderSauceSelector from "@/modules/builder/BuilderSauceSelector";
 import { DataTransferType, DoughMap, SauceMap } from "@/common/constants";
 import { mapGetters, mapActions, mapState } from "vuex";
 
@@ -85,8 +21,6 @@ export default {
   name: "BuilderPizzaView",
   components: {
     BuilderDoughSelector,
-    BuilderDiameterSelector,
-    BuilderSauceSelector,
   },
   data() {
     return {
@@ -110,7 +44,6 @@ export default {
       "changeIngredients",
       "pizza",
       "transformedIngredients",
-      "transformedDoughs",
     ]),
     size() {
       return this.currentComponentPizza("sizes");
