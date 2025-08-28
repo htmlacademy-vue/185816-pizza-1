@@ -4,11 +4,23 @@
       }
       <div class="content__wrapper">
         <h1 class="title title--big">Конструктор пиццы</h1>
-        <SelectDough :items="dough" @setItem="setBinaryProperty" />
-        <SelectDiameter :items="sizes" @setItem="setBinaryProperty" />
+        <SelectDough
+          :items="dough"
+          :builder="builder"
+          @setItem="setBinaryProperty"
+        />
+        <SelectDiameter
+          :items="sizes"
+          :builder="builder"
+          @setItem="setBinaryProperty"
+        />
         <SelectIngredients>
           <template #select-sauce>
-            <SelectSauce :items="sauces" @setItem="setBinaryProperty" />
+            <SelectSauce
+              :items="sauces"
+              :builder="builder"
+              @setItem="setBinaryProperty"
+            />
           </template>
           <SelectFilling
             :items="ingredientsMerge"

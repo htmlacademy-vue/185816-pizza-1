@@ -12,8 +12,8 @@
             name="sauce"
             :id="id"
             :value="id"
+            :checked="checked"
             @change="setItem({ id, name, ...other })"
-            v-model="checked"
           >
             <b>{{ name }}</b>
           </RadioButton>
@@ -37,11 +37,15 @@ export default {
       type: Array,
       required: true,
     },
+    builder: {
+      type: Object,
+      default: () => ({}),
+    },
   },
-  data() {
-    return {
-      checked: 2,
-    };
+  computed: {
+    checked() {
+      return this.builder[BuilderProperty.SAUCE].id;
+    },
   },
   methods: {
     setItem(item) {

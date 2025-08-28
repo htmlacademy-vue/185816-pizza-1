@@ -17,3 +17,10 @@ export const Limit = {
   COUNT_MIN: 0,
   COUNT_STEP: 1,
 };
+
+export const DefaultValue = {
+  DOUGH: 1,
+  SAUCE: 1,
+  INGREDIENTS: -1,
+  SIZES: 1,
+};

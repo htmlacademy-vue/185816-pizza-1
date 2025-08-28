@@ -1,6 +1,10 @@
-import { BuilderProperty, BuilderCollection } from "@/common/enums/builder";
+import {
+  BuilderProperty,
+  BuilderCollection,
+  DefaultValue,
+} from "@/common/enums/builder";
 
-const initDefaultSchemeBuilder = [1, 1, -1, 1];
+const initDefaultSchemeBuilder = [...Object.values(DefaultValue)];
 
 export default {
   namespaced: true,

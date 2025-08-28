@@ -10,8 +10,8 @@
           hidden
           name="dough"
           :value="id"
+          :checked="checked"
           @change="setItem({ id, image, name, description, ...other })"
-          v-model="checked"
         >
           <b>{{ name }}</b>
           <span>{{ description }}</span>
@@ -36,11 +36,10 @@ export default {
       type: Array,
       required: true,
     },
-  },
-  data() {
-    return {
-      checked: 2,
-    };
+    builder: {
+      type: Object,
+      default: () => ({}),
+    },
   },
   computed: {
     itemsNormalize() {
@@ -48,6 +47,9 @@ export default {
         ...item,
         image: replacePath(image),
       }));
+    },
+    checked() {
+      return this.builder[BuilderProperty.DOUGH].id;
     },
   },
   methods: {

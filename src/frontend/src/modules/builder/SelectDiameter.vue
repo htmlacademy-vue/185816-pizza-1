@@ -10,8 +10,8 @@
           name="diameter"
           hidden
           :value="id"
+          :checked="checked"
           @change="setItem({ id, name, ...other })"
-          v-model="checked"
         >
           <b>{{ name }}</b>
         </RadioButton>
@@ -36,14 +36,16 @@ export default {
       type: Array,
       required: true,
     },
-  },
-  data() {
-    return {
-      checked: 2,
-    };
+    builder: {
+      type: Object,
+      default: () => ({}),
+    },
   },
   computed: {
     sizeMap: () => sizeMap,
+    checked() {
+      return this.builder[BuilderProperty.SIZE].id;
+    },
   },
   methods: {
     setItem(item) {
