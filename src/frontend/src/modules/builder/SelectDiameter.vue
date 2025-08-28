@@ -22,7 +22,7 @@
 
 <script>
 import RadioButton from "@/common/RadioButtonNew";
-import PropertyBuilder from "@/common/enums/property-builder";
+import { PropertyBuilder } from "@/common/enums/builder";
 
 const sizeMap = ["small", "normal", "big"];
 

@@ -24,7 +24,7 @@
 <script>
 import RadioButton from "@/common/RadioButtonNew";
 import { replacePath } from "@/modules/utils";
-import PropertyBuilder from "@/common/enums/property-builder";
+import { PropertyBuilder } from "@/common/enums/builder";
 
 export default {
   name: "SelectDough",
@@ -50,10 +50,12 @@ export default {
       }));
     },
     checkedItem() {
-      return this.items.filter(({ id }) => id === this.checked).at(0) || {};
+      return (
+        this.itemsNormalize.filter(({ id }) => id === this.checked).at(0) || {}
+      );
     },
   },
-  mounted() {
+  created() {
     this.setItem(this.checkedItem);
   },
   methods: {

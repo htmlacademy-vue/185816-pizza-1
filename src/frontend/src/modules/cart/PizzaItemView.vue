@@ -86,7 +86,7 @@ export default {
       };
     },
     sumPrice() {
-      return this.pizza.price * this.pizza.multiplier;
+      return this.pizza.totalPrice * this.pizza.multiplier;
     },
   },
   methods: {

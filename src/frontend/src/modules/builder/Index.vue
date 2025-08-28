@@ -1,61 +1,45 @@
 <template>
   <main class="content">
     <form action="#" method="post">
+      }
       <div class="content__wrapper">
-        {{ builder }}
         <h1 class="title title--big">Конструктор пиццы</h1>
         <SelectDough :items="doughs" @setItem="setBinaryProperty" />
         <SelectDiameter :items="sizes" @setItem="setBinaryProperty" />
-        <SelectIngredients :items="ingredients">
+        <SelectIngredients>
           <template #select-sauce>
             <SelectSauce :items="sauces" @setItem="setBinaryProperty" />
           </template>
           <SelectFilling
-            :items="ingredients"
+            :items="ingredientsMerge"
             @setItem="addCollectionProperty"
+            @deleteItem="removeCollectionProperty"
           />
         </SelectIngredients>
-        <div class="content__pizza">
-          <label class="input">
-            <span class="visually-hidden">Название пиццы</span>
-            <input
-              type="text"
-              name="pizza_name"
-              placeholder="Введите название пиццы"
-            />
-          </label>
-
-          <div class="content__constructor">
-            <div class="pizza pizza--foundation--big-tomato">
-              <div class="pizza__wrapper">
-                <div class="pizza__filling pizza__filling--ananas"></div>
-                <div class="pizza__filling pizza__filling--bacon"></div>
-                <div class="pizza__filling pizza__filling--cheddar"></div>
-              </div>
-            </div>
-          </div>
-
-          <div class="content__result">
-            <p>Итого: 0 ₽</p>
-            <button type="button" class="button" disabled>Готовьте!</button>
-          </div>
-        </div>
+        <ResultBuilder
+          :total-price="totalPrice"
+          :item="{ ...builder, selectedIngredients }"
+          @setItem="addCollectionProperty"
+          @build="build"
+        />
       </div>
     </form>
   </main>
 </template>
 
 <script>
-import { mapActions, mapState } from "vuex";
+import { mapActions, mapGetters, mapState } from "vuex";
 import SelectDough from "@/modules/builder/SelectDough.vue";
 import SelectDiameter from "@/modules/builder/SelectDiameter.vue";
 import SelectIngredients from "@/modules/builder/SelectIngredients.vue";
 import SelectSauce from "@/modules/builder/SelectSauce.vue";
-import SelectFilling from "@/modules/builder/SelectFilling.vue";
+import SelectFilling from "@/modules/builder/SelectFilling/Index.vue";
+import ResultBuilder from "@/modules/builder/ResultBuilder.vue";
 
 export default {
   name: "BuilderPizzaView",
   components: {
+    ResultBuilder,
     SelectFilling,
     SelectSauce,
     SelectIngredients,
@@ -70,9 +54,35 @@ export default {
       "sizes",
       "builder",
     ]),
+    ...mapGetters("Builder", ["selectedIngredients", "totalPrice"]),
+    ingredientsMerge() {
+      return this.ingredients.map((item) => {
+        const searchItem = this.selectedIngredients.find(
+          (subItem) => subItem.id === item.id
+        );
+
+        if (searchItem) {
+          return {
+            ...item,
+            ...searchItem,
+          };
+        }
+
+        return item;
+      });
+    },
   },
   methods: {
-    ...mapActions("Builder", ["setBinaryProperty", "addCollectionProperty"]),
+    ...mapActions("Builder", [
+      "setBinaryProperty",
+      "addCollectionProperty",
+      "removeCollectionProperty",
+    ]),
+    ...mapActions("Cart", ["addOrder"]),
+    build(item) {
+      this.addOrder(item);
+      this.$router.push("cart");
+    },
   },
 };
 </script>

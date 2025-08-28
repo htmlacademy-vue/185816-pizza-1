@@ -1,4 +1,4 @@
-import PropertyBuilder from "@/common/enums/property-builder";
+import { PropertyBuilder } from "@/common/enums/builder";
 
 export default {
   namespaced: true,
@@ -42,6 +42,32 @@ export default {
       [PropertyBuilder.SIZE]: {},
     },
   },
+  getters: {
+    selectedIngredients(state) {
+      return state.builder[PropertyBuilder.INGREDIENTS].reduce((acc, item) => {
+        const findElem = acc.find(({ id }) => id === item.id);
+
+        if (findElem) {
+          findElem.count += 1;
+          return [...acc];
+        }
+
+        return [...acc, { ...item, count: 1 }];
+      }, []);
+    },
+    totalPrice(state, getters) {
+      const totalIngredients = getters.selectedIngredients.reduce(
+        (acc, item) => acc + item.price * item.count,
+        0
+      );
+      return (
+        (totalIngredients +
+          state.builder[PropertyBuilder.DOUGH].price +
+          state.builder[PropertyBuilder.SAUCE].price) *
+        state.builder[PropertyBuilder.SIZE].multiplier
+      );
+    },
+  },
   mutations: {
     START_STATE(state, { dough, sizes, ingredients, sauces }) {
       state.doughs = dough;
@@ -56,15 +82,19 @@ export default {
       state.builder[property].push(item);
     },
     DELETE_COLLECTION_PROPERTY(state, { property, item: { id: itemID } }) {
-      state.builder[property] = state.builder[property].filter(
-        ({ id }) => id !== itemID
+      const deleteIndexItem = state.builder[property].findIndex(
+        ({ id }) => id === itemID
       );
+
+      if (deleteIndexItem >= 0) {
+        state.builder[property].splice(deleteIndexItem, 1);
+      }
     },
   },
   actions: {
     loadBuilder: {
       root: true,
-      handler: async function ({ commit }) {
+      handler: async function ({ dispatch }) {
         try {
           const promises = [
             this.$api.dough.query(),
@@ -75,7 +105,8 @@ export default {
 
           const results = await Promise.all(promises);
 
-          commit("START_STATE", {
+          // TODO: сделать циклом в массив
+          await dispatch("loadCollections", {
             dough: results.at(0),
             sauces: results.at(1),
             ingredients: results.at(2),
@@ -91,6 +122,12 @@ export default {
     },
     addCollectionProperty({ commit }, payload) {
       commit("ADD_COLLECTION_PROPERTY", payload);
+    },
+    removeCollectionProperty({ commit }, payload) {
+      commit("DELETE_COLLECTION_PROPERTY", payload);
+    },
+    loadCollections({ commit }, payload) {
+      commit("START_STATE", payload);
     },
   },
 };
