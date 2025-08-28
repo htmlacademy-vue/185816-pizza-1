@@ -53,7 +53,7 @@
 </template>
 
 <script>
-import { PropertyBuilder } from "@/common/enums/builder";
+import { BuilderProperty } from "@/common/enums/builder";
 import { DataTransferType } from "@/common/constants";
 
 const doughMap = {
@@ -96,13 +96,13 @@ export default {
       return this.item.selectedIngredients;
     },
     weight() {
-      return doughMap[this.item[PropertyBuilder.DOUGH].id];
+      return doughMap[this.item[BuilderProperty.DOUGH].id];
     },
     sauce() {
-      return sauceMap[this.item[PropertyBuilder.SAUCE].id];
+      return sauceMap[this.item[BuilderProperty.SAUCE].id];
     },
     scale() {
-      return scaleMap[this.item[PropertyBuilder.SIZE].multiplier];
+      return scaleMap[this.item[BuilderProperty.SIZE].multiplier];
     },
   },
   methods: {
@@ -110,7 +110,7 @@ export default {
       const { item } = JSON.parse(
         dataTransfer.getData(DataTransferType.PAYLOAD)
       );
-      this.$emit("setItem", { property: PropertyBuilder.INGREDIENTS, item });
+      this.$emit("setItem", { property: BuilderProperty.INGREDIENTS, item });
     },
   },
 };

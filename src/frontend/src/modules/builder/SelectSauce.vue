@@ -25,7 +25,7 @@
 
 <script>
 import RadioButton from "@/common/RadioButtonNew";
-import { PropertyBuilder } from "@/common/enums/builder";
+import { BuilderProperty } from "@/common/enums/builder";
 
 export default {
   name: "SelectSauce",
@@ -43,19 +43,11 @@ export default {
       checked: 2,
     };
   },
-  computed: {
-    checkedItem() {
-      return this.items.filter(({ id }) => id === this.checked).at(0) || {};
-    },
-  },
-  mounted() {
-    this.setItem(this.checkedItem);
-  },
   methods: {
     setItem(item) {
       console.log("Set sauce", item);
       this.$emit("setItem", {
-        property: PropertyBuilder.SAUCE,
+        property: BuilderProperty.SAUCE,
         item,
       });
     },

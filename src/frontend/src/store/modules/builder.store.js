@@ -1,50 +1,20 @@
-import { PropertyBuilder } from "@/common/enums/builder";
+import { BuilderProperty, BuilderCollection } from "@/common/enums/builder";
+
+const initDefaultSchemeBuilder = [1, 1, -1, 1];
 
 export default {
   namespaced: true,
   state: {
-    doughs: [],
-    ingredients: [],
-    sauces: [],
-    sizes: [],
     builder: {
-      /**
-       *   {
-       *     "id": 1,
-       *      "name": "Тонкое",
-       *      "image": "/public/img/dough-light.svg",
-       *      "description": "Из твердых сортов пшеницы",
-       *      "price": 300
-       *     },
-       */
-      [PropertyBuilder.DOUGH]: {},
-      /**
-       * [{
-       *         "id": 2,
-       *         "name": "Чеддер",
-       *         "image": "/public/img/filling/cheddar.svg",
-       *         "price": 42
-       *     },]
-       */
-      [PropertyBuilder.INGREDIENTS]: [],
-      /**
-       * { "id":1,"name":"Томатный","price":50 }
-       */
-      [PropertyBuilder.SAUCE]: {},
-      /**
-       * {
-       *         "id": 1,
-       *         "name": "23 см",
-       *         "image": "/public/img/diameter.svg",
-       *         "multiplier": 1
-       *     }
-       */
-      [PropertyBuilder.SIZE]: {},
+      [BuilderProperty.DOUGH]: {},
+      [BuilderProperty.SAUCE]: {},
+      [BuilderProperty.INGREDIENTS]: [],
+      [BuilderProperty.SIZE]: {},
     },
   },
   getters: {
     selectedIngredients(state) {
-      return state.builder[PropertyBuilder.INGREDIENTS].reduce((acc, item) => {
+      return state.builder[BuilderProperty.INGREDIENTS].reduce((acc, item) => {
         const findElem = acc.find(({ id }) => id === item.id);
 
         if (findElem) {
@@ -62,21 +32,31 @@ export default {
       );
       return (
         (totalIngredients +
-          state.builder[PropertyBuilder.DOUGH].price +
-          state.builder[PropertyBuilder.SAUCE].price) *
-        state.builder[PropertyBuilder.SIZE].multiplier
+          state.builder[BuilderProperty.DOUGH].price +
+          state.builder[BuilderProperty.SAUCE].price) *
+        state.builder[BuilderProperty.SIZE].multiplier
       );
     },
   },
   mutations: {
-    START_STATE(state, { dough, sizes, ingredients, sauces }) {
-      state.doughs = dough;
-      state.ingredients = ingredients;
-      state.sauces = sauces;
-      state.sizes = sizes;
+    START_STATE(state, { collection, results }) {
+      collection.forEach((item, idx) => {
+        state[item] = results[idx];
+      });
+
+      const collectionBuilder = Object.values(BuilderProperty);
+
+      collectionBuilder.forEach((item, idx) => {
+        if (item === BuilderProperty.INGREDIENTS) {
+          return (state.builder[item] = []);
+        }
+
+        state.builder[item] = results[idx][initDefaultSchemeBuilder[idx]];
+      });
     },
     SET_BINARY_PROPERTY(state, { property, item }) {
       state.builder[property] = item;
+      console.log(state.builder);
     },
     ADD_COLLECTION_PROPERTY(state, { property, item }) {
       state.builder[property].push(item);
@@ -105,13 +85,9 @@ export default {
 
           const results = await Promise.all(promises);
 
-          // TODO: сделать циклом в массив
-          await dispatch("loadCollections", {
-            dough: results.at(0),
-            sauces: results.at(1),
-            ingredients: results.at(2),
-            sizes: results.at(3),
-          });
+          const collection = Object.values(BuilderCollection);
+
+          await dispatch("loadCollections", { collection, results });
         } catch (e) {
           console.log(e, this.$api);
         }

@@ -1,8 +1,15 @@
-export const PropertyBuilder = {
+export const BuilderProperty = {
   DOUGH: "dough",
-  SIZE: "size",
   SAUCE: "sauce",
   INGREDIENTS: "ingredients",
+  SIZE: "size",
+};
+
+export const BuilderCollection = {
+  DOUGH: "dough",
+  SAUCES: "sauces",
+  INGREDIENTS: "ingredients",
+  SIZES: "sizes",
 };
 
 export const Limit = {

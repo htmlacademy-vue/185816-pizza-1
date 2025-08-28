@@ -10,7 +10,4 @@ new Vue({
   store,
   router,
   render: (h) => h(App),
-  beforeCreate() {
-    this.$store.dispatch("loadBuilder");
-  },
 }).$mount("#app");

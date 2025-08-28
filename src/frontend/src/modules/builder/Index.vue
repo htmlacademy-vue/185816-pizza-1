@@ -4,7 +4,7 @@
       }
       <div class="content__wrapper">
         <h1 class="title title--big">Конструктор пиццы</h1>
-        <SelectDough :items="doughs" @setItem="setBinaryProperty" />
+        <SelectDough :items="dough" @setItem="setBinaryProperty" />
         <SelectDiameter :items="sizes" @setItem="setBinaryProperty" />
         <SelectIngredients>
           <template #select-sauce>
@@ -50,7 +50,7 @@ export default {
     ...mapState("Builder", [
       "ingredients",
       "sauces",
-      "doughs",
+      "dough",
       "sizes",
       "builder",
     ]),
