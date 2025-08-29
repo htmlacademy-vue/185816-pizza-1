@@ -1,79 +1,36 @@
 import { BuilderCollection, DefaultValue } from "@/common/enums/builder";
+import { CollectionCrud } from "@/common/utils";
 
 export default {
   namespaced: true,
   state: {
-    builder: {
-      [BuilderCollection.DOUGH]: {},
-      [BuilderCollection.SAUCES]: {},
-      [BuilderCollection.INGREDIENTS]: [],
-      [BuilderCollection.SIZES]: {},
-    },
-  },
-  getters: {
-    selectedIngredients(state) {
-      return state.builder[BuilderCollection.INGREDIENTS].reduce(
-        (acc, item) => {
-          const findElem = acc.find(({ id }) => id === item.id);
-
-          if (findElem) {
-            findElem.count += 1;
-            return [...acc];
-          }
-
-          return [...acc, { ...item, count: 1 }];
-        },
-        []
-      );
-    },
-    totalPrice(state, getters) {
-      const totalIngredients = getters.selectedIngredients.reduce(
-        (acc, item) => acc + item.price * item.count,
-        0
-      );
-      return (
-        (totalIngredients +
-          state.builder[BuilderCollection.DOUGH].price +
-          state.builder[BuilderCollection.SAUCES].price) *
-        state.builder[BuilderCollection.SIZES].multiplier
-      );
-    },
+    dough: [],
+    sauce: [],
+    ingredients: [],
+    sizes: [],
   },
   mutations: {
-    LOAD_RESOURCES(state, { collection, results }) {
-      collection.forEach((item, idx) => {
-        state[item] = results[idx];
+    LOAD_RESOURCES(state, payload) {
+      Object.values(BuilderCollection).forEach((collection, idx) => {
+        state[collection] = payload[idx];
       });
-    },
-    INIT_BUILDER(state) {
-      const collectionBuilder = Object.values(BuilderCollection);
 
-      collectionBuilder.forEach((item) => {
-        if (item === BuilderCollection.INGREDIENTS) {
-          return (state.builder[item] = []);
+      console.log("Resources load", state);
+    },
+    DEFINE_DEFAULT_VALUE(state) {
+      for (const [key, id] of Object.entries(DefaultValue)) {
+        const collectionName = key.toLowerCase();
+
+        if (collectionName !== BuilderCollection.INGREDIENTS) {
+          CollectionCrud.select(state[collectionName], id, "checked");
         }
-
-        state.builder[item] = state[item][DefaultValue[item.toUpperCase()]];
-      });
-    },
-    CREATE_BUILDER(state, payload) {
-      state.builder = payload;
-    },
-    SET_BINARY_PROPERTY(state, { property, item }) {
-      state.builder[property] = item;
-      console.log(state.builder);
-    },
-    ADD_COLLECTION_PROPERTY(state, { property, item }) {
-      state.builder[property].push(item);
-    },
-    DELETE_COLLECTION_PROPERTY(state, { property, item: { id: itemID } }) {
-      const deleteIndexItem = state.builder[property].findIndex(
-        ({ id }) => id === itemID
-      );
-
-      if (deleteIndexItem >= 0) {
-        state.builder[property].splice(deleteIndexItem, 1);
       }
+    },
+    SET_CHECKED_COLLECTION(state, { collection, id }) {
+      CollectionCrud.select(state[collection], id, "checked");
+    },
+    SET_MULTIPLIER_COLLECTION(state, { collection, id, payload }) {
+      CollectionCrud.update(state[collection], id, payload);
     },
   },
   actions: {
@@ -81,38 +38,33 @@ export default {
       root: true,
       handler: async function ({ dispatch }) {
         try {
-          const promises = [
-            this.$api.dough.query(),
-            this.$api.sauces.query(),
-            this.$api.ingredients.query(),
-            this.$api.sizes.query(),
-          ];
+          const promises = Object.values(BuilderCollection).map((collection) =>
+            this.$api[collection].query()
+          );
 
-          const results = await Promise.all(promises);
+          const data = await Promise.all(promises);
 
-          const collection = Object.values(BuilderCollection);
-
-          await dispatch("loadCollections", { collection, results });
-          await dispatch("initBuilder");
+          await dispatch("loadResources", data);
+          await dispatch("defineDefaultValue", data);
         } catch (e) {
           console.log(e, this.$api);
         }
       },
     },
-    setBinaryProperty({ commit }, payload) {
-      commit("SET_BINARY_PROPERTY", payload);
+    setCheckedCollection({ commit }, payload) {
+      commit("SET_CHECKED_COLLECTION", payload);
     },
-    addCollectionProperty({ commit }, payload) {
-      commit("ADD_COLLECTION_PROPERTY", payload);
+    setMultiplierCollection({ commit }, payload) {
+      commit("SET_MULTIPLIER_COLLECTION", payload);
     },
     removeCollectionProperty({ commit }, payload) {
       commit("DELETE_COLLECTION_PROPERTY", payload);
     },
-    loadCollections({ commit }, payload) {
+    loadResources({ commit }, payload) {
       commit("LOAD_RESOURCES", payload);
     },
-    initBuilder({ commit }) {
-      commit("INIT_BUILDER");
+    defineDefaultValue({ commit }) {
+      commit("DEFINE_DEFAULT_VALUE");
     },
     createBuilder({ commit }, payload) {
       commit("CREATE_BUILDER", payload);

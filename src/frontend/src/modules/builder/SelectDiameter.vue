@@ -4,14 +4,14 @@
       <h2 class="title title--small sheet__title">Выберите размер</h2>
       <div class="sheet__content diameter">
         <RadioButton
-          v-for="({ id, name, ...other }, idx) of items"
+          v-for="({ id, name, checked }, idx) of items"
           :key="id"
           :class="['diameter__input', `diameter__input--${sizeMap[idx]}`]"
           name="diameter"
           hidden
           :value="id"
-          :checked="checked"
-          @change="setItem({ id, name, ...other })"
+          :checked="checked ? id : null"
+          @change="$emit('setItem', id)"
         >
           <b>{{ name }}</b>
         </RadioButton>
@@ -22,7 +22,6 @@
 
 <script>
 import RadioButton from "@/common/RadioButtonNew";
-import { BuilderCollection } from "@/common/enums/builder";
 
 const sizeMap = ["small", "normal", "big"];
 
@@ -36,22 +35,9 @@ export default {
       type: Array,
       required: true,
     },
-    builder: {
-      type: Object,
-      default: () => ({}),
-    },
   },
   computed: {
     sizeMap: () => sizeMap,
-    checked() {
-      return this.builder[BuilderCollection.SIZES].id;
-    },
-  },
-  methods: {
-    setItem(item) {
-      console.log("Set diameter", item);
-      this.$emit("setItem", { property: BuilderCollection.SIZES, item });
-    },
   },
 };
 </script>

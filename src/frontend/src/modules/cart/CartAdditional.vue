@@ -22,7 +22,14 @@
               type="button"
               class="counter__button counter__button--minus"
               :disabled="multiplier === 0"
-              @click.prevent="removeMiscItem({ id, name, multiplier, image })"
+              @click.prevent="
+                updateMisc({
+                  id,
+                  payload: {
+                    multiplier: (multiplier -= 1),
+                  },
+                })
+              "
             >
               <span class="visually-hidden">Меньше</span>
             </button>
@@ -35,7 +42,14 @@
             <button
               type="button"
               class="counter__button counter__button--plus counter__button--orange"
-              @click.prevent="addMiscItem({ id, name, multiplier, image })"
+              @click.prevent="
+                updateMisc({
+                  id,
+                  payload: {
+                    multiplier: (multiplier += 1),
+                  },
+                })
+              "
             >
               <span class="visually-hidden">Больше</span>
             </button>
@@ -62,19 +76,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions("Cart", ["updateMiscItem"]),
-    addMiscItem(miscItem) {
-      return this.updateMiscItem({
-        ...miscItem,
-        add: true,
-      });
-    },
-    removeMiscItem(miscItem) {
-      return this.updateMiscItem({
-        ...miscItem,
-        add: false,
-      });
-    },
+    ...mapActions("Cart", ["updateMisc"]),
   },
 };
 </script>

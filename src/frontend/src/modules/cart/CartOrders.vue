@@ -1,6 +1,6 @@
 <template>
   <ul class="cart-list sheet">
-    <pizza-item-view v-for="item in items" :key="item.id" :item="item" />
+    <pizza-item-view v-for="item of items" :key="item.id" :item="item" />
   </ul>
 </template>
 

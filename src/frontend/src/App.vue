@@ -10,9 +10,6 @@ import AppLayout from "@/layouts/AppLayout";
 export default {
   name: "App",
   components: { AppLayout },
-  async created() {
-    await this.$store.dispatch("init");
-  },
 };
 </script>
 

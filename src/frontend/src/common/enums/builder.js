@@ -1,8 +1,10 @@
+import Resources from "@/common/enums/resources";
+
 export const BuilderCollection = {
-  DOUGH: "dough",
-  SAUCES: "sauces",
-  INGREDIENTS: "ingredients",
-  SIZES: "sizes",
+  DOUGH: Resources.DOUGHS,
+  SAUCES: Resources.SAUCES,
+  INGREDIENTS: Resources.INGREDIENTS,
+  SIZES: Resources.SIZES,
 };
 
 export const Limit = {
@@ -12,8 +14,8 @@ export const Limit = {
 };
 
 export const DefaultValue = {
-  DOUGH: 1,
-  SAUCES: 1,
-  INGREDIENTS: -1,
-  SIZES: 1,
+  [Resources.DOUGHS]: 1,
+  [Resources.SAUCES]: 1,
+  [Resources.INGREDIENTS]: -1,
+  [Resources.SIZES]: 1,
 };

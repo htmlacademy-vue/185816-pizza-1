@@ -29,7 +29,7 @@
         type="button"
         class="counter__button counter__button--minus"
         :disabled="item.multiplier < 1"
-        @click="setMultiplier({ add: false, id: item.id })"
+        @click="minus"
       >
         <span class="visually-hidden">Меньше</span>
       </button>
@@ -42,19 +42,23 @@
       <button
         type="button"
         class="counter__button counter__button--plus counter__button--orange"
-        @click="setMultiplier({ add: true, id: item.id })"
+        @click="plus"
       >
         <span class="visually-hidden">Больше</span>
       </button>
     </div>
 
     <div class="cart-list__price">
-      <b>{{ item.totalPrice }} ₽</b>
+      <b>{{ totalPrice }} ₽</b>
     </div>
 
     <div class="cart-list__button">
       <button type="button" class="cart-list__edit">Изменить</button>
-      <button type="button" class="cart-list__edit" @click="deleteOrder(item)">
+      <button
+        type="button"
+        class="cart-list__edit"
+        @click="deleteOrder(item.id)"
+      >
         Удалить
       </button>
     </div>
@@ -76,9 +80,32 @@ export default {
     fill() {
       return this.item.selectedIngredients.map(({ name }) => name).join(", ");
     },
+    totalPrice() {
+      return this.item.totalPrice * this.item.multiplier;
+    },
   },
   methods: {
-    ...mapActions("Cart", ["setMultiplier", "deleteOrder"]),
+    ...mapActions("Cart", ["deleteOrder", "updateOrder"]),
+    plus() {
+      this.updateOrder({
+        id: this.item.id,
+        payload: {
+          multiplier: (this.item.multiplier += 1),
+        },
+      });
+    },
+    minus() {
+      this.updateOrder({
+        id: this.item.id,
+        payload: {
+          multiplier: (this.item.multiplier -= 1),
+        },
+      });
+
+      if (this.item.multiplier < 1) {
+        return this.deleteOrder(this.item.id);
+      }
+    },
   },
 };
 </script>

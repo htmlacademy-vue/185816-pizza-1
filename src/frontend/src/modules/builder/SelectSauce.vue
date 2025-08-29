@@ -7,13 +7,13 @@
           <p>Основной соус:</p>
           <RadioButton
             :class="['radio', 'ingredients__input']"
-            v-for="{ id, name, ...other } of items"
+            v-for="{ id, name, checked } of items"
             :key="id"
             name="sauce"
             :id="id"
             :value="id"
-            :checked="checked"
-            @change="setItem({ id, name, ...other })"
+            :checked="checked ? id : null"
+            @change="$emit('setItem', id)"
           >
             <b>{{ name }}</b>
           </RadioButton>
@@ -25,7 +25,6 @@
 
 <script>
 import RadioButton from "@/common/RadioButtonNew";
-import { BuilderCollection } from "@/common/enums/builder";
 
 export default {
   name: "SelectSauce",
@@ -40,20 +39,6 @@ export default {
     builder: {
       type: Object,
       default: () => ({}),
-    },
-  },
-  computed: {
-    checked() {
-      return this.builder[BuilderCollection.SAUCES].id;
-    },
-  },
-  methods: {
-    setItem(item) {
-      console.log("Set sauce", item);
-      this.$emit("setItem", {
-        property: BuilderCollection.SAUCES,
-        item,
-      });
     },
   },
 };

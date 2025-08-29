@@ -4,16 +4,16 @@
       <h2 class="title title--small sheet__title">Выберите тесто</h2>
       <div class="sheet__content dough">
         <RadioButton
-          v-for="{ id, image, name, description, ...other } of itemsNormalize"
+          v-for="{ id, image, name, description, checked } of itemsNormalize"
           :key="id"
           :class="['dough__input', `dough__input--${image}`]"
           hidden
           name="dough"
           :value="id"
-          :checked="checked"
-          @change="setItem({ id, image, name, description, ...other })"
+          :checked="checked ? id : null"
+          @change="setItem"
         >
-          <b>{{ name }}</b>
+          <b>{{ name }}</b> {{ checked }}
           <span>{{ description }}</span>
         </RadioButton>
       </div>
@@ -24,7 +24,6 @@
 <script>
 import RadioButton from "@/common/RadioButtonNew";
 import { replacePath } from "@/modules/utils";
-import { BuilderCollection } from "@/common/enums/builder";
 
 export default {
   name: "SelectDough",
@@ -36,10 +35,6 @@ export default {
       type: Array,
       required: true,
     },
-    builder: {
-      type: Object,
-      default: () => ({}),
-    },
   },
   computed: {
     itemsNormalize() {
@@ -48,17 +43,10 @@ export default {
         image: replacePath(image),
       }));
     },
-    checked() {
-      return this.builder[BuilderCollection.DOUGH].id;
-    },
   },
   methods: {
-    setItem(item) {
-      console.log("Checked dough", item);
-      this.$emit("setItem", {
-        property: BuilderCollection.DOUGH,
-        item,
-      });
+    setItem(id) {
+      this.$emit("setItem", { collection: "dough", id });
     },
   },
 };
