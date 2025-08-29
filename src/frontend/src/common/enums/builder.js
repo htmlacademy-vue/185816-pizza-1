@@ -1,10 +1,3 @@
-export const BuilderProperty = {
-  DOUGH: "dough",
-  SAUCE: "sauce",
-  INGREDIENTS: "ingredients",
-  SIZE: "size",
-};
-
 export const BuilderCollection = {
   DOUGH: "dough",
   SAUCES: "sauces",
@@ -20,7 +13,7 @@ export const Limit = {
 
 export const DefaultValue = {
   DOUGH: 1,
-  SAUCE: 1,
+  SAUCES: 1,
   INGREDIENTS: -1,
   SIZES: 1,
 };

@@ -1,7 +1,6 @@
 <template>
   <main class="content">
     <form action="#" method="post">
-      }
       <div class="content__wrapper">
         <h1 class="title title--big">Конструктор пиццы</h1>
         <SelectDough
@@ -89,10 +88,12 @@ export default {
       "setBinaryProperty",
       "addCollectionProperty",
       "removeCollectionProperty",
+      "initBuilder",
     ]),
     ...mapActions("Cart", ["addOrder"]),
     build(item) {
       this.addOrder(item);
+      this.initBuilder();
       this.$router.push("cart");
     },
   },

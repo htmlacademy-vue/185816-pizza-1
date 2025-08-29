@@ -9,16 +9,16 @@
         alt="Капричоза"
       />
       <div class="product__text">
-        <h2>{{ lowerNamePizzaComponents.name }}</h2>
+        <h2>{{ item.name }}</h2>
         <ul>
           <li>
-            {{ pizza.size.name }},
-            {{ lowerNamePizzaComponents.dough }}
+            {{ item.sizes.name }},
+            {{ item.dough.name }}
           </li>
-          <li>Соус: {{ lowerNamePizzaComponents.sauce }}</li>
-          <li>
+          <li>Соус: {{ item.sauces.name }}</li>
+          <li v-if="fill">
             Начинка:
-            {{ ingredientsFlat }}
+            {{ fill }}
           </li>
         </ul>
       </div>
@@ -28,8 +28,8 @@
       <button
         type="button"
         class="counter__button counter__button--minus"
-        :disabled="pizza.size.multiplier < 1"
-        @click="setMultiplier({ add: false, id: pizza.id })"
+        :disabled="item.multiplier < 1"
+        @click="setMultiplier({ add: false, id: item.id })"
       >
         <span class="visually-hidden">Меньше</span>
       </button>
@@ -37,24 +37,24 @@
         type="text"
         name="counter"
         class="counter__input"
-        :value="pizza.multiplier"
+        :value="item.multiplier"
       />
       <button
         type="button"
         class="counter__button counter__button--plus counter__button--orange"
-        @click="setMultiplier({ add: true, id: pizza.id })"
+        @click="setMultiplier({ add: true, id: item.id })"
       >
         <span class="visually-hidden">Больше</span>
       </button>
     </div>
 
     <div class="cart-list__price">
-      <b>{{ sumPrice }} ₽</b>
+      <b>{{ item.totalPrice }} ₽</b>
     </div>
 
     <div class="cart-list__button">
       <button type="button" class="cart-list__edit">Изменить</button>
-      <button type="button" class="cart-list__edit" @click="deleteOrder(pizza)">
+      <button type="button" class="cart-list__edit" @click="deleteOrder(item)">
         Удалить
       </button>
     </div>
@@ -65,28 +65,16 @@
 import { mapActions } from "vuex";
 
 export default {
-  name: "PizzaItemView",
+  name: "itemItemView",
   props: {
-    pizza: {
+    item: {
       type: Object,
       required: true,
     },
   },
   computed: {
-    ingredientsFlat() {
-      return this.pizza.ingredients
-        .map((ingredient) => ingredient.name.toLowerCase())
-        .join();
-    },
-    lowerNamePizzaComponents() {
-      return {
-        name: this.pizza.name.toLowerCase(),
-        dough: this.pizza.dough.name.toLowerCase(),
-        sauce: this.pizza.sauce.name.toLowerCase(),
-      };
-    },
-    sumPrice() {
-      return this.pizza.totalPrice * this.pizza.multiplier;
+    fill() {
+      return this.item.selectedIngredients.map(({ name }) => name).join(", ");
     },
   },
   methods: {

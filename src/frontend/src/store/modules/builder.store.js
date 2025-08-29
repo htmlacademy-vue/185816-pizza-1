@@ -1,33 +1,30 @@
-import {
-  BuilderProperty,
-  BuilderCollection,
-  DefaultValue,
-} from "@/common/enums/builder";
-
-const initDefaultSchemeBuilder = [...Object.values(DefaultValue)];
+import { BuilderCollection, DefaultValue } from "@/common/enums/builder";
 
 export default {
   namespaced: true,
   state: {
     builder: {
-      [BuilderProperty.DOUGH]: {},
-      [BuilderProperty.SAUCE]: {},
-      [BuilderProperty.INGREDIENTS]: [],
-      [BuilderProperty.SIZE]: {},
+      [BuilderCollection.DOUGH]: {},
+      [BuilderCollection.SAUCES]: {},
+      [BuilderCollection.INGREDIENTS]: [],
+      [BuilderCollection.SIZES]: {},
     },
   },
   getters: {
     selectedIngredients(state) {
-      return state.builder[BuilderProperty.INGREDIENTS].reduce((acc, item) => {
-        const findElem = acc.find(({ id }) => id === item.id);
+      return state.builder[BuilderCollection.INGREDIENTS].reduce(
+        (acc, item) => {
+          const findElem = acc.find(({ id }) => id === item.id);
 
-        if (findElem) {
-          findElem.count += 1;
-          return [...acc];
-        }
+          if (findElem) {
+            findElem.count += 1;
+            return [...acc];
+          }
 
-        return [...acc, { ...item, count: 1 }];
-      }, []);
+          return [...acc, { ...item, count: 1 }];
+        },
+        []
+      );
     },
     totalPrice(state, getters) {
       const totalIngredients = getters.selectedIngredients.reduce(
@@ -36,27 +33,31 @@ export default {
       );
       return (
         (totalIngredients +
-          state.builder[BuilderProperty.DOUGH].price +
-          state.builder[BuilderProperty.SAUCE].price) *
-        state.builder[BuilderProperty.SIZE].multiplier
+          state.builder[BuilderCollection.DOUGH].price +
+          state.builder[BuilderCollection.SAUCES].price) *
+        state.builder[BuilderCollection.SIZES].multiplier
       );
     },
   },
   mutations: {
-    START_STATE(state, { collection, results }) {
+    LOAD_RESOURCES(state, { collection, results }) {
       collection.forEach((item, idx) => {
         state[item] = results[idx];
       });
+    },
+    INIT_BUILDER(state) {
+      const collectionBuilder = Object.values(BuilderCollection);
 
-      const collectionBuilder = Object.values(BuilderProperty);
-
-      collectionBuilder.forEach((item, idx) => {
-        if (item === BuilderProperty.INGREDIENTS) {
+      collectionBuilder.forEach((item) => {
+        if (item === BuilderCollection.INGREDIENTS) {
           return (state.builder[item] = []);
         }
 
-        state.builder[item] = results[idx][initDefaultSchemeBuilder[idx]];
+        state.builder[item] = state[item][DefaultValue[item.toUpperCase()]];
       });
+    },
+    CREATE_BUILDER(state, payload) {
+      state.builder = payload;
     },
     SET_BINARY_PROPERTY(state, { property, item }) {
       state.builder[property] = item;
@@ -92,6 +93,7 @@ export default {
           const collection = Object.values(BuilderCollection);
 
           await dispatch("loadCollections", { collection, results });
+          await dispatch("initBuilder");
         } catch (e) {
           console.log(e, this.$api);
         }
@@ -107,7 +109,13 @@ export default {
       commit("DELETE_COLLECTION_PROPERTY", payload);
     },
     loadCollections({ commit }, payload) {
-      commit("START_STATE", payload);
+      commit("LOAD_RESOURCES", payload);
+    },
+    initBuilder({ commit }) {
+      commit("INIT_BUILDER");
+    },
+    createBuilder({ commit }, payload) {
+      commit("CREATE_BUILDER", payload);
     },
   },
 };

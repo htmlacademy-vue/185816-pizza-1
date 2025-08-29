@@ -3,17 +3,17 @@
     <ul class="additional-list">
       <li
         class="additional-list__item sheet"
-        v-for="miscItem in misc"
-        :key="miscItem.id"
+        v-for="{ id, image, name, multiplier, price } of items"
+        :key="id"
       >
         <p class="additional-list__description">
           <img
-            :src="require(`@/assets/img/${miscItem.image}`)"
+            :src="require(`@/assets/img/${image}`)"
             width="39"
             height="60"
-            :alt="miscItem.name"
+            :alt="name"
           />
-          <span>{{ miscItem.name }}</span>
+          <span>{{ name }}</span>
         </p>
 
         <div class="additional-list__wrapper">
@@ -21,8 +21,8 @@
             <button
               type="button"
               class="counter__button counter__button--minus"
-              :disabled="miscItem.multiplier === 0"
-              @click.prevent="removeMiscItem(miscItem)"
+              :disabled="multiplier === 0"
+              @click.prevent="removeMiscItem({ id, name, multiplier, image })"
             >
               <span class="visually-hidden">Меньше</span>
             </button>
@@ -30,19 +30,19 @@
               type="text"
               name="counter"
               class="counter__input"
-              :value="miscItem.multiplier"
+              :value="multiplier"
             />
             <button
               type="button"
               class="counter__button counter__button--plus counter__button--orange"
-              @click.prevent="addMiscItem(miscItem)"
+              @click.prevent="addMiscItem({ id, name, multiplier, image })"
             >
               <span class="visually-hidden">Больше</span>
             </button>
           </div>
 
           <div class="additional-list__price">
-            <b>× {{ miscItem.price }} ₽</b>
+            <b>× {{ price }} ₽</b>
           </div>
         </div>
       </li>
@@ -56,7 +56,7 @@ import { mapActions } from "vuex";
 export default {
   name: "CartAdditional",
   props: {
-    misc: {
+    items: {
       type: Array,
       required: true,
     },

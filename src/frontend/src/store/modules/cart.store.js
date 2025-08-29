@@ -12,7 +12,7 @@ import { v4 as uuidv4 } from "uuid";
 export default {
   namespaced: true,
   state: {
-    orders: [],
+    orders: new Set(),
     misc: misc.map((item) => ({ ...item, multiplier: 0 })),
   },
   mutations: {
@@ -23,9 +23,11 @@ export default {
      * @return {number}
      */
     [ADD_ITEM_CART](state, order) {
-      return state.orders.push({
+      state.orders.add({
         id: uuidv4(),
         multiplier: 1,
+        totalPrice: order.totalPrice,
+        mics: [],
         ...order,
       });
     },
@@ -57,29 +59,44 @@ export default {
         }
       });
     },
-  },
-  getters: {
-    sumOrders(state) {
-      if (state.orders.length !== 0) {
-        const misc = state.misc
-          .filter((item) => item.multiplier !== 0)
-          .map((item) => item.price * item.multiplier);
-
-        const prices = state.orders.map(
-          (order) => order.price * order.multiplier
-        );
-
-        return prices.concat(misc).reduce((prev, current) => prev + current);
-      } else {
-        return 0;
-      }
+    CHECK(state, item) {
+      console.log(state.orders.has(item));
     },
-    scopeOrders(state, getters) {
-      return {
-        orders: state.orders,
-        misc: state.misc.filter((item) => item.multiplier !== 0),
-        sum: getters.sumOrders,
-      };
+    // [CHANGE_ORDER_MULTIPLIER](state, { id, plus, minus }) {
+    //   state.orders.find((item) => {
+    //     if (item.id === miscItem.id) {
+    //       miscItem.add ? item.multiplier++ : item.multiplier--;
+    //     }
+    //   });
+    // },
+  },
+  // getters: {
+  //   isEmpty(state) {
+  //     return state.orders.values().length === 0;
+  //   },
+  //   sumOrders(state) {
+  //     if (state.orders.length !== 0) {
+  //       return state.orders
+  //         .values()
+  //         .reduce((sum, order) => sum + order.totalPrice * order.multiplier, 0);
+  //     } else {
+  //       return 0;
+  //     }
+  //   },
+  //   scopeOrders(state, getters) {
+  //     return {
+  //       orders: state.orders,
+  //       misc: state.misc.filter((item) => item.multiplier !== 0),
+  //       sum: getters.sumOrders,
+  //     };
+  //   },
+  // },
+  getters: {
+    totalPrice(state) {
+      return Array.from(state.orders).reduce(
+        (acc, item) => acc + item.totalPrice,
+        0
+      );
     },
   },
   actions: {

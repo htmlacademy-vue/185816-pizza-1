@@ -22,7 +22,7 @@
 
 <script>
 import RadioButton from "@/common/RadioButtonNew";
-import { BuilderProperty } from "@/common/enums/builder";
+import { BuilderCollection } from "@/common/enums/builder";
 
 const sizeMap = ["small", "normal", "big"];
 
@@ -44,13 +44,13 @@ export default {
   computed: {
     sizeMap: () => sizeMap,
     checked() {
-      return this.builder[BuilderProperty.SIZE].id;
+      return this.builder[BuilderCollection.SIZES].id;
     },
   },
   methods: {
     setItem(item) {
       console.log("Set diameter", item);
-      this.$emit("setItem", { property: BuilderProperty.SIZE, item });
+      this.$emit("setItem", { property: BuilderCollection.SIZES, item });
     },
   },
 };
