@@ -15,7 +15,7 @@ export const Limit = {
 
 export const DefaultValue = {
   [Resources.DOUGHS]: 1,
-  [Resources.SAUCES]: 1,
+  [Resources.SAUCES]: 0,
   [Resources.INGREDIENTS]: -1,
-  [Resources.SIZES]: 1,
+  [Resources.SIZES]: 0,
 };

@@ -23,13 +23,16 @@
           @dragover.prevent
           @dragenter.prevent
         >
-          <div v-for="{ id, image, count } of selectedIngredients" :key="id">
+          <div
+            v-for="{ id, image, quantity = 0 } of item.ingredients"
+            :key="id"
+          >
             <div
-              v-for="(step, index) of count"
+              v-for="(step, index) of quantity"
               :key="index"
               :class="[
                 'pizza__filling',
-                `pizza__filling--${image}`,
+                `pizza__filling--${replacePath(image)}`,
                 `pizza__filling--${ingredientLayer[step]}`,
               ]"
             ></div>
@@ -41,7 +44,7 @@
     <div class="content__result">
       <p>Итого: {{ totalPrice }} ₽</p>
       <button
-        @click.prevent.self="$emit('build', { ...item, name, totalPrice })"
+        @click.prevent.self="$emit('build', { ...item, totalPrice, name })"
         type="button"
         class="button"
         :disabled="name.length <= 0"
@@ -55,6 +58,7 @@
 <script>
 import { BuilderCollection } from "@/common/enums/builder";
 import { DataTransferType } from "@/common/constants";
+import { replacePath } from "@/modules/utils";
 
 const doughMap = {
   1: "small",
@@ -62,8 +66,8 @@ const doughMap = {
 };
 
 const sauceMap = {
-  1: "tomato",
-  2: "creamy",
+  2: "tomato",
+  1: "creamy",
 };
 
 const scaleMap = {
@@ -80,10 +84,6 @@ export default {
       required: true,
       default: () => ({}),
     },
-    totalPrice: {
-      type: Number,
-      required: true,
-    },
   },
   data() {
     return {
@@ -92,9 +92,6 @@ export default {
     };
   },
   computed: {
-    selectedIngredients() {
-      return this.item.selectedIngredients;
-    },
     weight() {
       return doughMap[this.item[BuilderCollection.DOUGH].id];
     },
@@ -102,15 +99,30 @@ export default {
       return sauceMap[this.item[BuilderCollection.SAUCES].id];
     },
     scale() {
-      return scaleMap[this.item[BuilderCollection.SIZES].multiplier];
+      return scaleMap[this.item[BuilderCollection.SIZES].multiplier] || 0;
     },
+    ingredientPrice() {
+      return this.item[BuilderCollection.INGREDIENTS].reduce(
+        (acc, { price, quantity }) => acc + price * quantity,
+        0
+      );
+    },
+    totalPrice() {
+      return (
+        (this.item[BuilderCollection.DOUGH].price +
+          this.item[BuilderCollection.SAUCES].price +
+          this.ingredientPrice) *
+        this.item[BuilderCollection.SIZES]?.multiplier
+      );
+    },
+    replacePath: () => replacePath,
   },
   methods: {
     onDropFill({ dataTransfer }) {
-      const { item } = JSON.parse(
+      const payload = JSON.parse(
         dataTransfer.getData(DataTransferType.PAYLOAD)
       );
-      this.$emit("setItem", { property: BuilderCollection.INGREDIENTS, item });
+      this.$emit("setItem", payload);
     },
   },
 };

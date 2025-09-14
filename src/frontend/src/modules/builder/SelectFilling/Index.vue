@@ -4,16 +4,12 @@
     <ul class="ingredients__list">
       <li
         class="ingredients__item"
-        v-for="{
-          id,
-          image,
-          name,
-          count = Limit.COUNT_MIN,
-          ...other
-        } of normalizeIngredientPath"
+        v-for="{ id, image, name, quantity, ...other } of normalizeIngredients"
         :key="id"
-        :draggable="count < Limit.COUNT_MAX"
-        @dragstart.self="onDragFill($event, { id, image, name, ...other })"
+        :draggable="quantity < Limit.COUNT_MAX"
+        @dragstart.self="
+          onDragFill($event, { id, image, quantity: quantity, ...other })
+        "
         @dragover.prevent
         @dragenter.prevent
         aria-dropeffect="move"
@@ -22,9 +18,8 @@
           {{ name }}
         </span>
         <IngredientItem
-          @plus="setItem({ id, image, name, ...other })"
-          @minus="deleteItem({ id, image, name, ...other })"
-          :sync-count="count"
+          :quantity="quantity"
+          @update="(quantity) => updateItem({ id, image, quantity, ...other })"
         />
       </li>
     </ul>
@@ -37,9 +32,9 @@ import {
   DataTransferDropEffect,
   DataTransferAllowEffect,
 } from "@/common/constants";
-import { Limit } from "@/common/enums/builder";
 import { replacePath } from "@/modules/utils";
 import IngredientItem from "@/modules/builder/SelectFilling/components/IngredientItem.vue";
+import { Limit } from "@/common/enums/builder";
 
 export default {
   name: "SelectFilling",
@@ -49,43 +44,41 @@ export default {
       type: Array,
       required: true,
     },
+    selectItems: {
+      type: Array,
+      default: () => [],
+    },
   },
   computed: {
-    normalizeIngredientPath() {
+    normalizeIngredients() {
       return this.items.map(({ image, ...item }) => ({
         ...item,
         image: replacePath(image),
+        quantity: this.getQuantity(item.id),
       }));
     },
     Limit: () => Limit,
   },
   methods: {
-    onDragFill({ dataTransfer }, item) {
+    onDragFill({ dataTransfer }, { quantity, ...other }) {
       dataTransfer.effectAllowed = DataTransferAllowEffect.MOVE;
       dataTransfer.dropEffect = DataTransferDropEffect.MOVE;
       dataTransfer.setData(
         DataTransferType.PAYLOAD,
-        JSON.stringify({
-          item,
-        })
+        JSON.stringify({ quantity: quantity + 1, ...other })
       );
     },
-    setItem(item) {
-      console.log("Add fill", item);
-      this.$emit("setItem", {
-        property: "ingredients",
-        item,
-      });
+    updateItem(payload) {
+      this.$emit("setItem", payload);
     },
-    deleteItem(item) {
-      console.log("Remove fill", item);
-      this.$emit("deleteItem", {
-        property: "ingredients",
-        item,
-      });
-    },
-    test(id) {
-      console.log(id);
+    getQuantity(id) {
+      const index = this.selectItems.findIndex((item) => item.id === id);
+
+      if (~index) {
+        return this.selectItems[index].quantity;
+      }
+
+      return 0;
     },
   },
 };

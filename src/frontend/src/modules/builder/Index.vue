@@ -3,63 +3,96 @@
     <form action="#" method="post">
       <div class="content__wrapper">
         <h1 class="title title--big">Конструктор пиццы</h1>
-        {{ dough }}
-        <SelectDough :items="dough" @setItem="setCheckedCollection" />
-        <!--        <SelectDiameter-->
-        <!--          :items="sizes"-->
-        <!--          @setItem="-->
-        <!--            (id) =>-->
-        <!--              setCheckedCollection({ collection: BuilderCollection.SIZES, id })-->
-        <!--          "-->
-        <!--        />-->
-        <!--        <SelectIngredients>-->
-        <!--          <template #select-sauce>-->
-        <!--            <SelectSauce :items="sauces" />-->
-        <!--          </template>-->
-        <!--          <SelectFilling :items="ingredients" />-->
-        <!--        </SelectIngredients>-->
-        <!--        <ResultBuilder-->
-        <!--          :total-price="totalPrice"-->
-        <!--          :item="{ ...builder, selectedIngredients }"-->
-        <!--          @setItem="addCollectionProperty"-->
-        <!--          @build="build"-->
-        <!--        />-->
+        <SelectDough
+          :items="dough"
+          :select-item="selectDough"
+          @setItem="
+            (payload) =>
+              updateItem({ entity: BuilderCollection.DOUGH, payload })
+          "
+        />
+        <SelectDiameter
+          :items="sizes"
+          :select-item="selectSize"
+          @setItem="
+            (payload) =>
+              updateItem({ entity: BuilderCollection.SIZES, payload })
+          "
+        />
+        <SelectIngredients>
+          <template #select-sauce>
+            <SelectSauce
+              :items="sauces"
+              :select-item="selectSauce"
+              @setItem="
+                (payload) =>
+                  updateItem({ entity: BuilderCollection.SAUCES, payload })
+              "
+            />
+          </template>
+          <SelectFilling
+            :items="ingredients"
+            :select-items="selectIngredients"
+            @setItem="
+              (payload) =>
+                updateItem({ entity: BuilderCollection.INGREDIENTS, payload })
+            "
+          />
+        </SelectIngredients>
+        <ResultBuilder
+          :item="builder"
+          @setItem="
+            (payload) =>
+              updateItem({ entity: BuilderCollection.INGREDIENTS, payload })
+          "
+        />
       </div>
     </form>
   </main>
 </template>
 
 <script>
-// import { BuilderCollection } from "@/common/enums/builder";
+import { BuilderCollection } from "@/common/enums/builder";
 import { mapActions, mapState } from "vuex";
 import SelectDough from "@/modules/builder/SelectDough.vue";
-// import SelectDiameter from "@/modules/builder/SelectDiameter.vue";
-// import SelectIngredients from "@/modules/builder/SelectIngredients.vue";
-// import SelectSauce from "@/modules/builder/SelectSauce.vue";
-// import SelectFilling from "@/modules/builder/SelectFilling/Index.vue";
-// import ResultBuilder from "@/modules/builder/ResultBuilder.vue";
+import SelectDiameter from "@/modules/builder/SelectDiameter.vue";
+import SelectIngredients from "@/modules/builder/SelectIngredients.vue";
+import SelectSauce from "@/modules/builder/SelectSauce.vue";
+import SelectFilling from "@/modules/builder/SelectFilling/Index.vue";
+import ResultBuilder from "@/modules/builder/ResultBuilder.vue";
 
 export default {
   name: "BuilderPizzaView",
   components: {
-    // ResultBuilder,
-    // SelectFilling,
-    // SelectSauce,
-    // SelectIngredients,
-    // SelectDiameter,
+    ResultBuilder,
+    SelectFilling,
+    SelectSauce,
+    SelectIngredients,
+    SelectDiameter,
     SelectDough,
   },
   computed: {
-    // BuilderCollection: () => BuilderCollection,
-    ...mapState("Builder", ["ingredients", "sauces", "dough", "sizes"]),
+    BuilderCollection: () => BuilderCollection,
+    ...mapState([
+      ...Object.keys(BuilderCollection).map((item) => item.toLowerCase()),
+    ]),
+    ...mapState("Builder", {
+      selectDough: (state) => state[BuilderCollection.DOUGH],
+      selectSize: (state) => state[BuilderCollection.SIZES],
+      selectSauce: (state) => state[BuilderCollection.SAUCES],
+      selectIngredients: (state) => state[BuilderCollection.INGREDIENTS],
+      builder: (state) => state,
+    }),
   },
   methods: {
-    ...mapActions("Builder", ["setCheckedCollection"]),
     ...mapActions("Cart", ["addOrder"]),
+    ...mapActions("Builder", ["updateItem"]),
     build(item) {
       this.addOrder(item);
-      this.initBuilder();
       this.$router.push("cart");
+    },
+    display(payload) {
+      console.log(payload);
     },
   },
 };

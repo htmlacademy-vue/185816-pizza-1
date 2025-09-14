@@ -7,13 +7,13 @@
           <p>Основной соус:</p>
           <RadioButton
             :class="['radio', 'ingredients__input']"
-            v-for="{ id, name, checked } of items"
+            v-for="{ id, name, ...other } of items"
             :key="id"
             name="sauce"
             :id="id"
             :value="id"
-            :checked="checked ? id : null"
-            @change="$emit('setItem', id)"
+            :checked="selectItem.id === id ? id : null"
+            @change="$emit('setItem', { id, name, ...other })"
           >
             <b>{{ name }}</b>
           </RadioButton>
@@ -34,6 +34,10 @@ export default {
   props: {
     items: {
       type: Array,
+      required: true,
+    },
+    selectItem: {
+      type: [Object, Array],
       required: true,
     },
     builder: {

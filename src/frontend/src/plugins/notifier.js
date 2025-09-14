@@ -20,7 +20,6 @@ export default class Notifier {
   }
 
   error(text) {
-    console.log(text);
     this.#store.dispatch("createNotification", {
       text,
       type: "ERROR",

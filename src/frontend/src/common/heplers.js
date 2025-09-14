@@ -3,7 +3,7 @@ import {
   AuthApiService,
   ReadOnlyApiService,
   CrudApiService,
-} from "@/services/api.service";
+} from "@/services/api";
 
 export const createResources = (notifier) => {
   return {
@@ -18,4 +18,30 @@ export const createResources = (notifier) => {
     ),
     [resources.SAUCES]: new ReadOnlyApiService(resources.SAUCES, notifier),
   };
+};
+
+export const setAuth = (store) => {
+  store.$api.auth.setAuthHeader();
+  store.dispatch("Auth/getMe");
+};
+
+export const CrudState = {
+  add(state, entity, payload) {
+    state[entity] = [...state[entity], payload];
+  },
+  replace(state, entity, payload) {
+    state[entity] = payload;
+  },
+  deleteByID(state, entity, id) {
+    state[entity] = state[entity].filter((item) => item.id !== id);
+  },
+  addOrUpdate(state, entity, id, payload) {
+    const index = state[entity].findIndex((item) => item.id === id);
+    if (~index) {
+      this.deleteByID(state, entity, id);
+      this.add(state, entity, payload);
+    } else {
+      this.add(state, entity, payload);
+    }
+  },
 };

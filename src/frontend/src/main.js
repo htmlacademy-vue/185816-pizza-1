@@ -10,7 +10,4 @@ new Vue({
   store,
   router,
   render: (h) => h(App),
-  async beforeCreate() {
-    await this.$store.dispatch("init");
-  },
 }).$mount("#app");

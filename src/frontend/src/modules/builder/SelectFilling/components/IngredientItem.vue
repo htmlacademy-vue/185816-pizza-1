@@ -4,7 +4,7 @@
       type="button"
       class="counter__button counter__button--minus"
       @click.prevent.self="minus"
-      :disabled="count <= Limit.COUNT_MIN"
+      :disabled="quantity <= Limit.COUNT_MIN"
     >
       <span class="visually-hidden">Меньше</span>
     </button>
@@ -13,13 +13,13 @@
       name="counter"
       class="counter__input"
       disabled
-      :value="count"
+      v-model="quantity"
     />
     <button
       type="button"
       class="counter__button counter__button--plus"
       @click.prevent.self="plus"
-      :disabled="count >= Limit.COUNT_MAX"
+      :disabled="quantity >= Limit.COUNT_MAX"
     >
       <span class="visually-hidden">Больше</span>
     </button>
@@ -32,29 +32,20 @@ import { Limit } from "@/common/enums/builder";
 export default {
   name: "IngredientItem",
   props: {
-    syncCount: {
+    quantity: {
       type: Number,
+      default: 0,
     },
-  },
-  data() {
-    return { count: Limit.COUNT_MIN };
   },
   computed: {
     Limit: () => Limit,
   },
-  watch: {
-    syncCount(newVal) {
-      this.count = newVal;
-    },
-  },
   methods: {
     plus() {
-      this.count += Limit.COUNT_STEP;
-      this.$emit("plus");
+      this.$emit("update", this.quantity + 1);
     },
     minus() {
-      this.count -= Limit.COUNT_STEP;
-      this.$emit("minus");
+      this.$emit("update", this.quantity - 1);
     },
   },
 };

@@ -10,7 +10,9 @@ const plugins = {
       computed: {
         $jwt: () => JwtService,
         $notifier: () => new Notifier(store),
-        $api: () => createResources(this.$notifier),
+        $api() {
+          return createResources(this.$notifier);
+        },
       },
     });
   },

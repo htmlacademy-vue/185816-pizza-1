@@ -4,10 +4,11 @@ const axiosInstance = axios.create({
   baseURL: "/api/",
 });
 
+const defaultMessage = "Возникла ошибка при выполнении запроса к серверу";
+
 axiosInstance.interceptors.response.use(
   (res) => res,
   (e) => {
-    const defaultMessage = "Возникла ошибка при выполнении запроса к серверу";
     axiosInstance.$notifier.error(
       e?.response?.data?.error?.message || defaultMessage
     );

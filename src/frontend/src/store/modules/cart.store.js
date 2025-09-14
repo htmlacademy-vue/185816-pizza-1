@@ -5,29 +5,7 @@ import { CollectionCrud } from "@/common/utils";
 export default {
   namespaced: true,
   state: {
-    orders: [
-      {
-        id: uuidv4(),
-        multiplier: 1,
-        name: "test",
-        totalPrice: 700,
-        dough: {
-          id: 1,
-          name: "Тонкое",
-          image: "/public/img/dough-light.svg",
-          description: "Из твердых сортов пшеницы",
-          price: 300,
-        },
-        sauces: { id: 1, name: "Томатный", price: 50 },
-        selectedIngredients: [],
-        sizes: {
-          id: 1,
-          name: "23 см",
-          image: "/public/img/diameter.svg",
-          multiplier: 1,
-        },
-      },
-    ],
+    orders: [],
     misc: misc.map((item) => ({ ...item, multiplier: 0 })),
   },
   mutations: {

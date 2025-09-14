@@ -10,18 +10,24 @@ import {
   ADD_ENTITY,
 } from "@/store/mutations";
 
+import { BuilderCollection, DefaultValue } from "@/common/enums/builder";
+
 Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
     notifications: [],
+    // Set props builder
+    ...Object.fromEntries(
+      Object.keys(BuilderCollection).map((item) => [item.toLowerCase(), []])
+    ),
   },
   getters: {},
   mutations: {
     [CREATE_NOTICE](state, payload) {
-      state.notifications.push(payload);
+      state.notifications = [...state.notifications, payload];
     },
-    [SET_ENTITY](state, { module, entity, value }) {
+    [SET_ENTITY](state, { module = null, entity, value }) {
       module ? (state[module][entity] = value) : (state[entity] = value);
     },
     [ADD_ENTITY](state, { module, entity, value }) {
@@ -60,8 +66,29 @@ export default new Vuex.Store({
     createNotification({ commit }, payload) {
       commit("CREATE_NOTICE", payload);
     },
-    async init({ dispatch }) {
-      await dispatch("loadBuilder");
+    async init({ commit }) {
+      try {
+        const promises = Object.values(BuilderCollection).map((collection) =>
+          this.$api[collection].query()
+        );
+
+        const data = await Promise.all(promises);
+
+        Object.keys(BuilderCollection).forEach((item, idx) => {
+          const entity = item.toLowerCase();
+          commit(SET_ENTITY, { entity, value: data[idx] });
+          commit(SET_ENTITY, {
+            module: "Builder",
+            entity,
+            value:
+              entity !== BuilderCollection.INGREDIENTS
+                ? data[idx][DefaultValue[entity]]
+                : [],
+          });
+        });
+      } catch (e) {
+        console.log(e, this.$api);
+      }
     },
   },
   modules,

@@ -13,7 +13,7 @@
     <div class="header__cart">
       <router-link :to="{ name: 'Cart' }">{{ sumOrders }} ₽</router-link>
     </div>
-    <div class="header__user" v-if="isAuth">
+    <div class="header__user" v-if="isAuthenticated">
       <router-link to="profile">
         <img
           src="@/assets/img/users/user.jpg"
@@ -23,24 +23,31 @@
         />
         <span>{{ user.name }}</span>
       </router-link>
-      <a href="#" class="header__logout"><span>Выйти</span></a>
+      <a @click.prevent.stop="$logout" class="header__logout"
+        ><span>Выйти</span></a
+      >
     </div>
     <div class="header__user" v-else>
       <router-link :to="{ name: 'Login' }" class="header__login">
-        Войти
+        <span>Войти</span>
       </router-link>
     </div>
   </header>
 </template>
 
 <script>
-import { mapGetters, mapState } from "vuex";
+import { mapActions, mapGetters, mapState } from "vuex";
+import logout from "@/common/mixins/logout";
 
 export default {
   name: "AppHeader",
+  mixins: [logout],
   computed: {
-    ...mapState("Auth", ["user", "isAuth"]),
+    ...mapState("Auth", ["user", "isAuthenticated"]),
     ...mapGetters("Cart", ["sumOrders"]),
+  },
+  methods: {
+    ...mapActions("Auth", ["login"]),
   },
 };
 </script>

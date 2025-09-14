@@ -4,16 +4,16 @@
       <h2 class="title title--small sheet__title">Выберите тесто</h2>
       <div class="sheet__content dough">
         <RadioButton
-          v-for="{ id, image, name, description, checked } of itemsNormalize"
+          v-for="{ id, image, name, description, ...other } of itemsNormalize"
           :key="id"
           :class="['dough__input', `dough__input--${image}`]"
           hidden
           name="dough"
           :value="id"
-          :checked="checked ? id : null"
-          @change="setItem"
+          :checked="selectItem.id === id ? id : null"
+          @change="$emit('setItem', { id, image, name, description, ...other })"
         >
-          <b>{{ name }}</b> {{ checked }}
+          <b>{{ name }}</b>
           <span>{{ description }}</span>
         </RadioButton>
       </div>
@@ -35,6 +35,10 @@ export default {
       type: Array,
       required: true,
     },
+    selectItem: {
+      type: [Object, Array],
+      required: true,
+    },
   },
   computed: {
     itemsNormalize() {
@@ -42,11 +46,6 @@ export default {
         ...item,
         image: replacePath(image),
       }));
-    },
-  },
-  methods: {
-    setItem(id) {
-      this.$emit("setItem", { collection: "dough", id });
     },
   },
 };

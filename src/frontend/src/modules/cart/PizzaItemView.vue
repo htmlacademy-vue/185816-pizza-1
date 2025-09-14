@@ -6,16 +6,16 @@
         class="product__img"
         width="56"
         height="56"
-        alt="Капричоза"
+        :alt="item.name"
       />
       <div class="product__text">
         <h2>{{ item.name }}</h2>
         <ul>
           <li>
-            {{ item.sizes.name }},
-            {{ item.dough.name }}
+            {{ item[BuilderCollection.SIZES].at(0).name }},
+            {{ item[BuilderCollection.DOUGH].at(0).name }},
           </li>
-          <li>Соус: {{ item.sauces.name }}</li>
+          <li>Соус: {{ item[BuilderCollection.SAUCES].at(0).name }}</li>
           <li v-if="fill">
             Начинка:
             {{ fill }}
@@ -67,6 +67,7 @@
 
 <script>
 import { mapActions } from "vuex";
+import { BuilderCollection } from "@/common/enums/builder";
 
 export default {
   name: "itemItemView",
@@ -78,11 +79,14 @@ export default {
   },
   computed: {
     fill() {
-      return this.item.selectedIngredients.map(({ name }) => name).join(", ");
+      return this.item[BuilderCollection.INGREDIENTS]
+        .map(({ name }) => name)
+        .join(", ");
     },
     totalPrice() {
       return this.item.totalPrice * this.item.multiplier;
     },
+    BuilderCollection: () => BuilderCollection,
   },
   methods: {
     ...mapActions("Cart", ["deleteOrder", "updateOrder"]),

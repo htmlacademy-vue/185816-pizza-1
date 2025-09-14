@@ -1,73 +1,32 @@
-import { BuilderCollection, DefaultValue } from "@/common/enums/builder";
-import { CollectionCrud } from "@/common/utils";
+import { BuilderCollection } from "@/common/enums/builder";
+import { CrudState } from "@/common/heplers";
+import { UPDATE_ENTITY } from "@/store/mutations";
 
 export default {
   namespaced: true,
   state: {
-    dough: [],
-    sauce: [],
-    ingredients: [],
-    sizes: [],
+    name: "",
+    // Set builder components
+    ...Object.fromEntries(
+      Object.keys(BuilderCollection).map((item) => [item.toLowerCase(), []])
+    ),
   },
   mutations: {
-    LOAD_RESOURCES(state, payload) {
-      Object.values(BuilderCollection).forEach((collection, idx) => {
-        state[collection] = payload[idx];
-      });
-
-      console.log("Resources load", state);
+    LOAD_BUILDER(state, payload) {
+      state = payload;
     },
-    DEFINE_DEFAULT_VALUE(state) {
-      for (const [key, id] of Object.entries(DefaultValue)) {
-        const collectionName = key.toLowerCase();
-
-        if (collectionName !== BuilderCollection.INGREDIENTS) {
-          CollectionCrud.select(state[collectionName], id, "checked");
-        }
-      }
-    },
-    SET_CHECKED_COLLECTION(state, { collection, id }) {
-      CollectionCrud.select(state[collection], id, "checked");
-    },
-    SET_MULTIPLIER_COLLECTION(state, { collection, id, payload }) {
-      CollectionCrud.update(state[collection], id, payload);
+    [UPDATE_ENTITY](state, { entity, payload }) {
+      Array.isArray(state[entity])
+        ? CrudState.addOrUpdate(state, entity, payload.id, payload)
+        : CrudState.replace(state, entity, payload);
     },
   },
   actions: {
-    loadBuilder: {
-      root: true,
-      handler: async function ({ dispatch }) {
-        try {
-          const promises = Object.values(BuilderCollection).map((collection) =>
-            this.$api[collection].query()
-          );
-
-          const data = await Promise.all(promises);
-
-          await dispatch("loadResources", data);
-          await dispatch("defineDefaultValue", data);
-        } catch (e) {
-          console.log(e, this.$api);
-        }
-      },
+    updateItem({ commit }, payload) {
+      commit(UPDATE_ENTITY, payload);
     },
-    setCheckedCollection({ commit }, payload) {
-      commit("SET_CHECKED_COLLECTION", payload);
-    },
-    setMultiplierCollection({ commit }, payload) {
-      commit("SET_MULTIPLIER_COLLECTION", payload);
-    },
-    removeCollectionProperty({ commit }, payload) {
-      commit("DELETE_COLLECTION_PROPERTY", payload);
-    },
-    loadResources({ commit }, payload) {
-      commit("LOAD_RESOURCES", payload);
-    },
-    defineDefaultValue({ commit }) {
-      commit("DEFINE_DEFAULT_VALUE");
-    },
-    createBuilder({ commit }, payload) {
-      commit("CREATE_BUILDER", payload);
+    loadBuilder({ commit }) {
+      commit("LOAD_BUILDER");
     },
   },
 };
