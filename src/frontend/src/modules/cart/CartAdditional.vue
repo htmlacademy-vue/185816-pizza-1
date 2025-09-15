@@ -1,18 +1,14 @@
 <template>
   <div class="cart__additional">
+    {{ misc }}
     <ul class="additional-list">
       <li
         class="additional-list__item sheet"
-        v-for="{ id, image, name, multiplier, price } of items"
+        v-for="{ id, image, name, quantity = 0, price } of quantifiedItems"
         :key="id"
       >
         <p class="additional-list__description">
-          <img
-            :src="require(`@/assets/img/${image}`)"
-            width="39"
-            height="60"
-            :alt="name"
-          />
+          <img :src="image" width="39" height="60" :alt="name" />
           <span>{{ name }}</span>
         </p>
 
@@ -21,14 +17,19 @@
             <button
               type="button"
               class="counter__button counter__button--minus"
-              :disabled="multiplier === 0"
-              @click.prevent="
-                updateMisc({
-                  id,
-                  payload: {
-                    multiplier: (multiplier -= 1),
+              :disabled="quantity === 0"
+              @click="
+                changeItem(
+                  {
+                    id,
+                    image,
+                    name,
+                    quantity: (quantity -= 1),
+                    price,
                   },
-                })
+                  quantity + 1,
+                  quantity
+                )
               "
             >
               <span class="visually-hidden">Меньше</span>
@@ -37,18 +38,24 @@
               type="text"
               name="counter"
               class="counter__input"
-              :value="multiplier"
+              disabled
+              :value="quantity"
             />
             <button
               type="button"
               class="counter__button counter__button--plus counter__button--orange"
-              @click.prevent="
-                updateMisc({
-                  id,
-                  payload: {
-                    multiplier: (multiplier += 1),
+              @click="
+                changeItem(
+                  {
+                    id,
+                    image,
+                    name,
+                    quantity: (quantity += 1),
+                    price,
                   },
-                })
+                  quantity - 1,
+                  quantity
+                )
               "
             >
               <span class="visually-hidden">Больше</span>
@@ -65,7 +72,9 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
+import { mapActions, mapGetters, mapState } from "vuex";
+
+const entity = "misc";
 
 export default {
   name: "CartAdditional",
@@ -75,8 +84,39 @@ export default {
       required: true,
     },
   },
+  data() {
+    return {
+      quantity: 0,
+    };
+  },
+  computed: {
+    ...mapState("Cart", ["misc"]),
+    ...mapGetters(["getEntityByID"]),
+    quantifiedItems() {
+      return this.items.map((item) => {
+        const newItem = this.getEntityByID({
+          module: "Cart",
+          entity,
+          id: item.id,
+        });
+
+        return { ...item, quantity: newItem ? newItem.quantity : 0 };
+      });
+    },
+  },
   methods: {
-    ...mapActions("Cart", ["updateMisc"]),
+    ...mapActions("Cart", ["addItem", "updateItem", "deleteItem", "clearCart"]),
+    changeItem(payload, oldValue, newValue) {
+      if (oldValue === 0 && newValue === 1) {
+        this.addItem({ entity, payload });
+      }
+
+      if (oldValue === 1 && newValue === 0) {
+        this.deleteItem({ entity, payload });
+      }
+
+      this.updateItem({ entity, payload });
+    },
   },
 };
 </script>

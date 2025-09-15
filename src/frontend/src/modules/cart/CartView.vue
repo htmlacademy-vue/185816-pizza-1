@@ -7,10 +7,10 @@
         </div>
         <div class="sheet cart__empty" v-if="isEmpty">
           <p>В корзине нет ни одного товара</p>
+          <cart-additional :items="misc" />
         </div>
         <div v-else>
           <cart-orders :items="orders" />
-          <cart-additional :items="misc" />
           <cart-form />
         </div>
       </div>
@@ -35,8 +35,9 @@ export default {
     CartForm,
   },
   computed: {
-    ...mapState("Cart", ["orders", "misc"]),
+    ...mapState("Cart", ["orders"]),
     ...mapGetters("Cart", ["isEmpty", "sumOrders"]),
+    ...mapState(["misc"]),
   },
 };
 </script>

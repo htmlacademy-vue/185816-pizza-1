@@ -1,38 +1,24 @@
-import misc from "@/static/misc.json";
-import { v4 as uuidv4 } from "uuid";
-import { CollectionCrud } from "@/common/utils";
+import {
+  ADD_ENTITY,
+  CLEAR_ENTITY,
+  DELETE_ENTITY,
+  UPDATE_ENTITY,
+} from "@/store/mutations";
+import { CrudState } from "@/common/heplers";
+import { capitalize } from "@/common/utils";
+
+const entity = "cart";
+const module = capitalize(entity);
 
 export default {
   namespaced: true,
   state: {
     orders: [],
-    misc: misc.map((item) => ({ ...item, multiplier: 0 })),
+    misc: [],
   },
   mutations: {
-    ADD_ORDER(state, order) {
-      CollectionCrud.add(state.orders, {
-        id: uuidv4(),
-        mics: [],
-        multiplier: 1,
-        ...order,
-      });
-    },
-    UPDATE_ORDER(state, { id, payload }) {
-      CollectionCrud.update(state.orders, id, payload);
-    },
-    DELETE_ORDER(state, id) {
-      CollectionCrud.delete(state.orders, id);
-    },
-    UPDATE_MISC(state, { id, payload }) {
-      CollectionCrud.update(state.misc, id, payload);
-    },
-    CLEAR_ORDERS(state) {
-      CollectionCrud.clear(state.orders);
-    },
-    CLEAR_MISC(state) {
-      state.misc.forEach(({ id }) => {
-        CollectionCrud.update(state.misc, id, { multiplier: 0 });
-      });
+    [UPDATE_ENTITY](state, { entity, payload }) {
+      CrudState.addOrUpdate(state, entity, payload.id, payload);
     },
   },
   getters: {
@@ -41,13 +27,13 @@ export default {
     },
     totalCountOrders(state) {
       return state.orders.reduce(
-        (sum, order) => sum + order.totalPrice * order.multiplier,
+        (sum, order) => sum + order.totalPrice * order.quantity,
         0
       );
     },
     totalCountMics(state) {
       return state.misc.reduce(
-        (sum, order) => sum + order.price * order.multiplier,
+        (sum, order) => sum + order.price * order.quantity,
         0
       );
     },
@@ -63,21 +49,53 @@ export default {
     },
   },
   actions: {
-    addOrder({ commit }, order) {
-      commit("ADD_ORDER", order);
+    updateItem({ commit }, { entity, payload }) {
+      commit(
+        UPDATE_ENTITY,
+        {
+          module,
+          entity,
+          payload,
+        },
+        { root: true }
+      );
     },
-    deleteOrder({ commit }, id) {
-      commit("DELETE_ORDER", id);
+    addItem({ commit }, { entity, payload }) {
+      commit(
+        ADD_ENTITY,
+        {
+          module,
+          entity,
+          payload,
+        },
+        { root: true }
+      );
     },
-    updateOrder({ commit }, payload) {
-      commit("UPDATE_ORDER", payload);
-    },
-    updateMisc({ commit }, payload) {
-      commit("UPDATE_MISC", payload);
+    deleteItem({ commit }, { entity, payload: { id } }) {
+      commit(
+        DELETE_ENTITY,
+        {
+          module,
+          entity,
+          id,
+        },
+        { root: true }
+      );
     },
     clearCart({ commit }) {
-      commit("CLEAR_ORDERS");
-      commit("CLEAR_MISC");
+      commit(CLEAR_ENTITY, {
+        module,
+        entity: "misc",
+      });
+
+      commit(
+        CLEAR_ENTITY,
+        {
+          module,
+          entity: "orders",
+        },
+        { root: true }
+      );
     },
   },
 };

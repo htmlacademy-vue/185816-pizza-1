@@ -17,6 +17,7 @@ export const createResources = (notifier) => {
       notifier
     ),
     [resources.SAUCES]: new ReadOnlyApiService(resources.SAUCES, notifier),
+    [resources.MISC]: new ReadOnlyApiService(resources.MISC, notifier),
   };
 };
 
@@ -44,13 +45,54 @@ export const CrudState = {
       this.add(state, entity, payload);
     }
   },
-  getIndexByID(state, entity, id) {
-    const index = state[entity].findIndex((item) => item.id === id);
+};
+
+export const CrudCollection = {
+  _validator(collection) {
+    if (!Array.isArray(collection)) {
+      throw new SyntaxError(
+        `Collection expected Array, got ${typeof collection}`
+      );
+    }
+  },
+
+  add(collection, ...items) {
+    this._validator(collection);
+    collection.splice(0, 0, ...items);
+  },
+
+  deleteByID(collection, itemID) {
+    this._validator(collection);
+    const index = this.getIndexByID(collection, itemID);
 
     if (~index) {
-      return index;
+      collection.splice(index, 1);
     }
+  },
 
-    return 0;
+  updateByID(collection, itemID, payload) {
+    this._validator(collection);
+    const index = this.getIndexByID(collection, itemID);
+
+    if (~index) {
+      const oldItem = collection[index];
+      collection.splice(index, 1);
+      collection.splice(index, 0, { ...oldItem, ...payload });
+    }
+  },
+
+  getIndexByID(collection, itemID) {
+    this._validator(collection);
+    return collection.findIndex(({ id }) => id === itemID);
+  },
+
+  getElementByID(collection, itemID) {
+    this._validator(collection);
+    return collection.find(({ id }) => id === itemID);
+  },
+
+  clear(collection) {
+    this._validator(collection);
+    collection.splice(0, collection.length);
   },
 };

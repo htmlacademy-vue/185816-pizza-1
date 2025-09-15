@@ -5,6 +5,7 @@ export const BuilderCollection = {
   SAUCES: Resources.SAUCES,
   INGREDIENTS: Resources.INGREDIENTS,
   SIZES: Resources.SIZES,
+  MISC: Resources.MISC,
 };
 
 export const Limit = {
