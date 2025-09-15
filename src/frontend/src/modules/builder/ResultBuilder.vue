@@ -44,7 +44,7 @@
     <div class="content__result">
       <p>Итого: {{ totalPrice }} ₽</p>
       <button
-        @click.prevent.self="$emit('build', { ...item, totalPrice, name })"
+        @click.prevent.self="build({ ...item, totalPrice, name })"
         type="button"
         class="button"
         :disabled="name.length <= 0"
@@ -66,8 +66,8 @@ const doughMap = {
 };
 
 const sauceMap = {
-  2: "tomato",
-  1: "creamy",
+  1: "tomato",
+  2: "creamy",
 };
 
 const scaleMap = {
@@ -123,6 +123,10 @@ export default {
         dataTransfer.getData(DataTransferType.PAYLOAD)
       );
       this.$emit("setItem", payload);
+    },
+    build(payload) {
+      this.name = "";
+      this.$emit("build", payload);
     },
   },
 };

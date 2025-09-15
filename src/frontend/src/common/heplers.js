@@ -44,4 +44,13 @@ export const CrudState = {
       this.add(state, entity, payload);
     }
   },
+  getIndexByID(state, entity, id) {
+    const index = state[entity].findIndex((item) => item.id === id);
+
+    if (~index) {
+      return index;
+    }
+
+    return 0;
+  },
 };

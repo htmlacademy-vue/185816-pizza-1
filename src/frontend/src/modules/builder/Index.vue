@@ -2,6 +2,9 @@
   <main class="content">
     <form action="#" method="post">
       <div class="content__wrapper">
+        <!--        <pre>-->
+        <!--          {{ $store.state.Builder }}-->
+        <!--        </pre>-->
         <h1 class="title title--big">Конструктор пиццы</h1>
         <SelectDough
           :items="dough"
@@ -45,6 +48,7 @@
             (payload) =>
               updateItem({ entity: BuilderCollection.INGREDIENTS, payload })
           "
+          @build="build"
         />
       </div>
     </form>
@@ -87,12 +91,11 @@ export default {
   methods: {
     ...mapActions("Cart", ["addOrder"]),
     ...mapActions("Builder", ["updateItem"]),
-    build(item) {
-      this.addOrder(item);
-      this.$router.push("cart");
-    },
-    display(payload) {
-      console.log(payload);
+    ...mapActions(["init"]),
+    async build(item) {
+      await this.addOrder(item);
+      await this.init();
+      await this.$router.push("cart");
     },
   },
 };

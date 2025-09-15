@@ -17,5 +17,5 @@ export const DefaultValue = {
   [Resources.DOUGHS]: 1,
   [Resources.SAUCES]: 0,
   [Resources.INGREDIENTS]: -1,
-  [Resources.SIZES]: 0,
+  [Resources.SIZES]: 2,
 };
