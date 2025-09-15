@@ -12,10 +12,10 @@
         <h2>{{ item.name }}</h2>
         <ul>
           <li>
-            {{ item[BuilderCollection.SIZES].at(0).name }},
-            {{ item[BuilderCollection.DOUGH].at(0).name }},
+            {{ item[BuilderCollection.SIZES].name }},
+            {{ item[BuilderCollection.DOUGH].name }},
           </li>
-          <li>Соус: {{ item[BuilderCollection.SAUCES].at(0).name }}</li>
+          <li>Соус: {{ item[BuilderCollection.SAUCES].name }}</li>
           <li v-if="fill">
             Начинка:
             {{ fill }}

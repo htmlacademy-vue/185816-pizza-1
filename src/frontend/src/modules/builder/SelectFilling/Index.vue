@@ -8,7 +8,7 @@
         :key="id"
         :draggable="quantity < Limit.COUNT_MAX"
         @dragstart.self="
-          onDragFill($event, { id, image, quantity: quantity, ...other })
+          onDragFill($event, { id, image, name, quantity: quantity, ...other })
         "
         @dragover.prevent
         @dragenter.prevent
@@ -19,7 +19,9 @@
         </span>
         <IngredientItem
           :quantity="quantity"
-          @update="(quantity) => updateItem({ id, image, quantity, ...other })"
+          @update="
+            (quantity) => updateItem({ id, image, name, quantity, ...other })
+          "
         />
       </li>
     </ul>
