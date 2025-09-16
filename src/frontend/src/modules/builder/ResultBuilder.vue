@@ -44,7 +44,9 @@
     <div class="content__result">
       <p>Итого: {{ totalPrice }} ₽</p>
       <button
-        @click.prevent.self="build({ ...item, totalPrice, name, quantity: 1 })"
+        @click.prevent.self="
+          build({ ...item, totalPrice, name, quantity: item.quantity || 1 })
+        "
         type="button"
         class="button"
         :disabled="name.length <= 0"

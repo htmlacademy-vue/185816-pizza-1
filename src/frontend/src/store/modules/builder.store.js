@@ -22,6 +22,7 @@ export default {
     CLEAR_BUILDER(state) {
       state.name = "";
       state.id = null;
+      state.quantity = 1;
     },
   },
   actions: {

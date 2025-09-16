@@ -49,6 +49,9 @@ export default {
     ...mapGetters("Cart", ["isEmpty", "sumOrders"]),
     ...mapState(["misc"]),
   },
+  mounted() {
+    console.log(this.$router);
+  },
   methods: {
     ...mapActions("Cart", ["deleteItem", "updateItem", "addItem"]),
     editOrder(payload) {

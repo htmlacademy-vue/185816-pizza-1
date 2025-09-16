@@ -6,8 +6,6 @@ import "@/plugins/vuePlugins";
 
 Vue.config.productionTip = false;
 
-console.log(store);
-
 new Vue({
   store,
   router,

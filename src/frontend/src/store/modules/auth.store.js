@@ -1,9 +1,8 @@
 import { REPLACE_ENTITY } from "@/store/mutations";
 import Module from "@/common/enums/module";
 import { Auth } from "@/common/enums/entity";
-import { capitalize } from "@/common/utils";
 
-const module = capitalize(Module.AUTH);
+const module = Module.AUTH;
 
 export default {
   namespaced: true,
@@ -38,12 +37,12 @@ export default {
       // Указываем, что пользователь не авторизован, и очищаем объект пользователя
       commit(
         REPLACE_ENTITY,
-        { module: module, entity: Auth.IS_AUTHENTICATED, value: false },
+        { module, entity: Auth.IS_AUTHENTICATED, payload: false },
         { root: true }
       );
       commit(
         REPLACE_ENTITY,
-        { module, entity: Auth.USER, value: null },
+        { module, entity: Auth.USER, payload: null },
         { root: true }
       );
     },
@@ -52,12 +51,12 @@ export default {
         const data = await this.$api.auth.getMe();
         commit(
           REPLACE_ENTITY,
-          { module, entity: Auth.IS_AUTHENTICATED, value: true },
+          { module, entity: Auth.IS_AUTHENTICATED, payload: true },
           { root: true }
         );
         commit(
           REPLACE_ENTITY,
-          { module, entity: Auth.USER, value: data },
+          { module, entity: Auth.USER, payload: data },
           { root: true }
         );
       } catch {

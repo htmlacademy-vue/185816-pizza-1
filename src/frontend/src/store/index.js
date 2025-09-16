@@ -13,11 +13,13 @@ import {
 import { BuilderCollection, DefaultValue } from "@/common/enums/builder";
 import { CrudCollection } from "@/common/heplers";
 import Module from "@/common/enums/module";
+import { v4 as uuidv4 } from "uuid";
 
 Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
+    loading: false,
     notifications: [],
     // Set props builder
     ...Object.fromEntries(
@@ -90,6 +92,21 @@ export default new Vuex.Store({
       } catch (e) {
         console.log(e, this.$api);
       }
+    },
+    createNotice({ commit }, payload) {
+      const id = uuidv4();
+
+      commit(ADD_ENTITY, {
+        entity: "notifications",
+        payload: { ...payload, id },
+      });
+
+      setTimeout(() => {
+        commit(DELETE_ENTITY, {
+          entity: "notifications",
+          id,
+        });
+      }, 1800);
     },
   },
   modules,

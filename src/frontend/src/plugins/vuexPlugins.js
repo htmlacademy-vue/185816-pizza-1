@@ -5,5 +5,5 @@ import { createResources } from "@/common/heplers";
 export default function (store) {
   store.$jwt = JwtService;
   store.$notifier = new Notifier(store);
-  store.$api = createResources(store.$notifier);
+  store.$api = createResources(store.$notifier, store);
 }

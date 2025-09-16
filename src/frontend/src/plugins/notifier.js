@@ -6,28 +6,28 @@ export default class Notifier {
   }
 
   info(text) {
-    this.#store.dispatch("createNotification", {
+    this.#store.dispatch("createNotice", {
       text,
       type: "INFO",
     });
   }
 
   success(text) {
-    this.#store.dispatch("createNotification", {
+    this.#store.dispatch("createNotice", {
       text,
       type: "SUCCESS",
     });
   }
 
   error(text) {
-    this.#store.dispatch("createNotification", {
+    this.#store.dispatch("createNotice", {
       text,
       type: "ERROR",
     });
   }
 
   warning(text) {
-    this.#store.dispatch("createNotification", {
+    this.#store.dispatch("createNotice", {
       text,
       type: "WARNING",
     });
