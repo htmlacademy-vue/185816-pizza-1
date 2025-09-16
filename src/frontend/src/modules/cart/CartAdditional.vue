@@ -1,10 +1,9 @@
 <template>
   <div class="cart__additional">
-    {{ misc }}
     <ul class="additional-list">
       <li
         class="additional-list__item sheet"
-        v-for="{ id, image, name, quantity = 0, price } of quantifiedItems"
+        v-for="{ id, image, name, quantity, price } of quantifiedItems"
         :key="id"
       >
         <p class="additional-list__description">
@@ -72,7 +71,7 @@
 </template>
 
 <script>
-import { mapActions, mapGetters, mapState } from "vuex";
+import { mapGetters } from "vuex";
 
 const entity = "misc";
 
@@ -84,13 +83,7 @@ export default {
       required: true,
     },
   },
-  data() {
-    return {
-      quantity: 0,
-    };
-  },
   computed: {
-    ...mapState("Cart", ["misc"]),
     ...mapGetters(["getEntityByID"]),
     quantifiedItems() {
       return this.items.map((item) => {
@@ -105,17 +98,16 @@ export default {
     },
   },
   methods: {
-    ...mapActions("Cart", ["addItem", "updateItem", "deleteItem", "clearCart"]),
     changeItem(payload, oldValue, newValue) {
       if (oldValue === 0 && newValue === 1) {
-        this.addItem({ entity, payload });
+        this.$emit("add", { entity, payload });
       }
 
       if (oldValue === 1 && newValue === 0) {
-        this.deleteItem({ entity, payload });
+        this.$emit("delete", { entity, payload });
       }
 
-      this.updateItem({ entity, payload });
+      this.$emit("update", { entity, payload });
     },
   },
 };

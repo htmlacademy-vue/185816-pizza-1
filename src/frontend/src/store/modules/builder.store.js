@@ -1,6 +1,13 @@
 import { BuilderCollection } from "@/common/enums/builder";
-import { CrudState } from "@/common/heplers";
-import { UPDATE_ENTITY } from "@/store/mutations";
+import {
+  ADD_ENTITY,
+  DELETE_ENTITY,
+  REPLACE_ENTITY,
+  UPDATE_ENTITY,
+} from "@/store/mutations";
+import Module from "@/common/enums/module";
+
+const module = Module.BUILDER;
 
 export default {
   namespaced: true,
@@ -12,21 +19,58 @@ export default {
     ),
   },
   mutations: {
-    LOAD_BUILDER(state, payload) {
-      state = payload;
-    },
-    [UPDATE_ENTITY](state, { entity, payload }) {
-      Array.isArray(state[entity])
-        ? CrudState.addOrUpdate(state, entity, payload.id, payload)
-        : CrudState.replace(state, entity, payload);
+    CLEAR_BUILDER(state) {
+      state.name = "";
+      state.id = null;
     },
   },
   actions: {
-    updateItem({ commit }, payload) {
-      commit(UPDATE_ENTITY, payload);
+    replaceItem({ commit }, { entity, payload }) {
+      commit(
+        REPLACE_ENTITY,
+        {
+          module,
+          entity,
+          payload,
+        },
+        { root: true }
+      );
     },
-    loadBuilder({ commit }) {
-      commit("LOAD_BUILDER");
+    updateItem({ commit }, { entity, payload }) {
+      commit(
+        UPDATE_ENTITY,
+        {
+          module,
+          entity,
+          payload,
+        },
+        { root: true }
+      );
+    },
+    addItem({ commit }, { entity, payload }) {
+      commit(
+        ADD_ENTITY,
+        {
+          module,
+          entity,
+          payload,
+        },
+        { root: true }
+      );
+    },
+    deleteItem({ commit }, { entity, payload: { id } }) {
+      commit(
+        DELETE_ENTITY,
+        {
+          module,
+          entity,
+          id,
+        },
+        { root: true }
+      );
+    },
+    clearBuilder({ commit }) {
+      commit("CLEAR_BUILDER");
     },
   },
 };

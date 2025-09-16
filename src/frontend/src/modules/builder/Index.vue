@@ -3,52 +3,40 @@
     <form action="#" method="post">
       <div class="content__wrapper">
         <!--        <pre>-->
-        <!--          {{ $store.state.Builder }}-->
-        <!--        </pre>-->
+        <!--                          {{ builder }}-->
+        <!--                        </pre-->
         <h1 class="title title--big">Конструктор пиццы</h1>
         <SelectDough
           :items="dough"
           :select-item="selectDough"
-          @setItem="
-            (payload) =>
-              updateItem({ entity: BuilderCollection.DOUGH, payload })
-          "
+          @replace="replaceItem"
         />
         <SelectDiameter
           :items="sizes"
           :select-item="selectSize"
-          @setItem="
-            (payload) =>
-              updateItem({ entity: BuilderCollection.SIZES, payload })
-          "
+          @replace="replaceItem"
         />
         <SelectIngredients>
           <template #select-sauce>
             <SelectSauce
               :items="sauces"
               :select-item="selectSauce"
-              @setItem="
-                (payload) =>
-                  updateItem({ entity: BuilderCollection.SAUCES, payload })
-              "
+              @replace="replaceItem"
             />
           </template>
           <SelectFilling
             :items="ingredients"
             :select-items="selectIngredients"
-            @setItem="
-              (payload) =>
-                updateItem({ entity: BuilderCollection.INGREDIENTS, payload })
-            "
+            @add="addItem"
+            @update="updateItem"
+            @delete="deleteItem"
           />
         </SelectIngredients>
         <ResultBuilder
           :item="builder"
-          @setItem="
-            (payload) =>
-              updateItem({ entity: BuilderCollection.INGREDIENTS, payload })
-          "
           @build="build"
+          @add="addItem"
+          @update="updateItem"
         />
       </div>
     </form>
@@ -64,6 +52,7 @@ import SelectIngredients from "@/modules/builder/SelectIngredients.vue";
 import SelectSauce from "@/modules/builder/SelectSauce.vue";
 import SelectFilling from "@/modules/builder/SelectFilling/Index.vue";
 import ResultBuilder from "@/modules/builder/ResultBuilder.vue";
+import { Cart } from "@/common/enums/entity";
 
 export default {
   name: "BuilderPizzaView",
@@ -76,7 +65,6 @@ export default {
     SelectDough,
   },
   computed: {
-    BuilderCollection: () => BuilderCollection,
     ...mapState([
       ...Object.keys(BuilderCollection).map((item) => item.toLowerCase()),
     ]),
@@ -89,11 +77,28 @@ export default {
     }),
   },
   methods: {
-    ...mapActions("Cart", ["addOrder"]),
-    ...mapActions("Builder", ["updateItem"]),
+    ...mapActions("Builder", [
+      "updateItem",
+      "replaceItem",
+      "deleteItem",
+      "addItem",
+      "clearBuilder",
+    ]),
     ...mapActions(["init"]),
-    async build(item) {
-      await this.addOrder(item);
+    async build(payload) {
+      if (payload.id) {
+        await this.$store.dispatch("Cart/updateItem", {
+          entity: Cart.ORDERS,
+          payload,
+        });
+      } else {
+        await this.$store.dispatch("Cart/addItem", {
+          entity: Cart.ORDERS,
+          payload,
+        });
+      }
+
+      await this.clearBuilder();
       await this.init();
       await this.$router.push("cart");
     },

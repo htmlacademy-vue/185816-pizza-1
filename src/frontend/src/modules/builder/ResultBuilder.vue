@@ -44,7 +44,7 @@
     <div class="content__result">
       <p>Итого: {{ totalPrice }} ₽</p>
       <button
-        @click.prevent.self="build({ ...item, totalPrice, name })"
+        @click.prevent.self="build({ ...item, totalPrice, name, quantity: 1 })"
         type="button"
         class="button"
         :disabled="name.length <= 0"
@@ -117,12 +117,22 @@ export default {
     },
     replacePath: () => replacePath,
   },
+  mounted() {
+    this.name = this.item.name || "";
+  },
   methods: {
     onDropFill({ dataTransfer }) {
-      const payload = JSON.parse(
-        dataTransfer.getData(DataTransferType.PAYLOAD)
-      );
-      this.$emit("setItem", payload);
+      const data = JSON.parse(dataTransfer.getData(DataTransferType.PAYLOAD));
+
+      const {
+        payload: { quantity },
+      } = data;
+
+      if (quantity <= 1) {
+        this.$emit("add", data);
+      } else {
+        this.$emit("update", data);
+      }
     },
     build(payload) {
       this.name = "";

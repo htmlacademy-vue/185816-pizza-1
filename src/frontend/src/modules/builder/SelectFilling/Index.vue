@@ -4,11 +4,20 @@
     <ul class="ingredients__list">
       <li
         class="ingredients__item"
-        v-for="{ id, image, name, quantity, ...other } of normalizeIngredients"
+        v-for="{
+          id,
+          image,
+          name,
+          quantity = 0,
+          ...other
+        } of normalizeIngredients"
         :key="id"
         :draggable="quantity < Limit.COUNT_MAX"
         @dragstart.self="
-          onDragFill($event, { id, image, name, quantity: quantity, ...other })
+          onDragFill($event, {
+            entity,
+            payload: { id, image, name, quantity: quantity + 1, ...other },
+          })
         "
         @dragover.prevent
         @dragenter.prevent
@@ -20,7 +29,12 @@
         <IngredientItem
           :quantity="quantity"
           @update="
-            (quantity) => updateItem({ id, image, name, quantity, ...other })
+            (oldValue, newValue) =>
+              changeItem(
+                { id, image, name, quantity: newValue, ...other },
+                oldValue,
+                newValue
+              )
           "
         />
       </li>
@@ -37,6 +51,12 @@ import {
 import { replacePath } from "@/modules/utils";
 import IngredientItem from "@/modules/builder/SelectFilling/components/IngredientItem.vue";
 import { Limit } from "@/common/enums/builder";
+import Module from "@/common/enums/module";
+import { Builder } from "@/common/enums/entity";
+import { mapGetters } from "vuex";
+
+const entity = Builder.INGREDIENTS;
+const module = Module.BUILDER;
 
 export default {
   name: "SelectFilling",
@@ -52,35 +72,41 @@ export default {
     },
   },
   computed: {
-    normalizeIngredients() {
-      return this.items.map(({ image, ...item }) => ({
-        ...item,
-        image: replacePath(image),
-        quantity: this.getQuantity(item.id),
-      }));
-    },
+    ...mapGetters(["getEntityByID"]),
     Limit: () => Limit,
+    entity: () => Builder.INGREDIENTS,
+    normalizeIngredients() {
+      return this.items.map(({ image, ...item }) => {
+        const newItem = this.getEntityByID({
+          module,
+          entity,
+          id: item.id,
+        });
+
+        return {
+          ...item,
+          image: replacePath(image),
+          quantity: newItem ? newItem.quantity : 0,
+        };
+      });
+    },
   },
   methods: {
-    onDragFill({ dataTransfer }, { quantity, ...other }) {
+    onDragFill({ dataTransfer }, payload) {
       dataTransfer.effectAllowed = DataTransferAllowEffect.MOVE;
       dataTransfer.dropEffect = DataTransferDropEffect.MOVE;
-      dataTransfer.setData(
-        DataTransferType.PAYLOAD,
-        JSON.stringify({ quantity: quantity + 1, ...other })
-      );
+      dataTransfer.setData(DataTransferType.PAYLOAD, JSON.stringify(payload));
     },
-    updateItem(payload) {
-      this.$emit("setItem", payload);
-    },
-    getQuantity(id) {
-      const index = this.selectItems.findIndex((item) => item.id === id);
-
-      if (~index) {
-        return this.selectItems[index].quantity;
+    changeItem(payload, oldValue, newValue) {
+      if (oldValue === 0 && newValue === 1) {
+        this.$emit("add", { entity, payload });
       }
 
-      return 0;
+      if (oldValue === 1 && newValue === 0) {
+        this.$emit("delete", { entity, payload });
+      }
+
+      this.$emit("update", { entity, payload });
     },
   },
 };

@@ -28,8 +28,8 @@
       <button
         type="button"
         class="counter__button counter__button--minus"
-        :disabled="item.multiplier < 1"
-        @click="minus"
+        :disabled="item.quantity < 1"
+        @click="changeItem({ ...item, quantity: (item.quantity -= 1) })"
       >
         <span class="visually-hidden">Меньше</span>
       </button>
@@ -37,12 +37,12 @@
         type="text"
         name="counter"
         class="counter__input"
-        :value="item.multiplier"
+        :value="item.quantity"
       />
       <button
         type="button"
         class="counter__button counter__button--plus counter__button--orange"
-        @click="plus"
+        @click="changeItem({ ...item, quantity: (item.quantity += 1) })"
       >
         <span class="visually-hidden">Больше</span>
       </button>
@@ -53,11 +53,22 @@
     </div>
 
     <div class="cart-list__button">
-      <button type="button" class="cart-list__edit">Изменить</button>
+      <button
+        @click="$emit('edit', item)"
+        type="button"
+        class="cart-list__edit"
+      >
+        Изменить
+      </button>
       <button
         type="button"
         class="cart-list__edit"
-        @click="deleteOrder(item.id)"
+        @click="
+          $emit('delete', {
+            entity,
+            payload: item,
+          })
+        "
       >
         Удалить
       </button>
@@ -66,8 +77,8 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
 import { BuilderCollection } from "@/common/enums/builder";
+import { Cart } from "@/common/enums/entity";
 
 export default {
   name: "itemItemView",
@@ -84,31 +95,24 @@ export default {
         .join(", ");
     },
     totalPrice() {
-      return this.item.totalPrice * this.item.multiplier;
+      return this.item.totalPrice * this.item.quantity;
     },
     BuilderCollection: () => BuilderCollection,
+    entity: () => Cart.ORDERS,
   },
   methods: {
-    ...mapActions("Cart", ["deleteOrder", "updateOrder"]),
-    plus() {
-      this.updateOrder({
-        id: this.item.id,
-        payload: {
-          multiplier: (this.item.multiplier += 1),
-        },
-      });
-    },
-    minus() {
-      this.updateOrder({
-        id: this.item.id,
-        payload: {
-          multiplier: (this.item.multiplier -= 1),
-        },
-      });
-
-      if (this.item.multiplier < 1) {
-        return this.deleteOrder(this.item.id);
+    changeItem(payload) {
+      if (payload.quantity < 1) {
+        this.$emit("delete", {
+          entity: Cart.ORDERS,
+          payload,
+        });
       }
+
+      this.$emit("update", {
+        entity: Cart.ORDERS,
+        payload,
+      });
     },
   },
 };

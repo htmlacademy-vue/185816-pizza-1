@@ -42,10 +42,10 @@ export default {
   },
   methods: {
     plus() {
-      this.$emit("update", this.quantity + 1);
+      this.$emit("update", this.quantity, this.quantity + 1);
     },
     minus() {
-      this.$emit("update", this.quantity - 1);
+      this.$emit("update", this.quantity, this.quantity - 1);
     },
   },
 };

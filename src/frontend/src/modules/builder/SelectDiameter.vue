@@ -4,14 +4,19 @@
       <h2 class="title title--small sheet__title">Выберите размер</h2>
       <div class="sheet__content diameter">
         <RadioButton
-          v-for="({ id, name, ...other }, idx) of sortedItems"
+          v-for="({ id, name, ...other }, idx) of items"
           :key="id"
           :class="['diameter__input', `diameter__input--${sizeMap[idx]}`]"
           name="diameter"
           hidden
           :value="id"
           :checked="selectItem.id === id ? id : null"
-          @change="$emit('setItem', { id, name, ...other })"
+          @change="
+            $emit('replace', {
+              entity,
+              payload: { id, name, ...other },
+            })
+          "
         >
           <b>{{ name }}</b>
         </RadioButton>
@@ -22,6 +27,7 @@
 
 <script>
 import RadioButton from "@/common/RadioButtonNew";
+import { Builder } from "@/common/enums/entity";
 
 const sizeMap = ["small", "normal", "big"];
 
@@ -42,9 +48,7 @@ export default {
   },
   computed: {
     sizeMap: () => sizeMap,
-    sortedItems() {
-      return this.items.sort((a, b) => a.multiplier - b.multiplier);
-    },
+    entity: () => Builder.SIZES,
   },
 };
 </script>

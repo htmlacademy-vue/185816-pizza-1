@@ -12,6 +12,7 @@ import {
 
 import { BuilderCollection, DefaultValue } from "@/common/enums/builder";
 import { CrudCollection } from "@/common/heplers";
+import Module from "@/common/enums/module";
 
 Vue.use(Vuex);
 
@@ -38,8 +39,8 @@ export default new Vuex.Store({
           : CrudCollection.getIndexByID(state[entity], id),
   },
   mutations: {
-    [REPLACE_ENTITY](state, { module = null, entity, value }) {
-      module ? (state[module][entity] = value) : (state[entity] = value);
+    [REPLACE_ENTITY](state, { module = null, entity, payload }) {
+      module ? (state[module][entity] = payload) : (state[entity] = payload);
     },
     [ADD_ENTITY](state, { module, entity, payload }) {
       module
@@ -76,11 +77,11 @@ export default new Vuex.Store({
 
         Object.keys(BuilderCollection).forEach((item, idx) => {
           const entity = item.toLowerCase();
-          commit(REPLACE_ENTITY, { entity, value: data[idx] });
+          commit(REPLACE_ENTITY, { entity, payload: data[idx] });
           commit(REPLACE_ENTITY, {
-            module: "Builder",
+            module: Module.BUILDER,
             entity,
-            value:
+            payload:
               entity !== BuilderCollection.INGREDIENTS
                 ? data[idx][DefaultValue[entity]]
                 : [],

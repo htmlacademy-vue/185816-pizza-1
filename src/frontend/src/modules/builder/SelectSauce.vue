@@ -13,7 +13,12 @@
             :id="id"
             :value="id"
             :checked="selectItem.id === id ? id : null"
-            @change="$emit('setItem', { id, name, ...other })"
+            @change="
+              $emit('replace', {
+                entity,
+                payload: { id, name, ...other },
+              })
+            "
           >
             <b>{{ name }}</b>
           </RadioButton>
@@ -25,6 +30,7 @@
 
 <script>
 import RadioButton from "@/common/RadioButtonNew";
+import { Builder } from "@/common/enums/entity";
 
 export default {
   name: "SelectSauce",
@@ -44,6 +50,9 @@ export default {
       type: Object,
       default: () => ({}),
     },
+  },
+  computed: {
+    entity: () => Builder.SAUCES,
   },
 };
 </script>

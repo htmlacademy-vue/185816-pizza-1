@@ -11,7 +11,12 @@
           name="dough"
           :value="id"
           :checked="selectItem.id === id ? id : null"
-          @change="$emit('setItem', { id, image, name, description, ...other })"
+          @change="
+            $emit('replace', {
+              entity,
+              payload: { id, image, name, description, ...other },
+            })
+          "
         >
           <b>{{ name }}</b>
           <span>{{ description }}</span>
@@ -24,6 +29,7 @@
 <script>
 import RadioButton from "@/common/RadioButtonNew";
 import { replacePath } from "@/modules/utils";
+import { Builder } from "@/common/enums/entity";
 
 export default {
   name: "SelectDough",
@@ -41,6 +47,7 @@ export default {
     },
   },
   computed: {
+    entity: () => Builder.DOUGH,
     itemsNormalize() {
       return this.items.map(({ image, ...item }) => ({
         ...item,

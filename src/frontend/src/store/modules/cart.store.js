@@ -4,35 +4,30 @@ import {
   DELETE_ENTITY,
   UPDATE_ENTITY,
 } from "@/store/mutations";
-import { CrudState } from "@/common/heplers";
-import { capitalize } from "@/common/utils";
+import Module from "@/common/enums/module";
+import { Cart } from "@/common/enums/entity";
+import { v4 as uuidv4 } from "uuid";
 
-const entity = "cart";
-const module = capitalize(entity);
+const module = Module.CART;
 
 export default {
   namespaced: true,
   state: {
-    orders: [],
-    misc: [],
-  },
-  mutations: {
-    [UPDATE_ENTITY](state, { entity, payload }) {
-      CrudState.addOrUpdate(state, entity, payload.id, payload);
-    },
+    [Cart.ORDERS]: [],
+    [Cart.MISC]: [],
   },
   getters: {
     isEmpty(state) {
-      return state.orders.length === 0;
+      return state[Cart.ORDERS].length === 0;
     },
     totalCountOrders(state) {
-      return state.orders.reduce(
+      return state[Cart.ORDERS].reduce(
         (sum, order) => sum + order.totalPrice * order.quantity,
         0
       );
     },
     totalCountMics(state) {
-      return state.misc.reduce(
+      return state[Cart.MISC].reduce(
         (sum, order) => sum + order.price * order.quantity,
         0
       );
@@ -42,8 +37,8 @@ export default {
     },
     scopeOrders(state, getters) {
       return {
-        orders: state.orders,
-        misc: state.misc.filter((item) => item.multiplier !== 0),
+        orders: state[Cart.ORDERS],
+        misc: state[Cart.MISC].filter((item) => item.quantity !== 0),
         sum: getters.sumOrders,
       };
     },
@@ -66,7 +61,7 @@ export default {
         {
           module,
           entity,
-          payload,
+          payload: { ...payload, id: payload.id ? payload.id : uuidv4() },
         },
         { root: true }
       );
@@ -85,14 +80,14 @@ export default {
     clearCart({ commit }) {
       commit(CLEAR_ENTITY, {
         module,
-        entity: "misc",
+        entity: Cart.MISC,
       });
 
       commit(
         CLEAR_ENTITY,
         {
           module,
-          entity: "orders",
+          entity: Cart.ORDERS,
         },
         { root: true }
       );
