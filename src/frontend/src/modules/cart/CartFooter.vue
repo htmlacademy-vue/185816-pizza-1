@@ -49,7 +49,7 @@ export default {
     submitOrder() {
       this.addOrder(this.scopeOrders());
       this.clearCart();
-      this.$router.push("success-popup");
+      this.$router.push("cart/success-popup");
     },
   },
 };

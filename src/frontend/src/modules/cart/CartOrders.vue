@@ -1,5 +1,8 @@
 <template>
-  <ul class="cart-list sheet">
+  <transition-group
+    leave-active-class="animate__animated animate__backOutLeft"
+    tag="ul"
+  >
     <pizza-item-view
       @edit="(payload) => $emit('edit', payload)"
       @delete="(payload) => $emit('delete', payload)"
@@ -8,7 +11,7 @@
       :key="item.id"
       :item="item"
     />
-  </ul>
+  </transition-group>
 </template>
 
 <script>
@@ -27,5 +30,3 @@ export default {
   },
 };
 </script>
-
-<style scoped></style>
