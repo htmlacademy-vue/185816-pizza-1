@@ -3,11 +3,9 @@
     <div class="cart-form">
       <label class="cart-form__select">
         <span class="cart-form__label">Получение заказа:</span>
-
-        <select name="test" class="select">
+        <select v-model="type" name="test" class="select">
           <option value="1">Заберу сам</option>
           <option value="2">Новый адрес</option>
-          <option value="3">Дом</option>
         </select>
       </label>
 
@@ -16,7 +14,10 @@
         <input type="text" name="tel" placeholder="+7 999-999-99-99" />
       </label>
 
-      <div class="cart-form__address">
+      <div
+        class="cart-form__address"
+        v-if="parseInt(type) === DeliveryType.NEW_ADDRESS"
+      >
         <span class="cart-form__label">Новый адрес:</span>
 
         <div class="cart-form__input">
@@ -45,7 +46,20 @@
 </template>
 
 <script>
+const DeliveryType = {
+  MYSELF: 1,
+  NEW_ADDRESS: 2,
+};
+
 export default {
   name: "CartForm",
+  data() {
+    return {
+      type: 1,
+    };
+  },
+  computed: {
+    DeliveryType: () => DeliveryType,
+  },
 };
 </script>

@@ -6,19 +6,19 @@
         class="product__img"
         width="56"
         height="56"
-        alt="Капричоза"
+        :alt="item.name"
       />
       <div class="product__text">
-        <h2>{{ lowerNamePizzaComponents.name }}</h2>
+        <h2>{{ item.name }}</h2>
         <ul>
           <li>
-            {{ pizza.size.name }},
-            {{ lowerNamePizzaComponents.dough }}
+            {{ item[BuilderCollection.SIZES].name }},
+            {{ item[BuilderCollection.DOUGH].name }},
           </li>
-          <li>Соус: {{ lowerNamePizzaComponents.sauce }}</li>
-          <li>
+          <li>Соус: {{ item[BuilderCollection.SAUCES].name }}</li>
+          <li v-if="fill">
             Начинка:
-            {{ ingredientsFlat }}
+            {{ fill }}
           </li>
         </ul>
       </div>
@@ -28,8 +28,8 @@
       <button
         type="button"
         class="counter__button counter__button--minus"
-        :disabled="pizza.size.multiplier < 1"
-        @click="setMultiplier({ add: false, id: pizza.id })"
+        :disabled="item.quantity < 1"
+        @click="changeItem({ ...item, quantity: (item.quantity -= 1) })"
       >
         <span class="visually-hidden">Меньше</span>
       </button>
@@ -37,24 +37,39 @@
         type="text"
         name="counter"
         class="counter__input"
-        :value="pizza.multiplier"
+        :value="item.quantity"
       />
       <button
         type="button"
         class="counter__button counter__button--plus counter__button--orange"
-        @click="setMultiplier({ add: true, id: pizza.id })"
+        @click="changeItem({ ...item, quantity: (item.quantity += 1) })"
       >
         <span class="visually-hidden">Больше</span>
       </button>
     </div>
 
     <div class="cart-list__price">
-      <b>{{ sumPrice }} ₽</b>
+      <b>{{ totalPrice }} ₽</b>
     </div>
 
     <div class="cart-list__button">
-      <button type="button" class="cart-list__edit">Изменить</button>
-      <button type="button" class="cart-list__edit" @click="deleteOrder(pizza)">
+      <button
+        @click="$emit('edit', item)"
+        type="button"
+        class="cart-list__edit"
+      >
+        Изменить
+      </button>
+      <button
+        type="button"
+        class="cart-list__edit"
+        @click="
+          $emit('delete', {
+            entity,
+            payload: item,
+          })
+        "
+      >
         Удалить
       </button>
     </div>
@@ -62,35 +77,43 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
+import { BuilderCollection } from "@/common/enums/builder";
+import { Cart } from "@/common/enums/entity";
 
 export default {
-  name: "PizzaItemView",
+  name: "itemItemView",
   props: {
-    pizza: {
+    item: {
       type: Object,
       required: true,
     },
   },
   computed: {
-    ingredientsFlat() {
-      return this.pizza.ingredients
-        .map((ingredient) => ingredient.name.toLowerCase())
-        .join();
+    fill() {
+      return this.item[BuilderCollection.INGREDIENTS]
+        .map(({ name }) => name)
+        .join(", ");
     },
-    lowerNamePizzaComponents() {
-      return {
-        name: this.pizza.name.toLowerCase(),
-        dough: this.pizza.dough.name.toLowerCase(),
-        sauce: this.pizza.sauce.name.toLowerCase(),
-      };
+    totalPrice() {
+      return this.item.totalPrice * this.item.quantity;
     },
-    sumPrice() {
-      return this.pizza.price * this.pizza.multiplier;
-    },
+    BuilderCollection: () => BuilderCollection,
+    entity: () => Cart.ORDERS,
   },
   methods: {
-    ...mapActions("Cart", ["setMultiplier", "deleteOrder"]),
+    changeItem(payload) {
+      if (payload.quantity < 1) {
+        this.$emit("delete", {
+          entity: Cart.ORDERS,
+          payload,
+        });
+      }
+
+      this.$emit("update", {
+        entity: Cart.ORDERS,
+        payload,
+      });
+    },
   },
 };
 </script>

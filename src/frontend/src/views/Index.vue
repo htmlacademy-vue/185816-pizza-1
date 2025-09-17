@@ -6,7 +6,7 @@
 </template>
 
 <script>
-import BuilderPizzaView from "@/modules/builder/BuilderPizzaView";
+import BuilderPizzaView from "@/modules/builder/Index";
 
 export default {
   name: "IndexPage",

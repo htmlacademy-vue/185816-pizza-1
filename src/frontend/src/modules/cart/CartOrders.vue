@@ -1,6 +1,13 @@
 <template>
   <ul class="cart-list sheet">
-    <pizza-item-view v-for="pizza in pizzas" :key="pizza.id" :pizza="pizza" />
+    <pizza-item-view
+      @edit="(payload) => $emit('edit', payload)"
+      @delete="(payload) => $emit('delete', payload)"
+      @update="(payload) => $emit('update', payload)"
+      v-for="item of items"
+      :key="item.id"
+      :item="item"
+    />
   </ul>
 </template>
 
@@ -13,7 +20,7 @@ export default {
     PizzaItemView,
   },
   props: {
-    pizzas: {
+    items: {
       type: Array,
       required: true,
     },

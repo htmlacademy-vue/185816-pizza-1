@@ -3,17 +3,12 @@
     <ul class="additional-list">
       <li
         class="additional-list__item sheet"
-        v-for="miscItem in misc"
-        :key="miscItem.id"
+        v-for="{ id, image, name, quantity, price } of quantifiedItems"
+        :key="id"
       >
         <p class="additional-list__description">
-          <img
-            :src="require(`@/assets/img/${miscItem.image}`)"
-            width="39"
-            height="60"
-            :alt="miscItem.name"
-          />
-          <span>{{ miscItem.name }}</span>
+          <img :src="image" width="39" height="60" :alt="name" />
+          <span>{{ name }}</span>
         </p>
 
         <div class="additional-list__wrapper">
@@ -21,8 +16,20 @@
             <button
               type="button"
               class="counter__button counter__button--minus"
-              :disabled="miscItem.multiplier === 0"
-              @click.prevent="removeMiscItem(miscItem)"
+              :disabled="quantity === 0"
+              @click="
+                changeItem(
+                  {
+                    id,
+                    image,
+                    name,
+                    quantity: (quantity -= 1),
+                    price,
+                  },
+                  quantity + 1,
+                  quantity
+                )
+              "
             >
               <span class="visually-hidden">Меньше</span>
             </button>
@@ -30,19 +37,32 @@
               type="text"
               name="counter"
               class="counter__input"
-              :value="miscItem.multiplier"
+              disabled
+              :value="quantity"
             />
             <button
               type="button"
               class="counter__button counter__button--plus counter__button--orange"
-              @click.prevent="addMiscItem(miscItem)"
+              @click="
+                changeItem(
+                  {
+                    id,
+                    image,
+                    name,
+                    quantity: (quantity += 1),
+                    price,
+                  },
+                  quantity - 1,
+                  quantity
+                )
+              "
             >
               <span class="visually-hidden">Больше</span>
             </button>
           </div>
 
           <div class="additional-list__price">
-            <b>× {{ miscItem.price }} ₽</b>
+            <b>× {{ price }} ₽</b>
           </div>
         </div>
       </li>
@@ -51,29 +71,43 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
+import { mapGetters } from "vuex";
+
+const entity = "misc";
 
 export default {
   name: "CartAdditional",
   props: {
-    misc: {
+    items: {
       type: Array,
       required: true,
     },
   },
-  methods: {
-    ...mapActions("Cart", ["updateMiscItem"]),
-    addMiscItem(miscItem) {
-      return this.updateMiscItem({
-        ...miscItem,
-        add: true,
+  computed: {
+    ...mapGetters(["getEntityByID"]),
+    quantifiedItems() {
+      return this.items.map((item) => {
+        const newItem = this.getEntityByID({
+          module: "Cart",
+          entity,
+          id: item.id,
+        });
+
+        return { ...item, quantity: newItem ? newItem.quantity : 0 };
       });
     },
-    removeMiscItem(miscItem) {
-      return this.updateMiscItem({
-        ...miscItem,
-        add: false,
-      });
+  },
+  methods: {
+    changeItem(payload, oldValue, newValue) {
+      if (oldValue === 0 && newValue === 1) {
+        this.$emit("add", { entity, payload });
+      }
+
+      if (oldValue === 1 && newValue === 0) {
+        this.$emit("delete", { entity, payload });
+      }
+
+      this.$emit("update", { entity, payload });
     },
   },
 };
