@@ -49,6 +49,11 @@ export const CrudState = {
 };
 
 export const CrudCollection = {
+  /**
+   * Validate collection argument on Array
+   * @param collection
+   * @private
+   */
   _validator(collection) {
     if (!Array.isArray(collection)) {
       throw new SyntaxError(
@@ -57,11 +62,21 @@ export const CrudCollection = {
     }
   },
 
+  /**
+   * Add element to collection
+   * @param collection
+   * @param items
+   */
   add(collection, ...items) {
     this._validator(collection);
     collection.splice(0, 0, ...items);
   },
 
+  /**
+   * Delete element to collection by ID
+   * @param collection
+   * @param itemID
+   */
   deleteByID(collection, itemID) {
     this._validator(collection);
     const index = this.getIndexByID(collection, itemID);
@@ -71,6 +86,12 @@ export const CrudCollection = {
     }
   },
 
+  /**
+   * Update element to collection by ID
+   * @param collection
+   * @param itemID
+   * @param payload
+   */
   updateByID(collection, itemID, payload) {
     this._validator(collection);
     const index = this.getIndexByID(collection, itemID);
@@ -82,16 +103,43 @@ export const CrudCollection = {
     }
   },
 
+  /**
+   * Search element index by ID in collection
+   * @param collection
+   * @param itemID
+   * @returns {*}
+   */
   getIndexByID(collection, itemID) {
     this._validator(collection);
     return collection.findIndex(({ id }) => id === itemID);
   },
 
+  /**
+   * Get element by ID in collection
+   * @param collection
+   * @param itemID
+   * @returns {*}
+   */
   getElementByID(collection, itemID) {
     this._validator(collection);
     return collection.find(({ id }) => id === itemID);
   },
 
+  /**
+   * Get element common function
+   * @param collection
+   * @param callback
+   * @returns {*}
+   */
+  getElement(collection, callback) {
+    this._validator(collection);
+    return collection.find(callback);
+  },
+
+  /**
+   * Clear collection to empty array
+   * @param collection
+   */
   clear(collection) {
     this._validator(collection);
     collection.splice(0, collection.length);

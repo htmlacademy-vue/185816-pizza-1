@@ -18,7 +18,7 @@
             })
           "
         >
-          <b>{{ name }}</b>
+          <span>{{ name }}</span>
         </RadioButton>
       </div>
     </div>

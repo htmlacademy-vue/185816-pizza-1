@@ -8,9 +8,7 @@
       :value="value"
       v-model="proxyChecked"
     />
-    <span>
-      <slot />
-    </span>
+    <slot />
   </label>
 </template>
 

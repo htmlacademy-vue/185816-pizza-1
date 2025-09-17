@@ -1,13 +1,21 @@
 <template>
   <div class="content__pizza">
     <label class="input">
-      <span class="visually-hidden">Название пиццы</span>
+      <span class="visually-hidden">Название пиццы<sub>*</sub></span>
       <input
         type="text"
         name="pizza_name"
-        placeholder="Введите название пиццы"
-        v-model="name"
+        placeholder="Введите название пиццы
+      *"
+        v-model.trim="name"
+        v-validate="['required']"
+        :style="{ borderColor: currenError('pizza_name') ? 'crimson' : 'gray' }"
       />
+      <span
+        style="color: crimson; display: block; padding: 4px 0"
+        v-if="currenError('pizza_name')"
+        >{{ currenError("pizza_name").message }}
+      </span>
     </label>
     <div
       class="content__constructor"
@@ -49,7 +57,7 @@
         "
         type="button"
         class="button"
-        :disabled="name.length <= 0"
+        :disabled="errors.length > 0 || name.length === 0"
       >
         Готовьте!
       </button>
@@ -61,6 +69,7 @@
 import { BuilderCollection } from "@/common/enums/builder";
 import { DataTransferType } from "@/common/constants";
 import { replacePath } from "@/modules/utils";
+import { CrudCollection } from "@/common/heplers";
 
 const doughMap = {
   1: "small",
@@ -91,6 +100,7 @@ export default {
     return {
       name: "",
       ingredientLayer: ["", "second", "third"],
+      errors: [],
     };
   },
   computed: {
@@ -123,6 +133,11 @@ export default {
     this.name = this.item.name || "";
   },
   methods: {
+    currenError(id) {
+      return CrudCollection.getElement(this.errors, (item) =>
+        item.id.match(id)
+      );
+    },
     onDropFill({ dataTransfer }) {
       const data = JSON.parse(dataTransfer.getData(DataTransferType.PAYLOAD));
 

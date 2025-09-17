@@ -51,7 +51,7 @@ export default {
     itemsNormalize() {
       return this.items.map(({ image, ...item }) => ({
         ...item,
-        image: replacePath(image),
+        image: replacePath(image).split("-").at(-1),
       }));
     },
   },

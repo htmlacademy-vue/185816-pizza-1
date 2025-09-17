@@ -18,16 +18,6 @@ export default [
           popup: "login",
         },
       },
-    ],
-  },
-  {
-    path: "/cart",
-    name: "Cart",
-    component: () => import("@/views/Cart.vue"),
-    meta: {
-      layout: "AppLayoutDefault",
-    },
-    children: [
       {
         path: "success-popup",
         name: "SuccessPopup",
@@ -38,6 +28,14 @@ export default [
         },
       },
     ],
+  },
+  {
+    path: "/cart",
+    name: "Cart",
+    component: () => import("@/views/Cart.vue"),
+    meta: {
+      layout: "AppLayoutDefault",
+    },
   },
   {
     path: "/orders",

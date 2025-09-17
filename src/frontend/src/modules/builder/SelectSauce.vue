@@ -1,30 +1,23 @@
 <template>
-  <div class="content__ingredients">
-    <div class="sheet">
-      <h2 class="title title--small sheet__title">Выберите ингредиенты</h2>
-      <div class="sheet__content ingredients">
-        <div class="ingredients__sauce">
-          <p>Основной соус:</p>
-          <RadioButton
-            :class="['radio', 'ingredients__input']"
-            v-for="{ id, name, ...other } of items"
-            :key="id"
-            name="sauce"
-            :id="id"
-            :value="id"
-            :checked="selectItem.id === id ? id : null"
-            @change="
-              $emit('replace', {
-                entity,
-                payload: { id, name, ...other },
-              })
-            "
-          >
-            <b>{{ name }}</b>
-          </RadioButton>
-        </div>
-      </div>
-    </div>
+  <div class="ingredients__sauce">
+    <p>Основной соус:</p>
+    <RadioButton
+      :class="['radio', 'ingredients__input']"
+      v-for="{ id, name, ...other } of items"
+      :key="id"
+      name="sauce"
+      :id="id"
+      :value="id"
+      :checked="selectItem.id === id ? id : null"
+      @change="
+        $emit('replace', {
+          entity,
+          payload: { id, name, ...other },
+        })
+      "
+    >
+      <span>{{ name }}</span>
+    </RadioButton>
   </div>
 </template>
 

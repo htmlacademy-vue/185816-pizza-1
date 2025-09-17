@@ -1,6 +1,7 @@
 <template>
-  <div>
+  <div class="app-content">
     <ul
+      v-if="notifications.length > 0"
       style="
         position: fixed;
         top: 0;

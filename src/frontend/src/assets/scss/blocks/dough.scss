@@ -7,10 +7,6 @@
 
   cursor: pointer;
 
-  & input:checked ~ span b:before {
-    box-shadow: $shadow-regular;
-  }
-
   b {
     @include r-s16-h19;
 
@@ -36,7 +32,7 @@
     display: block;
   }
 
-  &--dough-light {
+  &--light {
     b {
       &::before {
         background-image: url("~@/assets/img/dough-light.svg");
@@ -44,7 +40,7 @@
     }
   }
 
-  &--dough-large {
+  &--large {
     b {
       &::before {
         background-image: url("~@/assets/img/dough-large.svg");
