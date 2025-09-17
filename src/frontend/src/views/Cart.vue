@@ -1,5 +1,9 @@
 <template>
-  <cart-view />
+  <cart-view>
+    <template #popup>
+      <router-view />
+    </template>
+  </cart-view>
 </template>
 
 <script>

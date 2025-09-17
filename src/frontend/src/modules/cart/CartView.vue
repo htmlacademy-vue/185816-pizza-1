@@ -1,5 +1,6 @@
 <template>
   <form method="post" class="layout-form">
+    <slot name="popup" />
     <main class="content cart">
       <div class="container">
         <div class="cart__title">

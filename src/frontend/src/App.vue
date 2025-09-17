@@ -1,6 +1,13 @@
 <template>
   <app-layout>
-    <router-view></router-view>
+    <transition
+      name="view"
+      appear
+      enter-active-class="animate__animated animate__fadeIn"
+      :duration="{ enter: 100, leave: 100 }"
+    >
+      <router-view />
+    </transition>
   </app-layout>
 </template>
 

@@ -8,16 +8,15 @@ export default [
     meta: {
       layout: "AppLayoutDefault",
     },
+  },
+  {
+    path: "/cart",
+    name: "Cart",
+    component: () => import("@/views/Cart.vue"),
+    meta: {
+      layout: "AppLayoutDefault",
+    },
     children: [
-      {
-        path: "login-popup",
-        name: "LoginPopup",
-        component: () => import("@/views/Popup.vue"),
-        meta: {
-          layout: "AppLayoutDefault",
-          popup: "login",
-        },
-      },
       {
         path: "success-popup",
         name: "SuccessPopup",
@@ -28,14 +27,6 @@ export default [
         },
       },
     ],
-  },
-  {
-    path: "/cart",
-    name: "Cart",
-    component: () => import("@/views/Cart.vue"),
-    meta: {
-      layout: "AppLayoutDefault",
-    },
   },
   {
     path: "/orders",
