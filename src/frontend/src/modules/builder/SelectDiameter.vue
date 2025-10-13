@@ -42,9 +42,9 @@ export default {
       required: true,
     },
   },
-  computed: {
-    sizeMap: () => sizeMap,
-    entity: () => Builder.SIZES,
-  },
+  data: () => ({
+    entity: Builder.SIZES,
+    sizeMap,
+  }),
 };
 </script>

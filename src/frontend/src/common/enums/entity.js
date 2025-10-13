@@ -1,15 +1,16 @@
-import Resources from "@/common/enums/resources";
-
 export const Builder = {
-  DOUGH: Resources.DOUGHS,
-  SAUCES: Resources.SAUCES,
-  INGREDIENTS: Resources.INGREDIENTS,
-  SIZES: Resources.SIZES,
+  DOUGH: "doughId",
+  SAUCES: "sauceId",
+  INGREDIENTS: "ingredients",
+  SIZES: "sizeId",
+  NAME: "name",
+  ID: "id",
 };
 
 export const Cart = {
-  MISC: Resources.MISC,
+  MISC: "misc",
   ORDERS: "orders",
+  TOTAL_PRICE: "totalPrice",
 };
 
 export const Auth = {

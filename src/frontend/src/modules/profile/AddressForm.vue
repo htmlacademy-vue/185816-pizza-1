@@ -1,6 +1,6 @@
 <template>
   <form
-    @submit.prevent.stop="$emit('submit', formData)"
+    @submit.prevent.stop="onSubmit"
     action="test.html"
     method="post"
     class="address-form address-form--opened sheet"
@@ -127,6 +127,15 @@ export default {
           item.id.match(id)
         );
       };
+    },
+  },
+  methods: {
+    onSubmit() {
+      if (this.createOnly) {
+        return this.$emit("create", this.formData);
+      }
+
+      return this.$emit("update", this.formData);
     },
   },
 };

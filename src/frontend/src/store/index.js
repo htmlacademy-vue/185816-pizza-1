@@ -14,6 +14,7 @@ import { BuilderCollection, DefaultValue } from "@/common/enums/builder";
 import { CrudCollection } from "@/common/heplers";
 import Module from "@/common/enums/module";
 import { v4 as uuidv4 } from "uuid";
+import { Builder } from "@/common/enums/entity";
 
 Vue.use(Vuex);
 
@@ -81,14 +82,12 @@ export default new Vuex.Store({
         Object.keys(BuilderCollection).forEach((item, idx) => {
           const entity = item.toLowerCase();
           commit(REPLACE_ENTITY, { entity, payload: data[idx] });
+
           // Set default builder
           commit(REPLACE_ENTITY, {
             module: Module.BUILDER,
-            entity,
-            payload:
-              entity !== BuilderCollection.INGREDIENTS
-                ? DefaultValue[entity]
-                : [],
+            entity: Builder[item],
+            payload: DefaultValue[item],
           });
         });
       } catch (e) {

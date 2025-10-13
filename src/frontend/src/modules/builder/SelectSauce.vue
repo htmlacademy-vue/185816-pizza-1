@@ -40,8 +40,8 @@ export default {
       default: () => ({}),
     },
   },
-  computed: {
-    entity: () => Builder.SAUCES,
-  },
+  data: () => ({
+    entity: Builder.SAUCES,
+  }),
 };
 </script>

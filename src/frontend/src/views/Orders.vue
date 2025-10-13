@@ -20,23 +20,31 @@
       <div class="layout__title">
         <h1 class="title title--big">История заказов</h1>
       </div>
+      <OrderView
+        v-for="item of items"
+        :key="item.id"
+        :item="item"
+        @delete="deleteItem"
+      />
     </div>
   </main>
 </template>
 
 <script>
 import { mapActions, mapState } from "vuex";
+import OrderView from "@/modules/orders/OrderView.vue";
 
 export default {
   name: "Orders",
+  components: { OrderView },
   computed: {
-    ...mapState("Orders", ["orderItems"]),
+    ...mapState("Orders", ["items"]),
   },
   async mounted() {
     await this.fetchOrderItems();
   },
   methods: {
-    ...mapActions("Orders", ["fetchOrderItems"]),
+    ...mapActions("Orders", ["fetchOrderItems", "deleteItem"]),
   },
 };
 </script>

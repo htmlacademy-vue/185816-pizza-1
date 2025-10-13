@@ -49,7 +49,7 @@ import SelectIngredients from "@/modules/builder/SelectIngredients.vue";
 import SelectSauce from "@/modules/builder/SelectSauce.vue";
 import SelectFilling from "@/modules/builder/SelectFilling/Index.vue";
 import ResultBuilder from "@/modules/builder/ResultBuilder.vue";
-import { Cart } from "@/common/enums/entity";
+import { Builder, Cart } from "@/common/enums/entity";
 
 export default {
   name: "BuilderPizzaView",
@@ -66,10 +66,10 @@ export default {
       ...Object.keys(BuilderCollection).map((item) => item.toLowerCase()),
     ]),
     ...mapState("Builder", {
-      selectDough: (state) => state[BuilderCollection.DOUGH],
-      selectSize: (state) => state[BuilderCollection.SIZES],
-      selectSauce: (state) => state[BuilderCollection.SAUCES],
-      selectIngredients: (state) => state[BuilderCollection.INGREDIENTS],
+      selectDough: (state) => state[Builder.DOUGH],
+      selectSize: (state) => state[Builder.SIZES],
+      selectSauce: (state) => state[Builder.SAUCES],
+      selectIngredients: (state) => state[Builder.INGREDIENTS],
       builder: (state) => state,
     }),
   },

@@ -1,8 +1,14 @@
-import { REPLACE_ENTITY, ADD_ENTITY, DELETE_ENTITY } from "@/store/mutations";
+import {
+  REPLACE_ENTITY,
+  ADD_ENTITY,
+  DELETE_ENTITY,
+  UPDATE_ENTITY,
+} from "@/store/mutations";
 import Module from "@/common/enums/module";
 import { CrudCollection } from "@/common/heplers";
 
 const module = Module.ADDRESS;
+const entity = "items";
 
 export default {
   namespaced: true,
@@ -22,7 +28,7 @@ export default {
         REPLACE_ENTITY,
         {
           module,
-          entity: "items",
+          entity,
           payload,
         },
         { root: true }
@@ -35,7 +41,7 @@ export default {
         ADD_ENTITY,
         {
           module,
-          entity: "items",
+          entity,
           payload: { id, ...payload },
         },
         { root: true }
@@ -48,8 +54,21 @@ export default {
         DELETE_ENTITY,
         {
           module,
-          entity: "items",
+          entity,
           id,
+        },
+        { root: true }
+      );
+    },
+    async updateItem({ commit }, payload) {
+      await this.$api.addresses.put(payload);
+
+      commit(
+        UPDATE_ENTITY,
+        {
+          module,
+          entity,
+          payload,
         },
         { root: true }
       );

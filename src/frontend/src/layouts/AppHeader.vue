@@ -11,7 +11,9 @@
       </router-link>
     </div>
     <div class="header__cart">
-      <router-link :to="{ name: 'Cart' }">{{ sumOrders }} ₽</router-link>
+      <router-link :to="{ name: 'Cart' }"
+        >{{ totalPrice + calculateItems(selectMisc) }} ₽</router-link
+      >
     </div>
     <div class="header__user" v-if="isAuthenticated">
       <router-link to="/profile">
@@ -38,16 +40,18 @@
 <script>
 import { mapActions, mapGetters, mapState } from "vuex";
 import logout from "@/common/mixins/logout";
+import { calculateItems } from "@/common/utils";
 
 export default {
   name: "AppHeader",
   mixins: [logout],
   computed: {
     ...mapState("Auth", ["user", "isAuthenticated"]),
-    ...mapGetters("Cart", ["sumOrders"]),
+    ...mapGetters("Cart", ["totalPrice", "selectMisc"]),
   },
   methods: {
     ...mapActions("Auth", ["login"]),
+    calculateItems,
   },
 };
 </script>

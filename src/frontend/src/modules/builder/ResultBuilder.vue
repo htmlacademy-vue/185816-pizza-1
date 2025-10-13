@@ -52,11 +52,13 @@
     </div>
 
     <div class="content__result">
-      <p>Итого: {{ totalPrice }} ₽</p>
+      <p>
+        Итого:
+        {{ totalPrice }}
+        ₽
+      </p>
       <button
-        @click.prevent.self="
-          build({ ...item, totalPrice, name, quantity: item.quantity || 1 })
-        "
+        @click.prevent.self="build({ ...item, name, totalPrice })"
         type="button"
         class="button"
         :disabled="errors.length > 0 || name.length === 0"
@@ -68,11 +70,11 @@
 </template>
 
 <script>
-import { BuilderCollection } from "@/common/enums/builder";
 import { DataTransferType } from "@/common/constants";
 import { replacePath } from "@/modules/utils";
 import { CrudCollection } from "@/common/heplers";
-import { mapState } from "vuex";
+import { mapGetters } from "vuex";
+import { calculatePizza } from "@/common/utils";
 
 const doughMap = {
   1: "small",
@@ -107,38 +109,12 @@ export default {
     };
   },
   computed: {
-    ...mapState(["dough", "ingredients", "sauces", "sizes"]),
-    selectDough() {
-      return CrudCollection.getElementByID(
-        this.dough,
-        this.item[BuilderCollection.DOUGH]
-      );
-    },
-    selectSauce() {
-      return CrudCollection.getElementByID(
-        this.sauces,
-        this.item[BuilderCollection.SAUCES]
-      );
-    },
-    selectSize() {
-      return CrudCollection.getElementByID(
-        this.sizes,
-        this.item[BuilderCollection.SIZES]
-      );
-    },
-    selectIngredients() {
-      return this.item.ingredients.map((item) => {
-        const payload = CrudCollection.getElementByID(
-          this.ingredients,
-          item.id
-        );
-
-        return {
-          ...item,
-          ...payload,
-        };
-      });
-    },
+    ...mapGetters("Builder", [
+      "selectDough",
+      "selectSauce",
+      "selectSize",
+      "selectIngredients",
+    ]),
     weight() {
       return doughMap[this.selectDough?.id];
     },
@@ -148,20 +124,6 @@ export default {
     scale() {
       return scaleMap[this.selectSize?.multiplier] || 0;
     },
-    ingredientPrice() {
-      return this.selectIngredients.reduce(
-        (acc, { price = 0, quantity = 0 }) => acc + price * quantity,
-        0
-      );
-    },
-    totalPrice() {
-      return (
-        (this.selectDough?.price +
-          this.selectSauce?.price +
-          this.ingredientPrice) *
-        this.selectSize?.multiplier
-      );
-    },
     currentError: function () {
       return function (id) {
         return CrudCollection.getElement(this.errors, (item) =>
@@ -169,12 +131,21 @@ export default {
         );
       };
     },
-    replacePath: () => replacePath,
+    totalPrice() {
+      return this.calculatePizza(
+        this.selectDough,
+        this.selectSauce,
+        this.selectSize,
+        this.selectIngredients
+      );
+    },
   },
   mounted() {
     this.name = this.item.name || "";
   },
   methods: {
+    replacePath,
+    calculatePizza,
     onDropFill({ dataTransfer }) {
       const data = JSON.parse(dataTransfer.getData(DataTransferType.PAYLOAD));
 

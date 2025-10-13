@@ -12,7 +12,7 @@
       Перейти к конструктору<br />чтоб собрать ещё одну пиццу
     </p>
     <div class="footer__price">
-      <b>Итого: {{ sum }} ₽</b>
+      <b>Итого: {{ totalPrice + calculateItems(selectMisc) }} ₽</b>
     </div>
 
     <div class="footer__submit">
@@ -29,18 +29,17 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapGetters, mapState } from "vuex";
+import { calculateItems } from "@/common/utils";
 
 export default {
   name: "CartFooter",
-  props: {
-    sum: {
-      type: Number,
-      required: true,
-    },
-  },
   computed: {
     ...mapState("Cart", ["orders"]),
+    ...mapGetters("Cart", ["totalPrice", "selectMisc"]),
+  },
+  methods: {
+    calculateItems,
   },
 };
 </script>

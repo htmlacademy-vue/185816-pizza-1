@@ -85,6 +85,7 @@ export default {
   },
   computed: {
     ...mapGetters(["getEntityByID"]),
+    ...mapGetters("Cart", ["selectMisc"]),
     quantifiedItems() {
       return this.items.map((item) => {
         const newItem = this.getEntityByID({
@@ -98,7 +99,9 @@ export default {
     },
   },
   methods: {
-    changeItem(payload, oldValue, newValue) {
+    changeItem({ id, quantity }, oldValue, newValue) {
+      const payload = { id, quantity };
+
       if (oldValue === 0 && newValue === 1) {
         this.$emit("add", { entity, payload });
       }

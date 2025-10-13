@@ -17,6 +17,7 @@
       v-if="isEdit"
       :order="order"
       @delete="(item) => $emit('delete', item)"
+      @update="update"
     />
   </div>
 </template>
@@ -45,6 +46,10 @@ export default {
   methods: {
     edit() {
       this.isEdit = true;
+    },
+    update(data) {
+      this.isEdit = false;
+      this.$emit("update", data);
     },
   },
 };

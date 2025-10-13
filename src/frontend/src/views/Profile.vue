@@ -28,7 +28,7 @@
       <user-info v-if="user" :item="user" />
 
       <transition-group
-        tag-div
+        tag="div"
         leave-active-class="animate__animated animate__backOutLeft"
       >
         <address-view
@@ -37,6 +37,7 @@
           :key="item.id"
           :item="item"
           @delete="(item) => deleteItem(item)"
+          @update="(item) => updateItem(item)"
         />
       </transition-group>
       <transition
@@ -49,7 +50,7 @@
         <address-form
           v-if="isCreated"
           :order="orderItems.length + 1"
-          @submit="submit"
+          @create="submit"
           create-only
         />
       </transition>
@@ -89,7 +90,12 @@ export default {
     await this.fetchItems();
   },
   methods: {
-    ...mapActions("Address", ["fetchItems", "createItem", "deleteItem"]),
+    ...mapActions("Address", [
+      "fetchItems",
+      "createItem",
+      "deleteItem",
+      "updateItem",
+    ]),
     submit(data) {
       this.createItem({ ...data, userId: this.user.id });
       this.isCreated = false;

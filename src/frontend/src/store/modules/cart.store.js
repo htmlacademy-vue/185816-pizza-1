@@ -8,9 +8,10 @@ import {
 import Module from "@/common/enums/module";
 import { Cart } from "@/common/enums/entity";
 import { v4 as uuidv4 } from "uuid";
+import { BuilderCollection } from "@/common/enums/builder";
 
 const module = Module.CART;
-
+// TODO: объединить с Orders
 export default {
   namespaced: true,
   state: {
@@ -21,23 +22,34 @@ export default {
     isEmpty(state) {
       return state[Cart.ORDERS].length === 0;
     },
-    totalCountOrders(state) {
+    selectMisc(state, getters, rootState, rootGetters) {
+      return state[Cart.MISC].map((item) => ({
+        ...item,
+        ...rootGetters.getEntityByID({
+          entity: BuilderCollection.INGREDIENTS,
+          id: item.id,
+        }),
+      }));
+    },
+    totalPrice(state) {
       return state[Cart.ORDERS].reduce(
-        (sum, order) => sum + order.totalPrice * order.quantity,
+        (acc, { totalPrice }) => acc + totalPrice,
         0
       );
-    },
-    totalCountMics(state) {
-      return state[Cart.MISC].reduce(
-        (sum, order) => sum + order.price * order.quantity,
-        0
-      );
-    },
-    sumOrders(state, getters) {
-      return getters.totalCountOrders + getters.totalCountMics;
     },
   },
   actions: {
+    replaceItem({ commit }, { entity, payload }) {
+      commit(
+        REPLACE_ENTITY,
+        {
+          module,
+          entity,
+          payload,
+        },
+        { root: true }
+      );
+    },
     updateItem({ commit }, { entity, payload }) {
       commit(
         UPDATE_ENTITY,

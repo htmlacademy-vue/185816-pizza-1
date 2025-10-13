@@ -42,8 +42,10 @@ export default {
       required: true,
     },
   },
+  data: () => ({
+    entity: Builder.DOUGH,
+  }),
   computed: {
-    entity: () => Builder.DOUGH,
     itemsNormalize() {
       return this.items.map(({ image, ...item }) => ({
         ...item,
